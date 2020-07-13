@@ -1,0 +1,41 @@
+{
+  "rules": {
+    "clients": {
+      "items": {
+        ".read": "true",
+        ".write": "true",
+        ".indexOn": "action_date"
+      }
+    },
+    "expenses": {
+      "items": {
+        ".read": "true",
+        ".write": "true",
+        ".indexOn": "action_date"
+      }      
+    },
+    "sales": {
+      "water": {
+        "items": {
+          ".read": "true",
+          ".write": "true",
+          ".indexOn": "action_date"
+        }      
+      },
+      "others": {
+        "items": {
+          ".read": "true",
+          ".write": "true",
+          ".indexOn": "action_date"
+        }      
+      }    
+    },
+    "reports": {
+      "items": {
+        ".read": "true",
+        ".write": "true",
+        ".indexOn": "action_date"
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+<!-- Table list -->
+<div *ngIf="display=='list'">
+    <mat-table [dataSource]="items" class="mat-elevation-z8">
+        <!-- address column -->
+        <ng-container matColumnDef="address">
+            <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.address}} </mat-cell>
+        </ng-container>
+
+        <!-- contact column -->
+        <ng-container matColumnDef="contact">
+            <mat-header-cell *matHeaderCellDef> Contact </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.contact}} </mat-cell>
+        </ng-container>
+
+        <!-- round column -->
+        <ng-container matColumnDef="round">
+            <mat-header-cell *matHeaderCellDef> Round </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.round}} </mat-cell>
+        </ng-container>
+
+        <!-- slim column -->
+        <ng-container matColumnDef="slim">
+            <mat-header-cell *matHeaderCellDef> Slim </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.slim}} </mat-cell>
+        </ng-container>
+
+        <!-- amount column -->
+        <ng-container matColumnDef="amount">
+            <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.amount}} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+</div>
+
+<!-- Form -->
+<div class="form" *ngIf="display=='form'">
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="Address" [(ngModel)]="item.address" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="Contact" [(ngModel)]="item.contact" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="Round" [(ngModel)]="item.round" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="Slim" [(ngModel)]="item.slim" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="Amount" [(ngModel)]="item.amount" />
+        </mat-form-field>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="actions">
+    <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
+    <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
+    <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>
+</div>
