@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { expenses } from '../models/expenses';
+import { category } from '../models/category';
 
 @Component({
   selector: 'app-expenses',
@@ -12,6 +13,7 @@ export class ExpensesComponent implements OnInit {
   displayedColumns: string[] = ['name', 'category', 'amount', 'remarks', 'action_date'];
   item: expenses;
   items: Array<expenses>;
+  categories: Array<category>;
 
   constructor(private service: WaterService) {}
 
@@ -28,6 +30,7 @@ export class ExpensesComponent implements OnInit {
 
   add() {
     this.display = 'form';
+    this.categories = this.service.expenses_categories;
     this.item = new expenses();
   }
 

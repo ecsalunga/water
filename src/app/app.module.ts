@@ -25,6 +25,7 @@ import { ProductsComponent } from './products/products.component';
 import { SummaryComponent } from './summary/summary.component';
 import { MenuComponent } from './menu/menu.component';
 import { ExpensesComponent } from './expenses/expenses.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { ExpensesComponent } from './expenses/expenses.component';
     ProductsComponent,
     SummaryComponent,
     MenuComponent,
-    ExpensesComponent
+    ExpensesComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

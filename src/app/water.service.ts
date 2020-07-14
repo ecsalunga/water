@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
+import { category } from './models/category';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WaterService {
+  expenses_categories: Array<category>;
   Action_Day: number;
   
   constructor(public db: AngularFireDatabase) {
     this.Action_Day =  this.actionDay();
+    this.loadExpensesCategory();
   }
 
   public actionDate(): number {
@@ -53,5 +56,16 @@ export class WaterService {
       num = "0" + num;
 
     return num;
+  }
+
+  private loadExpensesCategory() {
+    this.db.list<category>('settings/items', ref => ref.orderByChild('group').equalTo('expenses')).snapshotChanges().subscribe(records => {
+      this.expenses_categories = new Array<category>();
+      records.forEach(item => {
+        let i = item.payload.val();
+        i.key = item.key;
+        this.expenses_categories.push(i);
+      });
+    });
   }
 }

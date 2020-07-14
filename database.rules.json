@@ -36,6 +36,13 @@
         ".write": "true",
         ".indexOn": "action_day"
       }
+    },
+    "settings": {
+      "items": {
+        ".read": "true",
+        ".write": "true",
+        ".indexOn": "group"
+      }
     }
   }
 }
