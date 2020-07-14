@@ -26,22 +26,39 @@
             <mat-cell *matCellDef="let element"> {{element.slim}} </mat-cell>
         </ng-container>
 
-        <!-- amount column -->
-        <ng-container matColumnDef="amount">
-            <mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.amount}} </mat-cell>
-        </ng-container>
+        <!-- status column -->
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <mat-menu #appMenu="matMenu">
+                    <ng-template matMenuContent>
+                        <button mat-menu-item (click)="edit(element)">
+                            <mat-icon class="status-all">edit</mat-icon>
+                            <span>Edit</span>
+                        </button>
+                        <button mat-menu-item (click)="setStatus('new', element)">
+                            <mat-icon class="status-new">fiber_new</mat-icon>
+                            <span>New</span>
+                        </button>
+                        <button mat-menu-item (click)="setStatus('delivery', element)">
+                            <mat-icon class="status-delivery">two_wheeler</mat-icon>
+                            <span>For Delivery</span>
+                        </button>
+                        <button mat-menu-item (click)="setStatus('delivered', element)">
+                            <mat-icon class="status-delivered">check</mat-icon>
+                            <span>Deliverd</span>
+                        </button>
+                        <button mat-menu-item (click)="setStatus('cancelled', element)">
+                            <mat-icon class="status-cancelled">cancel</mat-icon>
+                            <span>Cancelled</span>
+                        </button>
+                    </ng-template>
+                </mat-menu>
 
-        <!-- amount column -->
-        <ng-container matColumnDef="action_date">
-            <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ toDate(element.action_date) | date : 'short' }} </mat-cell>
-        </ng-container>
-
-        <!-- remarks column -->
-        <ng-container matColumnDef="remarks">
-            <mat-header-cell *matHeaderCellDef> Remarks </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.remarks}} </mat-cell>
+                <button mat-icon-button [matMenuTriggerFor]="appMenu">
+                    <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
+                </button>
+            </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
@@ -76,6 +93,18 @@
             <input matInput required type="number" placeholder="Amount" [(ngModel)]="item.amount" />
         </mat-form-field>
     </div>
+    <div>
+        <mat-form-field>
+            <mat-label>Select Status</mat-label>
+            <mat-select [(value)]="item.status" required>
+                <mat-option>None</mat-option>
+                <mat-option value="new">New</mat-option>
+                <mat-option value="delivery">For Delivery</mat-option>
+                <mat-option value="delivered">Delivered</mat-option>
+                <mat-option value="cancelled">Cancelled</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
     <div class="long">
         <mat-form-field>
             <input matInput placeholder="Remarks" [(ngModel)]="item.remarks" />
@@ -85,6 +114,25 @@
 
 <!-- Actions -->
 <div class="actions">
+    <div *ngIf="display=='list'" style="float: left;">
+        <mat-button-toggle-group value="all">
+            <mat-button-toggle value="all" (click)="show('all')">
+                <mat-icon class="status-all">check_box</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('new')">
+                <mat-icon class="status-new">fiber_new</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('delivery')">
+                <mat-icon class="status-delivery">two_wheeler</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('delivered')">
+                <mat-icon class="status-delivered">check</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('cancelled')">
+                <mat-icon class="status-cancelled">cancel</mat-icon>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>

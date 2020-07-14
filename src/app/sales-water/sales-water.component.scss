@@ -14,3 +14,23 @@
 .long .mat-form-field {
     width: 500px;
 }
+
+.status-new {
+    color: rgb(41, 90, 122);
+}
+
+.status-delivery {
+    color: rgb(122, 224, 26);
+}
+
+.status-delivered {
+    color: rgb(25, 109, 25);
+}
+
+.status-cancelled {
+    color: rgb(156, 141, 141);
+}
+
+.status-all {
+    color: rgb(255, 0, 170);
+}
