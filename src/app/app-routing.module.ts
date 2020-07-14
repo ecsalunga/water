@@ -6,10 +6,12 @@ import { SalesWaterComponent } from './sales-water/sales-water.component';
 import { SalesOthersComponent } from './sales-others/sales-others.component';
 import { ProductsComponent } from './products/products.component';
 import { SummaryComponent } from './summary/summary.component';
+import { ExpensesComponent } from './expenses/expenses.component';
 
 const routes: Routes = [
   { path: 'menu', component: MenuComponent },
   { path: 'sales', component: SalesWaterComponent },
+  { path: 'expenses', component: ExpensesComponent },
   { path: 'others', component: SalesOthersComponent },
   { path: 'products', component: ProductsComponent },
   { path: 'summary', component: SummaryComponent },

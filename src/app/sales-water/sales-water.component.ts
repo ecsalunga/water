@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
+import { WaterService } from '../water.service';
 import { sales } from '../models/sales-water';
-import { arrayify } from 'tslint/lib/utils';
 
 @Component({
   selector: 'app-sales-water',
@@ -10,14 +9,14 @@ import { arrayify } from 'tslint/lib/utils';
 })
 export class SalesWaterComponent implements OnInit {
   display: string = 'list';
-  displayedColumns: string[] = ['address', 'contact', 'round', 'slim', 'amount'];
+  displayedColumns: string[] = ['address', 'contact', 'round', 'slim', 'amount', 'remarks', 'action_date'];
   item: sales;
   items: Array<sales>;
 
-  constructor(private db: AngularFireDatabase) { }
+  constructor(private service: WaterService) {}
 
   ngOnInit(): void {
-    this.db.list<sales>('sales/water/items').snapshotChanges().subscribe(records => {
+    this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.service.Action_Day)).snapshotChanges().subscribe(records => {
       this.items = new Array<sales>();
       records.forEach(item => {
         let i = item.payload.val();
@@ -36,6 +35,10 @@ export class SalesWaterComponent implements OnInit {
     this.display = 'list';
   }
 
+  toDate(action_date: number): Date {
+    return this.service.actionDayToDate(action_date);
+  }
+
   save() {
     let item = new sales();
     item.address = this.item.address;
@@ -43,9 +46,11 @@ export class SalesWaterComponent implements OnInit {
     item.amount = this.item.amount;
     item.round = this.item.round;
     item.slim = this.item.slim;
-    item.action_date = 20200713073201;
+    item.remarks = this.item.remarks ?? "";
+    item.action_date = this.service.actionDate();
+    item.action_day =  this.service.Action_Day;
 
-    this.db.list('sales/water/items').push(item);
+    this.service.db.list('sales/water/items').push(item);
     this.display = 'list';
   }
 }

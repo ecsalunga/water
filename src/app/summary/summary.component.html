@@ -1,1 +1,38 @@
-<p>summary works!</p>
+<div class="header">Summary</div>
+<!-- Form -->
+<table>
+    <tr class="tb-header">
+        <td>Item</td>
+        <td>Amount</td>
+    </tr>
+    <tr>
+        <td>Water Sales</td>
+        <td>{{ summary.water }}</td>
+    </tr>
+    <tr>
+        <td>Other Sales</td>
+        <td>{{ summary.others }}</td>
+    </tr>
+    <tr>
+        <td>Expenses</td>
+        <td>{{ summary.expenses }}</td>
+    </tr>
+    <tr style="height: 20px;">
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="diff">
+        <td>Diff</td>
+        <td>{{ summary.diff | number }}</td>
+    </tr>
+</table>
+
+<!-- Actions -->
+<div class="actions">
+    <mat-form-field>
+        <mat-label>Choose a date</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+</div>

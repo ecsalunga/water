@@ -7,7 +7,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-
+import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -19,6 +21,7 @@ import { SalesOthersComponent } from './sales-others/sales-others.component';
 import { ProductsComponent } from './products/products.component';
 import { SummaryComponent } from './summary/summary.component';
 import { MenuComponent } from './menu/menu.component';
+import { ExpensesComponent } from './expenses/expenses.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +30,8 @@ import { MenuComponent } from './menu/menu.component';
     SalesOthersComponent,
     ProductsComponent,
     SummaryComponent,
-    MenuComponent
+    MenuComponent,
+    ExpensesComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +43,10 @@ import { MenuComponent } from './menu/menu.component';
     MatButtonModule,
     MatTableModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatIconModule,
+    MatNativeDateModule,
+    MatDatepickerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

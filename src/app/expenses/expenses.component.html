@@ -1,23 +1,17 @@
-<div class="header">Other Sales</div>
+<div class="header">Expenses</div>
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <mat-table [dataSource]="items" class="mat-elevation-z8">
-        <!-- address column -->
-        <ng-container matColumnDef="address">
-            <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.address}} </mat-cell>
-        </ng-container>
-
-        <!-- contact column -->
-        <ng-container matColumnDef="contact">
-            <mat-header-cell *matHeaderCellDef> Contact </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.contact}} </mat-cell>
-        </ng-container>
-
         <!-- name column -->
         <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef> Item </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+        </ng-container>
+
+        <!-- category column -->
+        <ng-container matColumnDef="category">
+            <mat-header-cell *matHeaderCellDef> Category </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.category}} </mat-cell>
         </ng-container>
 
         <!-- amount column -->
@@ -47,17 +41,12 @@
 <div class="form" *ngIf="display=='form'">
     <div class="long">
         <mat-form-field>
-            <input matInput required placeholder="Address" [(ngModel)]="item.address" />
+            <input matInput required placeholder="Name" [(ngModel)]="item.name" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput required placeholder="Contact" [(ngModel)]="item.contact" />
-        </mat-form-field>
-    </div>
-    <div>
-        <mat-form-field>
-            <input matInput required placeholder="Item" [(ngModel)]="item.name" />
+            <input matInput required placeholder="Category" [(ngModel)]="item.category" />
         </mat-form-field>
     </div>
     <div>

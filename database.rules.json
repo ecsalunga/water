@@ -4,14 +4,14 @@
       "items": {
         ".read": "true",
         ".write": "true",
-        ".indexOn": "action_date"
+        ".indexOn": "action_day"
       }
     },
     "expenses": {
       "items": {
         ".read": "true",
         ".write": "true",
-        ".indexOn": "action_date"
+        ".indexOn": "action_day"
       }      
     },
     "sales": {
@@ -19,14 +19,14 @@
         "items": {
           ".read": "true",
           ".write": "true",
-          ".indexOn": "action_date"
+          ".indexOn": "action_day"
         }      
       },
       "others": {
         "items": {
           ".read": "true",
           ".write": "true",
-          ".indexOn": "action_date"
+          ".indexOn": "action_day"
         }      
       }    
     },
@@ -34,7 +34,7 @@
       "items": {
         ".read": "true",
         ".write": "true",
-        ".indexOn": "action_date"
+        ".indexOn": "action_day"
       }
     }
   }

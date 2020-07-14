@@ -1,3 +1,4 @@
+<div class="header">Water Sales</div>
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <mat-table [dataSource]="items" class="mat-elevation-z8">
@@ -31,6 +32,18 @@
             <mat-cell *matCellDef="let element"> {{element.amount}} </mat-cell>
         </ng-container>
 
+        <!-- amount column -->
+        <ng-container matColumnDef="action_date">
+            <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ toDate(element.action_date) | date : 'short' }} </mat-cell>
+        </ng-container>
+
+        <!-- remarks column -->
+        <ng-container matColumnDef="remarks">
+            <mat-header-cell *matHeaderCellDef> Remarks </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.remarks}} </mat-cell>
+        </ng-container>
+
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
@@ -38,29 +51,34 @@
 
 <!-- Form -->
 <div class="form" *ngIf="display=='form'">
-    <div>
+    <div class="long">
         <mat-form-field>
-            <input matInput placeholder="Address" [(ngModel)]="item.address" />
+            <input matInput required placeholder="Address" [(ngModel)]="item.address" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput placeholder="Contact" [(ngModel)]="item.contact" />
+            <input matInput required placeholder="Contact" [(ngModel)]="item.contact" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput placeholder="Round" [(ngModel)]="item.round" />
+            <input matInput required type="number" placeholder="Round" [(ngModel)]="item.round" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput placeholder="Slim" [(ngModel)]="item.slim" />
+            <input matInput required type="number" placeholder="Slim" [(ngModel)]="item.slim" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput placeholder="Amount" [(ngModel)]="item.amount" />
+            <input matInput required type="number" placeholder="Amount" [(ngModel)]="item.amount" />
+        </mat-form-field>
+    </div>
+    <div class="long">
+        <mat-form-field>
+            <input matInput placeholder="Remarks" [(ngModel)]="item.remarks" />
         </mat-form-field>
     </div>
 </div>
