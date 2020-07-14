@@ -20,16 +20,14 @@
             <mat-cell *matCellDef="let element"> {{element.amount}} </mat-cell>
         </ng-container>
 
-        <!-- amount column -->
-        <ng-container matColumnDef="action_date">
-            <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{ toDate(element.action_date) | date : 'short' }} </mat-cell>
-        </ng-container>
-
-        <!-- remarks column -->
-        <ng-container matColumnDef="remarks">
-            <mat-header-cell *matHeaderCellDef> Remarks </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.remarks}} </mat-cell>
+        <!-- actions column -->
+        <ng-container matColumnDef="key">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button color="accent" (click)="edit(element)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+            </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

@@ -9,7 +9,7 @@ import { sales } from '../models/sales-water';
 })
 export class SalesWaterComponent implements OnInit {
   display: string = 'list';
-  displayedColumns: string[] = ['address', 'contact', 'round', 'slim', 'status'];
+  displayedColumns: string[] = ['address', 'round', 'slim', 'status'];
   item: sales;
   items: Array<sales>;
   filter:string = 'all';
@@ -59,7 +59,7 @@ export class SalesWaterComponent implements OnInit {
 
   edit(item: sales) {
     this.display = 'form';
-    this.item = item;
+    this.item = Object.assign({}, item);
   }
 
   cancel() {
@@ -77,7 +77,7 @@ export class SalesWaterComponent implements OnInit {
 
   save() {
     let item = new sales();
-    item.key = this.item.key;
+    item.key = this.item.key ?? "";
     item.address = this.item.address;
     item.contact = this.item.contact;
     item.amount = this.item.amount;
@@ -88,7 +88,7 @@ export class SalesWaterComponent implements OnInit {
     item.action_date = this.service.actionDate();
     item.action_day =  this.service.Action_Day;
 
-    if(item.key == null)
+    if(item.key == null || item.key == "")
       this.service.db.list('sales/water/items').push(item);
     else
       this.service.db.object('sales/water/items/' + item.key).update(item);

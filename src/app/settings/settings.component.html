@@ -16,10 +16,10 @@
 <!-- Actions -->
 <div class="actions">
     <div class="long" style="float: left;">
-        <mat-form-field>
-            <input matInput required placeholder="Name" [(ngModel)]="item.name" />
+        <mat-form-field style="width: 250px;">
+            <input matInput placeholder="Name" [(ngModel)]="categoryName" />
         </mat-form-field>
     </div>
 
-    <button mat-raised-button (click)="add()">Add</button>
+    <button mat-raised-button [disabled]="categoryName == ''" (click)="add()">Add</button>
 </div>

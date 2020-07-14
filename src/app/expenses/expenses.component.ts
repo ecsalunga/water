@@ -10,7 +10,7 @@ import { category } from '../models/category';
 })
 export class ExpensesComponent implements OnInit {
   display: string = 'list';
-  displayedColumns: string[] = ['name', 'category', 'amount', 'remarks', 'action_date'];
+  displayedColumns: string[] = ['name', 'category', 'amount', 'key'];
   item: expenses;
   items: Array<expenses>;
   categories: Array<category>;
@@ -32,10 +32,17 @@ export class ExpensesComponent implements OnInit {
     this.display = 'form';
     this.categories = this.service.expenses_categories;
     this.item = new expenses();
+    this.item.category = "Others";
   }
 
   cancel() {
     this.display = 'list';
+  }
+
+  edit(item: expenses) {
+    this.display = 'form';
+    this.categories = this.service.expenses_categories;
+    this.item = Object.assign({}, item);
   }
 
   toDate(action_date: number): Date {
@@ -44,13 +51,19 @@ export class ExpensesComponent implements OnInit {
 
   save() {
     let item = new expenses();
+    item.key = this.item.key ?? "";
     item.name = this.item.name;
     item.category = this.item.category;
     item.amount = this.item.amount;
     item.remarks = this.item.remarks ?? "";
     item.action_date = this.service.actionDate();
     item.action_day =  this.service.Action_Day;
-    this.service.db.list('expenses/items').push(item);
+
+    if(item.key == null || item.key == "")
+      this.service.db.list('expenses/items').push(item);
+    else
+      this.service.db.object('expenses/items/' + item.key).update(item);
+
     this.display = 'list';
   }
 }

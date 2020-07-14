@@ -9,13 +9,12 @@ import { category } from '../models/category';
 })
 export class SettingsComponent implements OnInit {
   displayedColumns: string[] = ['name'];
-  item: category;
+  categoryName: string = "";
   items: Array<category>;
 
   constructor(private service: WaterService) {}
 
   ngOnInit(): void {
-    this.item = new category();
     this.service.db.list<category>('settings/items', ref => ref.orderByChild('group').equalTo('expenses')).snapshotChanges().subscribe(records => {
       this.items = new Array<category>();
       records.forEach(item => {
@@ -32,11 +31,11 @@ export class SettingsComponent implements OnInit {
 
   add() {
     let item = new category();
-    item.name = this.item.name;
+    item.name = this.categoryName;
     item.group = "expenses";
     item.action_date = this.service.actionDate();
     item.action_day =  this.service.Action_Day;
     this.service.db.list('settings/items').push(item);
-    this.item = new category();
+    this.categoryName = "";
   }
 }

@@ -8,12 +8,6 @@
             <mat-cell *matCellDef="let element"> {{element.address}} </mat-cell>
         </ng-container>
 
-        <!-- contact column -->
-        <ng-container matColumnDef="contact">
-            <mat-header-cell *matHeaderCellDef> Contact </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.contact}} </mat-cell>
-        </ng-container>
-
         <!-- round column -->
         <ng-container matColumnDef="round">
             <mat-header-cell *matHeaderCellDef> Round </mat-header-cell>
@@ -97,6 +91,7 @@
         <mat-form-field>
             <mat-label>Select Status</mat-label>
             <mat-select [(value)]="item.status" required>
+                <mat-option>None</mat-option>
                 <mat-option value="new">New</mat-option>
                 <mat-option value="delivery">For Delivery</mat-option>
                 <mat-option value="delivered">Delivered</mat-option>
@@ -113,8 +108,8 @@
 
 <!-- Actions -->
 <div class="actions">
-    <div *ngIf="display=='list'" style="float: left;">
-        <mat-button-toggle-group value="all">
+    <div [hidden]="display=='form'" style="float: left;">
+        <mat-button-toggle-group value='all'>
             <mat-button-toggle value="all" (click)="show('all')">
                 <mat-icon class="status-all">check_box</mat-icon>
             </mat-button-toggle>

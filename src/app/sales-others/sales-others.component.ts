@@ -9,7 +9,7 @@ import { others } from '../models/sales-others';
 })
 export class SalesOthersComponent implements OnInit {
   display: string = 'list';
-  displayedColumns: string[] = ['address', 'contact', 'name', 'amount', 'remarks', 'action_date'];
+  displayedColumns: string[] = ['address', 'name', 'amount', 'key'];
   item: others;
   items: Array<others>;
 
@@ -39,8 +39,14 @@ export class SalesOthersComponent implements OnInit {
     return this.service.actionDayToDate(action_date);
   }
 
+  edit(item: others) {
+    this.display = 'form';
+    this.item = Object.assign({}, item);
+  }
+
   save() {
     let item = new others();
+    item.key = this.item.key ?? "";
     item.name = this.item.name;
     item.address = this.item.address;
     item.contact = this.item.contact;
@@ -49,7 +55,11 @@ export class SalesOthersComponent implements OnInit {
     item.action_date = this.service.actionDate();
     item.action_day =  this.service.Action_Day;
 
-    this.service.db.list('sales/others/items').push(item);
+    if(item.key == null || item.key == "")
+      this.service.db.list('sales/others/items').push(item);
+    else
+      this.service.db.object('sales/others/items/' + item.key).update(item);
+
     this.display = 'list';
   }
 }
