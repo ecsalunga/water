@@ -1,16 +1,22 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { category } from './models/category';
+import { users } from './models/users';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WaterService {
   expenses_categories: Array<category>;
-  Action_Day: number;
+  app_users: Array<users>;
+  action_day: number;
+  user_roles = { Admin: 'Admin', Manager: 'Manager', Staff: "Staff" };
+  current_user = { username: '', role: '', isLogin: false };
   
-  constructor(public db: AngularFireDatabase) {
-    this.Action_Day =  this.actionDay();
+  constructor(public db: AngularFireDatabase, public router: Router) {
+    this.action_day =  this.actionDay();
+    this.loadUsers();
     this.loadExpensesCategory();
   }
 
@@ -65,6 +71,17 @@ export class WaterService {
         let i = item.payload.val();
         i.key = item.key;
         this.expenses_categories.push(i);
+      });
+    });
+  }
+
+  private loadUsers() {
+    this.db.list<users>('users/items').snapshotChanges().subscribe(records => {
+      this.app_users = new Array<users>();
+      records.forEach(item => {
+        let i = item.payload.val();
+        i.key = item.key;
+        this.app_users.push(i);
       });
     });
   }

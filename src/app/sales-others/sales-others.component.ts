@@ -16,7 +16,7 @@ export class SalesOthersComponent implements OnInit {
   constructor(private service: WaterService) {}
 
   ngOnInit(): void {
-    this.service.db.list<others>('sales/others/items', ref => ref.orderByChild('action_day').equalTo(this.service.Action_Day)).snapshotChanges().subscribe(records => {
+    this.service.db.list<others>('sales/others/items', ref => ref.orderByChild('action_day').equalTo(this.service.action_day)).snapshotChanges().subscribe(records => {
       this.items = new Array<others>();
       records.forEach(item => {
         let i = item.payload.val();
@@ -53,7 +53,7 @@ export class SalesOthersComponent implements OnInit {
     item.amount = this.item.amount;
     item.remarks = this.item.remarks ?? "";
     item.action_date = this.service.actionDate();
-    item.action_day =  this.service.Action_Day;
+    item.action_day =  this.service.action_day;
 
     if(item.key == null || item.key == "")
       this.service.db.list('sales/others/items').push(item);

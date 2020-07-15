@@ -34,7 +34,7 @@ export class SettingsComponent implements OnInit {
     item.name = this.categoryName;
     item.group = "expenses";
     item.action_date = this.service.actionDate();
-    item.action_day =  this.service.Action_Day;
+    item.action_day =  this.service.action_day;
     this.service.db.list('settings/items').push(item);
     this.categoryName = "";
   }

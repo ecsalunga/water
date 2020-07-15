@@ -43,6 +43,13 @@
         ".write": "true",
         ".indexOn": "group"
       }
+    },
+    "users": {
+      "items": {
+        ".read": "true",
+        ".write": "true",
+        ".indexOn": "action_day"
+      }
     }
   }
 }

@@ -13,6 +13,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCardModule } from '@angular/material/card';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +27,8 @@ import { SummaryComponent } from './summary/summary.component';
 import { MenuComponent } from './menu/menu.component';
 import { ExpensesComponent } from './expenses/expenses.component';
 import { SettingsComponent } from './settings/settings.component';
+import { LoginComponent } from './login/login.component';
+import { UsersComponent } from './users/users.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +39,9 @@ import { SettingsComponent } from './settings/settings.component';
     SummaryComponent,
     MenuComponent,
     ExpensesComponent,
-    SettingsComponent
+    SettingsComponent,
+    LoginComponent,
+    UsersComponent
   ],
   imports: [
     BrowserModule,
@@ -54,7 +59,8 @@ import { SettingsComponent } from './settings/settings.component';
     MatDatepickerModule,
     MatSelectModule,
     MatButtonToggleModule,
-    MatMenuModule
+    MatMenuModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -18,7 +18,7 @@ export class SummaryComponent implements OnInit {
   constructor(private service: WaterService) {}
 
   ngOnInit(): void {
-    this.selected = this.service.Action_Day;
+    this.selected = this.service.action_day;
     this.loadData();
   }
 
