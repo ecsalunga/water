@@ -10,9 +10,11 @@
 <div>
     <a [routerLink]="['/summary']">Summary</a>
 </div>
-<div>
-    <a [routerLink]="['/users']">Users</a>
-</div>
-<div>
-    <a [routerLink]="['/settings']">Settings</a>
-</div>
+<ng-container *ngIf="role == 'Admin'">
+    <div>
+        <a [routerLink]="['/users']">Users</a>
+    </div>
+    <div>
+        <a [routerLink]="['/settings']">Settings</a>
+    </div>
+</ng-container>

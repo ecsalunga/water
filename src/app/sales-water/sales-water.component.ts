@@ -8,41 +8,52 @@ import { sales } from '../models/sales-water';
   styleUrls: ['./sales-water.component.scss']
 })
 export class SalesWaterComponent implements OnInit {
+  role: string = "";
+  selected: number;
+  selectedDate = new Date();
   display: string = 'list';
   displayedColumns: string[] = ['address', 'round', 'slim', 'status'];
   item: sales;
   items: Array<sales>;
-  filter:string = 'all';
-  constructor(private service: WaterService) {}
+  filter: string = 'all';
+
+  constructor(private service: WaterService) { }
 
   ngOnInit(): void {
+    this.role = this.service.current_user.role;
+    this.selected = this.service.action_day;
     this.loadData();
   }
 
   loadData() {
-    this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.service.action_day)).snapshotChanges().subscribe(records => {
+    this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.items = new Array<sales>();
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
-        if(this.filter == 'all' || i.status == this.filter)
+        if (this.filter == 'all' || i.status == this.filter)
           this.items.push(i);
       });
     });
   }
 
+  dateSelected() {
+    this.selected = this.service.getActionDay(this.selectedDate);
+    this.loadData();
+  }
+
   getIcon(status: string): string {
     let icon = '';
 
-    if(status == 'new')
+    if (status == 'new')
       icon = 'fiber_new';
-    else if(status == 'delivery')
+    else if (status == 'delivery')
       icon = 'two_wheeler';
-    else if(status == 'delivered')
+    else if (status == 'delivered')
       icon = 'check';
-    else if(status == 'cancelled')
+    else if (status == 'cancelled')
       icon = 'cancel';
-      
+
     return icon;
   }
 
@@ -86,13 +97,13 @@ export class SalesWaterComponent implements OnInit {
     item.status = this.item.status;
     item.remarks = this.item.remarks ?? "";
     item.action_date = this.service.actionDate();
-    item.action_day =  this.service.action_day;
+    item.action_day = this.selected;
 
-    if(item.key == null || item.key == "")
+    if (item.key == null || item.key == "")
       this.service.db.list('sales/water/items').push(item);
     else
       this.service.db.object('sales/water/items/' + item.key).update(item);
-      
+
     this.display = 'list';
   }
 }

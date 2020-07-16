@@ -8,15 +8,24 @@ import { others } from '../models/sales-others';
   styleUrls: ['./sales-others.component.scss']
 })
 export class SalesOthersComponent implements OnInit {
+  role: string = "";
+  selected: number;
+  selectedDate = new Date();
   display: string = 'list';
   displayedColumns: string[] = ['address', 'name', 'amount', 'key'];
   item: others;
   items: Array<others>;
 
-  constructor(private service: WaterService) {}
+  constructor(private service: WaterService) { }
 
   ngOnInit(): void {
-    this.service.db.list<others>('sales/others/items', ref => ref.orderByChild('action_day').equalTo(this.service.action_day)).snapshotChanges().subscribe(records => {
+    this.role = this.service.current_user.role;
+    this.selected = this.service.action_day;
+    this.loadData();
+  }
+
+  loadData() {
+    this.service.db.list<others>('sales/others/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.items = new Array<others>();
       records.forEach(item => {
         let i = item.payload.val();
@@ -24,6 +33,11 @@ export class SalesOthersComponent implements OnInit {
         this.items.push(i);
       });
     });
+  }
+
+  dateSelected() {
+    this.selected = this.service.getActionDay(this.selectedDate);
+    this.loadData();
   }
 
   add() {
@@ -53,9 +67,9 @@ export class SalesOthersComponent implements OnInit {
     item.amount = this.item.amount;
     item.remarks = this.item.remarks ?? "";
     item.action_date = this.service.actionDate();
-    item.action_day =  this.service.action_day;
+    item.action_day = this.selected;
 
-    if(item.key == null || item.key == "")
+    if (item.key == null || item.key == "")
       this.service.db.list('sales/others/items').push(item);
     else
       this.service.db.object('sales/others/items/' + item.key).update(item);

@@ -108,6 +108,15 @@
 
 <!-- Actions -->
 <div class="actions">
+    <div class="date" *ngIf="role == 'Admin' || role == 'Manager'">
+        <mat-form-field>
+            <mat-label>Transaction date</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    </div>
+
     <div [hidden]="display=='form'" style="float: left;">
         <mat-button-toggle-group value='all'>
             <mat-button-toggle value="all" (click)="show('all')">

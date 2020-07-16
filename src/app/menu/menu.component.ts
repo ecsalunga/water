@@ -7,12 +7,14 @@ import { WaterService } from '../water.service';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
-
+  role: string = "";
   constructor(private service: WaterService) {}
 
   ngOnInit(): void {
     if(!this.service.current_user.isLogin)
       this.service.router.navigateByUrl('/login');
+    else
+      this.role = this.service.current_user.role;
   }
 
 }

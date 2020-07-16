@@ -9,16 +9,25 @@ import { category } from '../models/category';
   styleUrls: ['./expenses.component.scss']
 })
 export class ExpensesComponent implements OnInit {
+  role: string = "";
+  selected: number;
+  selectedDate = new Date();
   display: string = 'list';
   displayedColumns: string[] = ['name', 'category', 'amount', 'key'];
   item: expenses;
   items: Array<expenses>;
   categories: Array<category>;
 
-  constructor(private service: WaterService) {}
+  constructor(private service: WaterService) { }
 
   ngOnInit(): void {
-    this.service.db.list<expenses>('expenses/items', ref => ref.orderByChild('action_day').equalTo(this.service.action_day)).snapshotChanges().subscribe(records => {
+    this.role = this.service.current_user.role;
+    this.selected = this.service.action_day;
+    this.loadData();
+  }
+
+  loadData() {
+    this.service.db.list<expenses>('expenses/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.items = new Array<expenses>();
       records.forEach(item => {
         let i = item.payload.val();
@@ -26,6 +35,11 @@ export class ExpensesComponent implements OnInit {
         this.items.push(i);
       });
     });
+  }
+
+  dateSelected() {
+    this.selected = this.service.getActionDay(this.selectedDate);
+    this.loadData();
   }
 
   add() {
@@ -57,9 +71,9 @@ export class ExpensesComponent implements OnInit {
     item.amount = this.item.amount;
     item.remarks = this.item.remarks ?? "";
     item.action_date = this.service.actionDate();
-    item.action_day =  this.service.action_day;
+    item.action_day = this.selected;
 
-    if(item.key == null || item.key == "")
+    if (item.key == null || item.key == "")
       this.service.db.list('expenses/items').push(item);
     else
       this.service.db.object('expenses/items/' + item.key).update(item);

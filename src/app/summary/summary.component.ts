@@ -15,7 +15,7 @@ export class SummaryComponent implements OnInit {
   selectedDate = new Date();
   summary = { expenses: 0, water: 0, others: 0, diff: 0 };
 
-  constructor(private service: WaterService) {}
+  constructor(private service: WaterService) { }
 
   ngOnInit(): void {
     this.selected = this.service.action_day;
@@ -23,8 +23,7 @@ export class SummaryComponent implements OnInit {
   }
 
   dateSelected() {
-    console.log(this.selectedDate);
-    this.selected =  this.service.getActionDay(this.selectedDate);
+    this.selected = this.service.getActionDay(this.selectedDate);
     this.loadData();
   }
 
@@ -45,7 +44,7 @@ export class SummaryComponent implements OnInit {
         let i = item.payload.val();
         this.summary.others += i.amount;
       });
-      
+
       this.computeDiff();
     });
 
