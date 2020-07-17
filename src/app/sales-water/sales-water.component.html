@@ -62,6 +62,26 @@
 
 <!-- Form -->
 <div class="form" *ngIf="display=='form'">
+    <div>
+        <mat-form-field>
+            <input matInput required placeholder="Block" (change)="updateLotOptions()" [(ngModel)]="item.block" [formControl]="blockControl" [matAutocomplete]="autoBlock" />
+            <mat-autocomplete (optionSelected)="updateLotOptions()"  autoActiveFirstOption #autoBlock="matAutocomplete">
+                <mat-option *ngFor="let option of blockFilteredOptions | async" [value]="option">
+                    {{ option }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput required placeholder="Lot" (change)="updateAddress()" [(ngModel)]="item.lot" [formControl]="lotControl" [matAutocomplete]="autoLot" />
+            <mat-autocomplete (optionSelected)="updateAddress()" autoActiveFirstOption #autoLot="matAutocomplete">
+                <mat-option *ngFor="let option of lotFilteredOptions | async" [value]="option">
+                    {{ option }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </div>
     <div class="long">
         <mat-form-field>
             <input matInput required placeholder="Address" [(ngModel)]="item.address" />
@@ -109,7 +129,7 @@
 <!-- Actions -->
 <div class="actions">
     <div class="date" *ngIf="role == 'Admin' || role == 'Manager'">
-        <mat-form-field>
+        <mat-form-field style="width: 200px;">
             <mat-label>Transaction date</mat-label>
             <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>

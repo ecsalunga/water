@@ -10,6 +10,7 @@ import { ExpensesComponent } from './expenses/expenses.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UsersComponent } from './users/users.component';
 import { LoginComponent } from './login/login.component';
+import { ClientsComponent } from './clients/clients.component';
 
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'settings', component: SettingsComponent },
   { path: 'users', component: UsersComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'clients', component: ClientsComponent },
   { path: '**', component: MenuComponent }
 ];
 

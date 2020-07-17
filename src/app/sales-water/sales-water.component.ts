@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { sales } from '../models/sales-water';
+import { clients } from '../models/clients';
+import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sales-water',
@@ -14,8 +18,16 @@ export class SalesWaterComponent implements OnInit {
   display: string = 'list';
   displayedColumns: string[] = ['address', 'round', 'slim', 'status'];
   item: sales;
+  itemClients: Array<clients>;
   items: Array<sales>;
   filter: string = 'all';
+  blockControl = new FormControl();
+  blockFilteredOptions: Observable<string[]>;
+  blockOptions: string[] = ['Block'];
+
+  lotControl = new FormControl();
+  lotFilteredOptions: Observable<string[]>;
+  lotOptions: string[] = ['Lot'];
 
   constructor(private service: WaterService) { }
 
@@ -23,6 +35,7 @@ export class SalesWaterComponent implements OnInit {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
+    this.loadClientData();
   }
 
   loadData() {
@@ -37,6 +50,19 @@ export class SalesWaterComponent implements OnInit {
     });
   }
 
+  loadClientData() {
+    this.service.db.list<clients>('clients/items').snapshotChanges().subscribe(records => {
+      this.itemClients = new Array<clients>();
+      records.forEach(item => {
+        let i = item.payload.val();
+        i.key = item.key;
+        this.itemClients.push(i);
+      });
+
+      this.setBlockOptions();
+    });
+  }
+
   dateSelected() {
     this.selected = this.service.getActionDay(this.selectedDate);
     this.loadData();
@@ -45,13 +71,13 @@ export class SalesWaterComponent implements OnInit {
   getIcon(status: string): string {
     let icon = '';
 
-    if (status == 'new')
+    if (status == this.service.order_status.New)
       icon = 'fiber_new';
-    else if (status == 'delivery')
+    else if (status == this.service.order_status.Delivery)
       icon = 'two_wheeler';
-    else if (status == 'delivered')
+    else if (status == this.service.order_status.Delivered)
       icon = 'check';
-    else if (status == 'cancelled')
+    else if (status == this.service.order_status.Cancelled)
       icon = 'cancel';
 
     return icon;
@@ -89,6 +115,8 @@ export class SalesWaterComponent implements OnInit {
   save() {
     let item = new sales();
     item.key = this.item.key ?? "";
+    item.block = this.item.block;
+    item.lot = this.item.lot;
     item.address = this.item.address;
     item.contact = this.item.contact;
     item.amount = this.item.amount;
@@ -104,6 +132,86 @@ export class SalesWaterComponent implements OnInit {
     else
       this.service.db.object('sales/water/items/' + item.key).update(item);
 
+    this.saveClient();
     this.display = 'list';
+  }
+
+  private saveClient() {
+    let isExists = false;
+    this.itemClients.forEach(item => {
+      if (item.block == this.item.block && item.lot == this.item.lot)
+        isExists = true;
+    });
+
+    if(!isExists) {
+      let item = new clients();
+      item.key = "";
+      item.block = this.item.block;
+      item.lot = this.item.lot;
+      item.address = this.item.address ?? "";
+      item.name = this.item.address ?? "";
+      item.contact = this.item.contact ?? "";
+      item.remarks = this.item.remarks ?? "";
+      item.action_date = this.service.actionDate();
+      item.action_day = this.service.action_day;
+      item.last_order = item.action_date;
+      this.service.db.list('clients/items').push(item);
+    }
+  }
+
+  private setBlockOptions() {
+    this.blockOptions = [];
+    this.itemClients.forEach(item => {
+      if (this.blockOptions.indexOf(item.block) == -1)
+        this.blockOptions.push(item.block);
+    });
+
+    this.blockOptions = this.blockOptions.sort((a, b) => a > b ? 1 : -1);
+    this.blockFilteredOptions = this.blockControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterBlock(value))
+    );
+  }
+
+  private _filterBlock(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.blockOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  updateLotOptions() {
+    this.setLotOptions();
+    this.updateAddress();
+  }
+
+  updateAddress() {
+    let block = this.item.block ?? "";
+    let lot = this.item.lot ?? "";
+    this.item.address = (block != "") ? block + ", " + lot : lot;
+
+    this.itemClients.forEach(item => {
+      if (item.block == this.item.block && item.lot == this.item.lot)
+        this.item.contact = item.contact;
+    });
+  }
+
+  private setLotOptions() {
+    this.lotOptions = ['Lot'];
+    this.itemClients.forEach(item => {
+      if (item.block == this.item.block) {
+        if (this.lotOptions.indexOf(item.lot) == -1)
+          this.lotOptions.push(item.lot);
+      }
+    });
+
+    this.lotOptions = this.lotOptions.sort((a, b) => a > b ? 1 : -1);
+    this.lotFilteredOptions = this.lotControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterLot(value))
+    );
+  }
+
+  private _filterLot(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.lotOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
   }
 }

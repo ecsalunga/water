@@ -28,18 +28,21 @@ export class SummaryComponent implements OnInit {
   }
 
   loadData() {
-    this.summary = { expenses: 0, water: 0, others: 0, diff: 0 };
-
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
+      this.summary.water = 0;
+      
       records.forEach(item => {
         let i = item.payload.val();
-        this.summary.water += i.amount;
+        if(i.status == this.service.order_status.Delivered)
+          this.summary.water += i.amount;
       });
 
       this.computeDiff();
     });
 
     this.service.db.list<others>('sales/others/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
+      this.summary.others = 0;
+
       records.forEach(item => {
         let i = item.payload.val();
         this.summary.others += i.amount;
@@ -49,6 +52,8 @@ export class SummaryComponent implements OnInit {
     });
 
     this.service.db.list<expenses>('expenses/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
+      this.summary.expenses = 0;
+
       records.forEach(item => {
         let i = item.payload.val();
         this.summary.expenses += i.amount;

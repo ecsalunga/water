@@ -3,19 +3,19 @@
 <table>
     <tr class="tb-header">
         <td>Item</td>
-        <td>Amount</td>
+        <td class="amount">Amount</td>
     </tr>
     <tr>
         <td>Water Sales</td>
-        <td>{{ summary.water }}</td>
+        <td class="amount">{{ summary.water | number:'1.2-2' }}</td>
     </tr>
     <tr>
         <td>Other Sales</td>
-        <td>{{ summary.others }}</td>
+        <td class="amount">{{ summary.others | number:'1.2-2' }}</td>
     </tr>
     <tr>
         <td>Expenses</td>
-        <td>{{ summary.expenses }}</td>
+        <td class="amount">{{ summary.expenses | number:'1.2-2' }}</td>
     </tr>
     <tr style="height: 20px;">
         <td></td>
@@ -23,13 +23,13 @@
     </tr>
     <tr class="diff">
         <td>Diff</td>
-        <td>{{ summary.diff | number }}</td>
+        <td class="amount">{{ summary.diff | number:'1.2-2' }}</td>
     </tr>
 </table>
 
 <!-- Actions -->
 <div class="actions">
-    <mat-form-field>
+    <mat-form-field style="width: 200px;">
         <mat-label>Transaction date</mat-label>
         <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>

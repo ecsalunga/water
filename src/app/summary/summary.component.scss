@@ -6,12 +6,25 @@ table {
     width: 80%;
 }
 
+.mat-form-field {
+    width: 50%;
+    font-size: 16px;
+}
+
+td {
+    font-size: 16px;
+}
+
 .tb-header td {
     font-weight: bold;
-    font-size: 12px;
+    height: 40px;
   }
 
   .diff td {
-      font-size: 12px;
+      font-size: 18px;
       font-weight: bold;
   }
+
+.amount {
+    text-align: right;
+}

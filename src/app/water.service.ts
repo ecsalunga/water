@@ -11,8 +11,9 @@ export class WaterService {
   expenses_categories: Array<category>;
   app_users: Array<users>;
   action_day: number;
+  order_status = { New: 'new', Delivery: 'delivery', Delivered: "delivered", Cancelled: "cancelled" };
   user_roles = { Admin: 'Admin', Manager: 'Manager', Staff: "Staff" };
-  current_user = { username: '', role: '', isLogin: false };
+  current_user = { name: '', username: '', role: '', isLogin: false };
   
   constructor(public db: AngularFireDatabase, public router: Router) {
     this.action_day =  this.actionDay();
@@ -84,5 +85,32 @@ export class WaterService {
         this.app_users.push(i);
       });
     });
+  }
+
+  public saveLogin() {
+    localStorage.setItem('name', this.current_user.name);
+    localStorage.setItem('username', this.current_user.username);
+    localStorage.setItem('role', this.current_user.role);
+  }
+
+  public getLogin() {
+    let name = localStorage.getItem('name');
+    let username = localStorage.getItem('username');
+    let role = localStorage.getItem('role');
+
+    if(username != null && username != '') {
+      this.current_user.name = name;
+      this.current_user.username = username;
+      this.current_user.role = role;
+      this.current_user.isLogin = true;
+    }
+  }
+
+  public logOut() {
+    localStorage.setItem('name', '');
+    localStorage.setItem('username', '');
+    localStorage.setItem('role', '');
+    this.current_user = { name: '', username: '', role: '', isLogin: false };
+    this.router.navigateByUrl('/login');
   }
 }
