@@ -1,5 +1,5 @@
 <div class="header">Settings</div>
- <!-- expenses category -->
+<!-- expenses category -->
 <mat-card style="width: 80%;">
     <mat-card-header>
         <mat-card-title>Expenses Category</mat-card-title>
@@ -12,13 +12,23 @@
                 <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
             </ng-container>
 
+            <!-- actions column -->
+            <ng-container matColumnDef="key">
+                <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="warn" (click)="deleteCategory(element)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
             <mat-header-row *matHeaderRowDef="displayedExpensesCategoryColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedExpensesCategoryColumns;"></mat-row>
         </mat-table>
     </mat-card-content>
     <mat-card-actions style="text-align: right;">
         <div style="padding: 10px; margin-bottom: 10px;">
-            <div class="long" style="float: left; width: 300px; text-align: left;">
+            <div class="long" style="float: left; width: 60%; text-align: left;">
                 <mat-form-field style="width: 100%;">
                     <input matInput placeholder="Name" [(ngModel)]="categoryName" />
                 </mat-form-field>
@@ -28,10 +38,10 @@
     </mat-card-actions>
 </mat-card>
 
- <!-- expenses items -->
+<!-- expenses items -->
 <mat-card style="width: 80%; margin-top: 20px;">
     <mat-card-header>
-        <mat-card-title>Expenses Item</mat-card-title>
+        <mat-card-title>Expenses Items</mat-card-title>
     </mat-card-header>
     <mat-card-content>
         <mat-table [dataSource]="itemsExpensesItems">
@@ -41,18 +51,81 @@
                 <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
             </ng-container>
 
+            <!-- actions column -->
+            <ng-container matColumnDef="key">
+                <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="warn" (click)="deleteItem(element)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
             <mat-header-row *matHeaderRowDef="displayedExpensesItemColumns"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedExpensesItemColumns;"></mat-row>
         </mat-table>
     </mat-card-content>
     <mat-card-actions style="text-align: right;">
         <div style="padding: 10px; margin-bottom: 10px;">
-            <div class="long" style="float: left; width: 300px; text-align: left;">
+            <div class="long" style="float: left; width: 60%; text-align: left;">
                 <mat-form-field style="width: 100%;">
                     <input matInput placeholder="Name" [(ngModel)]="expensesItem.name" />
                 </mat-form-field>
             </div>
-            <button mat-raised-button [disabled]="expensesItem.name == ''" (click)="addExpenseItem()">Add</button>
+            <button mat-raised-button [disabled]="expensesItem.name == null || expensesItem.name == ''"
+                (click)="addExpenseItem()">Add</button>
+        </div>
+    </mat-card-actions>
+</mat-card>
+
+<!-- other sales items -->
+<mat-card style="width: 80%; margin-top: 20px;">
+    <mat-card-header>
+        <mat-card-title>Other Sales Items</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-table [dataSource]="itemsOtherSalesItems">
+            <!-- name column -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+            </ng-container>
+
+            <!-- price column -->
+            <ng-container matColumnDef="price">
+                <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.price}} </mat-cell>
+            </ng-container>
+
+            <!-- actions column -->
+            <ng-container matColumnDef="key">
+                <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="warn" (click)="deleteItem(element)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedOtherSalesItemsColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedOtherSalesItemsColumns;"></mat-row>
+        </mat-table>
+    </mat-card-content>
+    <mat-card-actions style="text-align: right;">
+        <div style="padding: 10px; overflow: auto; margin-bottom: 10px;">
+            <div class="long" style="float: left; width: 60%; text-align: left;">
+                <div>
+                    <mat-form-field style="width: 100%;">
+                        <input matInput placeholder="Name" [(ngModel)]="otherSalesItem.name" />
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field style="width: 100%;">
+                        <input matInput type="number" placeholder="Price" [(ngModel)]="otherSalesItem.price" />
+                    </mat-form-field>
+                </div>
+            </div>
+            <button mat-raised-button [disabled]="isOtherItemDisabled()" (click)="addOtherSalesItem()">Add</button>
         </div>
     </mat-card-actions>
 </mat-card>

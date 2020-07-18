@@ -11,6 +11,7 @@ import { expenses } from '../models/expenses';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
+  role: string = "";
   selected: number;
   selectedDate = new Date();
   summary = { expenses: 0, water: 0, others: 0, diff: 0 };
@@ -18,6 +19,7 @@ export class SummaryComponent implements OnInit {
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
+    this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
   }

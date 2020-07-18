@@ -1,8 +1,8 @@
 <div class="header">Water Sales</div>
 <!-- controls -->
 <div class="controls">
-    <div class="date left" *ngIf="role == 'Admin' || role == 'Manager'">
-        <mat-form-field style="width: 200px;">
+    <div class="date left" *ngIf="role == 'Admin'">
+        <mat-form-field style="width: 115px;">
             <mat-label>Transaction date</mat-label>
             <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -32,7 +32,7 @@
 
 <!-- Table list -->
 <div *ngIf="display=='list'">
-    <mat-table [dataSource]="items" class="mat-elevation-z8">
+    <mat-table [dataSource]="items">
         <!-- address column -->
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
@@ -52,7 +52,7 @@
         </ng-container>
 
         <!-- status column -->
-        <ng-container matColumnDef="status">
+        <ng-container matColumnDef="key">
             <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <mat-menu #appMenu="matMenu">
@@ -61,22 +61,24 @@
                             <mat-icon class="status-all">edit</mat-icon>
                             <span>Edit</span>
                         </button>
-                        <button mat-menu-item (click)="setStatus('preparing', element)">
-                            <mat-icon class="status-preparing">wash</mat-icon>
-                            <span>Preparing</span>
-                        </button>
-                        <button mat-menu-item (click)="setStatus('delivery', element)">
-                            <mat-icon class="status-delivery">two_wheeler</mat-icon>
-                            <span>For Delivery</span>
-                        </button>
-                        <button mat-menu-item (click)="setStatus('delivered', element)">
-                            <mat-icon class="status-delivered">check</mat-icon>
-                            <span>Deliverd</span>
-                        </button>
-                        <button mat-menu-item (click)="setStatus('cancelled', element)">
-                            <mat-icon class="status-cancelled">cancel</mat-icon>
-                            <span>Cancelled</span>
-                        </button>
+                        <ng-container *ngIf="access.WaterSalesEdit">
+                            <button mat-menu-item (click)="setStatus('preparing', element)">
+                                <mat-icon class="status-preparing">wash</mat-icon>
+                                <span>Preparing</span>
+                            </button>
+                            <button mat-menu-item (click)="setStatus('delivery', element)">
+                                <mat-icon class="status-delivery">two_wheeler</mat-icon>
+                                <span>For Delivery</span>
+                            </button>
+                            <button mat-menu-item (click)="setStatus('delivered', element)">
+                                <mat-icon class="status-delivered">check</mat-icon>
+                                <span>Deliverd</span>
+                            </button>
+                            <button mat-menu-item (click)="setStatus('cancelled', element)">
+                                <mat-icon class="status-cancelled">cancel</mat-icon>
+                                <span>Cancelled</span>
+                            </button>
+                        </ng-container>
                     </ng-template>
                 </mat-menu>
 
@@ -144,12 +146,12 @@
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" placeholder="Round" [(ngModel)]="item.round" />
+            <input matInput required type="number" (change)="priceUpdate()" placeholder="Slim" [(ngModel)]="item.slim" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" placeholder="Slim" [(ngModel)]="item.slim" />
+            <input matInput required type="number" (change)="priceUpdate()" placeholder="Round" [(ngModel)]="item.round" />
         </mat-form-field>
     </div>
     <div>
@@ -179,5 +181,5 @@
 <div class="actions">
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
-    <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>
+    <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!access.WaterSalesEdit">Save</button>
 </div>

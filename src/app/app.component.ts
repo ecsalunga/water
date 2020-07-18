@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef , Renderer2 } from '@angular/core';
 import { WaterService } from './water.service';
+import { Command } from './models/command';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +8,18 @@ import { WaterService } from './water.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  constructor(private service: WaterService) {}
+  @ViewChild('imageSelector', {static: false}) imageSelector: ElementRef;
+
+  progress: number = 0;
+  showProgress: boolean = false;
+  constructor(private service: WaterService, private renderer: Renderer2) {}
+
+  ngAfterViewInit() {
+    this.service.imageSelector = this.imageSelector;
+    this.renderer.listen(this.imageSelector.nativeElement, 'change', (event) => {
+      this.service.upload();
+    });
+  }
 
   ngOnInit(): void {
     if(!this.service.current_user.isLogin)
@@ -15,6 +27,17 @@ export class AppComponent implements OnInit {
 
     if(!this.service.current_user.isLogin)
       this.service.router.navigateByUrl('/login');
+
+    this.service.Changed.subscribe((cmd: Command) => {
+      if(cmd.type == this.service.command_types.Progress) {
+        this.progress = cmd.data;
+        this.showProgress = (cmd.data != 0 && cmd.data != 100);
+      }
+    });
+  }
+
+  upload() {
+    console.log("uploading");
   }
 
   logout() {

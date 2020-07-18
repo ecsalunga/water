@@ -1,4 +1,13 @@
 <div class="header">Summary</div>
+<!-- controls -->
+<div class="controls">
+    <mat-form-field style="width: 115px;" *ngIf="role == 'Admin'">
+        <mat-label>Transaction date</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+</div>
 <!-- Form -->
 <table>
     <tr class="tb-header">
@@ -26,13 +35,3 @@
         <td class="amount">{{ summary.diff | number:'1.2-2' }}</td>
     </tr>
 </table>
-
-<!-- Actions -->
-<div class="actions">
-    <mat-form-field style="width: 200px;">
-        <mat-label>Transaction date</mat-label>
-        <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-</div>

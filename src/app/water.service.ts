@@ -1,25 +1,38 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ElementRef, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireStorage } from '@angular/fire/storage';
 import { ExpensesCategory } from './models/expenses-category';
 import { ExpensesItem } from './models/expenses-item';
 import { users } from './models/users';
+import { Access } from './models/access';
+import { Command } from './models/command';
+import { SalesOthersItem } from './models/sales-others-item';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WaterService {
+  Changed: EventEmitter<Command> = new EventEmitter();
+
+  defaultImagePath: string = 'https://firebasestorage.googleapis.com/v0/b/acqua-perfetta.appspot.com/o/images%2Fdefault_default_photo.png?alt=media&token=6a1124f4-58d9-45cd-b134-024c71c6e898';
+  imagePath: string = '';
+  imageSelector: ElementRef;
+
   expenses_categories: Array<ExpensesCategory>;
-  expneses_items: Array<ExpensesItem>;
-  
+  expenses_items: Array<ExpensesItem>;
+  other_sales_items: Array<SalesOthersItem>;
+
   app_users: Array<users>;
   action_day: number;
   order_status = { Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Cancelled: "cancelled" };
-  user_roles = { Admin: 'Admin', Manager: 'Manager', Staff: "Staff" };
+  user_roles = { Admin: 'Admin', Monitor: 'Monitor', Delivery: "Delivery" };
+  user_access: Access;
   current_user = { name: '', username: '', role: '', isLogin: false };
   setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item' };
+  command_types = { ImageUploaded: 'image-uploaded', Progress: 'progress' };
   
-  constructor(public db: AngularFireDatabase, public router: Router) {
+  constructor(public db: AngularFireDatabase, public store: AngularFireStorage, public router: Router) {
     this.action_day =  this.actionDay();
     this.loadUsers();
     this.loadSettings();
@@ -80,11 +93,20 @@ export class WaterService {
     });
 
     this.db.list<ExpensesItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.ExpensesItem)).snapshotChanges().subscribe(records => {
-      this.expneses_items = new Array<ExpensesItem>();
+      this.expenses_items = new Array<ExpensesItem>();
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
-        this.expneses_items.push(i);
+        this.expenses_items.push(i);
+      });
+    });
+
+    this.db.list<SalesOthersItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.OtherSalesItems)).snapshotChanges().subscribe(records => {
+      this.other_sales_items = new Array<SalesOthersItem>();
+      records.forEach(item => {
+        let i = item.payload.val();
+        i.key = item.key;
+        this.other_sales_items.push(i);
       });
     });
   }
@@ -106,6 +128,15 @@ export class WaterService {
     localStorage.setItem('role', this.current_user.role);
   }
 
+  public loadAccess() {
+    this.user_access =  new Access();
+    this.user_access.WaterSalesEdit = true;
+    // temp
+    if(this.current_user.role == this.user_roles.Delivery) {
+      this.user_access.WaterSalesEdit = false;
+    }
+  }
+
   public getLogin() {
     let name = localStorage.getItem('name');
     let username = localStorage.getItem('username');
@@ -116,6 +147,7 @@ export class WaterService {
       this.current_user.username = username;
       this.current_user.role = role;
       this.current_user.isLogin = true;
+      this.loadAccess();
     }
   }
 
@@ -125,5 +157,52 @@ export class WaterService {
     localStorage.setItem('role', '');
     this.current_user = { name: '', username: '', role: '', isLogin: false };
     this.router.navigateByUrl('/login');
+  }
+
+  selectImage() {
+    this.imageSelector.nativeElement.click();
+  }
+
+  upload() {
+    if(this.imagePath == '')
+      return;
+
+    let nativeElement = (<HTMLInputElement>this.imageSelector.nativeElement);
+    let selectedFile = nativeElement.files[0];
+    if(selectedFile.type.indexOf("image") > -1) {
+      let cmd = new Command();
+      cmd.type = this.command_types.Progress;
+      cmd.data = 1;
+      this.Changed.emit(cmd);
+
+      this.store.upload(this.imagePath, selectedFile).snapshotChanges().subscribe(item => {
+        if(item.bytesTransferred == item.totalBytes) {
+          item.ref.getDownloadURL().then(path => {
+            cmd = new Command();
+            cmd.type = this.command_types.ImageUploaded;
+            cmd.data = path;
+            this.Changed.emit(cmd);
+
+            cmd = new Command();
+            cmd.type = this.command_types.Progress;
+            cmd.data = 100;
+            this.Changed.emit(cmd);
+          });
+
+          this.imagePath = '';
+          nativeElement.value = "";
+        }
+        else {
+          let cmd = new Command();
+          cmd.type = this.command_types.Progress;
+          cmd.data = (item.bytesTransferred/item.totalBytes) * 100;
+          this.Changed.emit(cmd);
+        }
+      });
+    }
+    else {
+      nativeElement.value = "";
+      console.log('Invalid image.');
+    }
   }
 }

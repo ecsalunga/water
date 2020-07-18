@@ -7,6 +7,7 @@ export class sales {
     contact: string;
     slim: number;
     round: number;
+    price: number;
     amount: number;
     remarks: string;
     status: string;

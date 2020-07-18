@@ -1,8 +1,8 @@
 <div class="header">Expenses</div>
 <!-- controls -->
 <div class="controls">
-    <div class="date" class="left" *ngIf="role == 'Admin' || role == 'Manager'">
-        <mat-form-field style="width: 200px;">
+    <div class="date" class="left" *ngIf="role == 'Admin'">
+        <mat-form-field style="width: 115px;">
             <mat-label>Transaction date</mat-label>
             <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -73,6 +73,9 @@
         <mat-form-field>
             <input matInput placeholder="Remarks" [(ngModel)]="item.remarks" />
         </mat-form-field>
+    </div>
+    <div>
+        <img class="upload-image" [src]="item.imagePath" (click)="upload()" />
     </div>
 </div>
 

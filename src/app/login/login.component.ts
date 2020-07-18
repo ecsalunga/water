@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit {
           this.service.current_user.role = item.role;
           this.service.current_user.isLogin = true;
           this.service.saveLogin();
+          this.service.loadAccess();
         }
       });
 

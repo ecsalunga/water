@@ -50,6 +50,13 @@
         ".write": "true",
         ".indexOn": "action_day"
       }
+    },
+    "access": {
+      "items": {
+        ".read": "true",
+        ".write": "true",
+        ".indexOn": "role"
+      }
     }
   }
 }

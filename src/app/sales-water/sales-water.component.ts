@@ -5,6 +5,7 @@ import { clients } from '../models/clients';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { Access } from '../models/access';
 
 @Component({
   selector: 'app-sales-water',
@@ -12,11 +13,12 @@ import { map, startWith } from 'rxjs/operators';
   styleUrls: ['./sales-water.component.scss']
 })
 export class SalesWaterComponent implements OnInit {
+  access: Access;
   role: string = "";
   selected: number;
   selectedDate = new Date();
   display: string = 'list';
-  displayedColumns: string[] = ['name', 'round', 'slim', 'status'];
+  displayedColumns: string[] = ['name', 'round', 'slim', 'key'];
   item: sales;
   itemClients: Array<clients>;
   items: Array<sales>;
@@ -41,6 +43,7 @@ export class SalesWaterComponent implements OnInit {
 
   ngOnInit(): void {
     this.role = this.service.current_user.role;
+    this.access = this.service.user_access;
     this.selected = this.service.action_day;
     this.loadData();
     this.loadClientData();
@@ -134,6 +137,7 @@ export class SalesWaterComponent implements OnInit {
     item.round = this.item.round ?? 0;
     item.amount = this.item.amount;
     item.status = this.item.status;
+    item.price = this.item.price ?? 0;
     item.remarks = this.item.remarks ?? "";
     item.action_date = this.service.actionDate();
     item.action_day = this.selected;
@@ -153,7 +157,6 @@ export class SalesWaterComponent implements OnInit {
       if (item.name.toLowerCase() == this.item.name.toLowerCase() && item.address.toLowerCase() == this.item.address.toLowerCase()) {
         item.slim = this.item.slim ?? 0;
         item.round = this.item.round ?? 0;
-        item.price = (this.item.amount / (item.slim + item.round));
         item.last_order = item.action_date = item.action_date;
         this.service.db.object('clients/items/' + item.key).update(item);
         isExists = true;
@@ -215,6 +218,11 @@ export class SalesWaterComponent implements OnInit {
     });
   }
 
+  priceUpdate() {
+    if(this.item.price != null && this.item.price > 0)
+      this.item.amount = (((this.item.slim ?? 0) * this.item.price) + ((this.item.round ?? 0) * this.item.price));
+  }
+
   updateName() {
     this.itemClients.forEach(item => {
       if (item.name.toLowerCase() == this.item.name.toLowerCase())
@@ -243,6 +251,7 @@ export class SalesWaterComponent implements OnInit {
     this.item.contact = item.contact;
     this.item.slim = item.slim;
     this.item.round = item.round;
+    this.item.price = item.price;
     this.item.amount = ((this.item.slim * item.price) + (this.item.round * item.price));
     this.item.remarks = item.remarks;
   }

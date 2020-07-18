@@ -96,3 +96,17 @@ body {
       float: right;
     }
   }
+
+  .mat-button-toggle-label-content {
+    line-height: 5px !important;
+    padding: 8px !important
+  }
+
+  .mat-column-key {
+    flex: 0 0 50px;
+  }
+
+  .upload-image {
+    max-width: 100%;
+    cursor: pointer;
+  }

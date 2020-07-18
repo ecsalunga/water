@@ -1,8 +1,8 @@
 <div class="header">Other Sales</div>
 <!-- controls -->
 <div class="controls">
-    <div class="date" class="left" *ngIf="role == 'Admin' || role == 'Manager'">
-        <mat-form-field style="width: 200px;">
+    <div class="date" class="left" *ngIf="role == 'Admin'">
+        <mat-form-field style="width: 115px;">
             <mat-label>Transaction date</mat-label>
             <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -12,7 +12,7 @@
 </div>
 <!-- Table list -->
 <div *ngIf="display=='list'">
-    <mat-table [dataSource]="items" class="mat-elevation-z8">
+    <mat-table [dataSource]="items">
         <!-- name column -->
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
@@ -99,17 +99,23 @@
     </div>
     <div>
         <mat-form-field>
-            <input matInput required placeholder="Item" [(ngModel)]="item.item" />
+            <input matInput required placeholder="Item" (change)="updateItem()" [(ngModel)]="item.item"
+                [formControl]="itemControl" [matAutocomplete]="autoItem" />
+            <mat-autocomplete (optionSelected)="updateItem()" autoActiveFirstOption #autoItem="matAutocomplete">
+                <mat-option *ngFor="let option of itemFilteredOptions | async" [value]="option">
+                    {{ option }}
+                </mat-option>
+            </mat-autocomplete>
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" placeholder="Quantity" [(ngModel)]="item.quantity" />
+            <input matInput required  (change)="updateQuantitiy()" type="number" placeholder="Quantity" [(ngModel)]="item.quantity" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" placeholder="Amount" [(ngModel)]="item.amount" />
+            <input matInput [disabled]="matchItem.name != null" required type="number" placeholder="Amount" [(ngModel)]="item.amount" />
         </mat-form-field>
     </div>
     <div class="long">

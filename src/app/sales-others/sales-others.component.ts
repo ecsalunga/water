@@ -5,6 +5,7 @@ import { clients } from '../models/clients';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { SalesOthersItem } from '../models/sales-others-item';
 
 @Component({
   selector: 'app-sales-others',
@@ -20,6 +21,7 @@ export class SalesOthersComponent implements OnInit {
   item: others;
   itemClients: Array<clients>;
   items: Array<others>;
+  matchItem: SalesOthersItem = new SalesOthersItem();
 
   blockControl = new FormControl();
   blockFilteredOptions: Observable<string[]>;
@@ -37,13 +39,17 @@ export class SalesOthersComponent implements OnInit {
   addressFilteredOptions: Observable<string[]>;
   addressOptions: string[] = [];
 
+  itemControl = new FormControl();
+  itemFilteredOptions: Observable<string[]>;
+  itemOptions: string[] = [];
+
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
-    this.loadClientData();
+    this.loadAutoComplete();
   }
 
   loadData() {
@@ -57,7 +63,7 @@ export class SalesOthersComponent implements OnInit {
     });
   }
 
-  loadClientData() {
+  loadAutoComplete() {
     this.service.db.list<clients>('clients/items').snapshotChanges().subscribe(records => {
       this.itemClients = new Array<clients>();
       records.forEach(item => {
@@ -65,10 +71,6 @@ export class SalesOthersComponent implements OnInit {
         i.key = item.key;
         this.itemClients.push(i);
       });
-
-      this.setNameOptions();
-      this.setBlockOptions();
-      this.setAddressOptions();
     });
   }
 
@@ -79,6 +81,7 @@ export class SalesOthersComponent implements OnInit {
 
   add() {
     this.display = 'form';
+    this.setAutoComplete();
     this.item = new others();
   }
 
@@ -92,7 +95,19 @@ export class SalesOthersComponent implements OnInit {
 
   edit(item: others) {
     this.display = 'form';
+    this.setAutoComplete();
     this.item = Object.assign({}, item);
+    this.service.other_sales_items.forEach(item => {
+      if (this.item.item.toLowerCase() == item.name.toLowerCase())
+        this.matchItem = item;
+    });
+  }
+
+  setAutoComplete() {
+    this.setNameOptions();
+    this.setBlockOptions();
+    this.setAddressOptions();
+    this.setItemOptions();
   }
 
   save() {
@@ -116,7 +131,26 @@ export class SalesOthersComponent implements OnInit {
       this.service.db.object('sales/others/items/' + item.key).update(item);
 
     this.saveClient();
+    this.saveOtherSalesItem();
     this.display = 'list';
+  }
+
+  private saveOtherSalesItem() {
+    let isExists = false;
+    this.service.other_sales_items.forEach(item => {
+      if (item.name.toLowerCase() == this.item.item.toLowerCase())
+        isExists = true;
+    });
+
+    if(!isExists) {
+      let item = new SalesOthersItem();
+      item.name = this.item.item;
+      item.price = (this.item.amount / this.item.quantity);
+      item.group = this.service.setting_types.OtherSalesItems;
+      item.action_date = this.service.actionDate();
+      item.action_day =  this.service.action_day;
+      this.service.db.list('settings/items').push(item);
+    }
   }
 
   private saveClient() {
@@ -126,7 +160,7 @@ export class SalesOthersComponent implements OnInit {
         isExists = true;
     });
 
-    if(!isExists) {
+    if (!isExists) {
       let item = new clients();
       item.key = "";
       item.name = this.item.name;
@@ -169,8 +203,7 @@ export class SalesOthersComponent implements OnInit {
 
   blockLotUpdate() {
     this.itemClients.forEach(item => {
-      if (item.block == this.item.block && item.lot == this.item.lot)
-      {
+      if (item.block == this.item.block && item.lot == this.item.lot) {
         this.item.name = item.name;
         this.item.address = item.address;
         this.updateCommon(item);
@@ -180,8 +213,7 @@ export class SalesOthersComponent implements OnInit {
 
   updateName() {
     this.itemClients.forEach(item => {
-      if (item.name.toLowerCase() == this.item.name.toLowerCase())
-      {
+      if (item.name.toLowerCase() == this.item.name.toLowerCase()) {
         this.item.block = item.block;
         this.item.lot = item.lot;
         this.item.address = item.address;
@@ -192,14 +224,28 @@ export class SalesOthersComponent implements OnInit {
 
   updateAddress() {
     this.itemClients.forEach(item => {
-      if (item.address.toLowerCase() == this.item.address.toLowerCase())
-      {
+      if (item.address.toLowerCase() == this.item.address.toLowerCase()) {
         this.item.name = item.name;
         this.item.block = item.block;
         this.item.lot = item.lot;
         this.updateCommon(item);
       }
     });
+  }
+
+  updateItem() {
+    this.matchItem = new SalesOthersItem();
+    this.service.other_sales_items.forEach(item => {
+      if (this.item.item.toLowerCase() == item.name.toLowerCase()) {
+        this.matchItem = item;
+        this.updateQuantitiy();
+      }
+    });
+  }
+
+  updateQuantitiy() {
+    if (this.matchItem.name != null)
+      this.item.amount = (this.item.quantity * this.matchItem.price);
   }
 
   private updateCommon(item: clients) {
@@ -262,5 +308,23 @@ export class SalesOthersComponent implements OnInit {
   private _filterAddress(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.addressOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  private setItemOptions() {
+    this.itemOptions = [];
+    this.service.other_sales_items.forEach(item => {
+      this.itemOptions.push(item.name);
+    });
+
+    this.itemOptions = this.itemOptions.sort((a, b) => a > b ? 1 : -1);
+    this.itemFilteredOptions = this.itemControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterItem(value))
+    );
+  }
+
+  private _filterItem(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.itemOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
   }
 }

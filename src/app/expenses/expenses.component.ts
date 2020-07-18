@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { expenses } from '../models/expenses';
 import { ExpensesCategory } from '../models/expenses-category';
+import { ExpensesItem } from '../models/expenses-item';
+import { Command } from '../models/command';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -31,6 +33,10 @@ export class ExpensesComponent implements OnInit {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
+    this.service.Changed.subscribe((cmd: Command) => {
+      if(cmd.type == this.service.command_types.ImageUploaded)
+        this.item.imagePath = cmd.data;
+    });
   }
 
   loadData() {
@@ -52,6 +58,8 @@ export class ExpensesComponent implements OnInit {
   add() {
     this.setCommon();
     this.item = new expenses();
+    this.item.imagePath = this.service.defaultImagePath;
+    this.item.action_date = this.service.actionDate();
     this.item.category = "Others";
   }
 
@@ -81,7 +89,7 @@ export class ExpensesComponent implements OnInit {
     item.category = this.item.category;
     item.amount = this.item.amount;
     item.remarks = this.item.remarks ?? "";
-    item.action_date = this.service.actionDate();
+    item.imagePath = this.item.imagePath;
     item.action_day = this.selected;
 
     if (item.key == null || item.key == "")
@@ -89,12 +97,35 @@ export class ExpensesComponent implements OnInit {
     else
       this.service.db.object('expenses/items/' + item.key).update(item);
 
+    this.saveItem();
     this.display = 'list';
+  }
+
+  private saveItem() {
+    let isExists = false;
+    this.service.expenses_items.forEach(item => {
+      if (item.name.toLowerCase() == this.item.name.toLowerCase())
+        isExists = true;
+    });
+
+    if(!isExists) {
+      let item = new ExpensesItem();
+      item.name = this.item.name;
+      item.group = this.service.setting_types.ExpensesItem;
+      item.action_date = this.service.actionDate();
+      item.action_day =  this.service.action_day;
+      this.service.db.list('settings/items').push(item);
+    }
+  }
+
+  upload() {
+    this.service.imagePath = "/images/expenses/" + this.item.action_date + ".png";
+    this.service.selectImage();
   }
 
   private setNameOptions() {
     this.nameOptions = [];
-    this.service.expneses_items.forEach(item => {
+    this.service.expenses_items.forEach(item => {
       this.nameOptions.push(item.name);
     });
 
