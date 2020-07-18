@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
-import { category } from '../models/category';
+import { ExpensesCategory } from '../models/expenses-category';
+import { ExpensesItem } from '../models/expenses-item';
 
 @Component({
   selector: 'app-settings',
@@ -8,9 +9,14 @@ import { category } from '../models/category';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  displayedColumns: string[] = ['name'];
+  displayedExpensesCategoryColumns: string[] = ['name'];
+  displayedExpensesItemColumns: string[] = ['name'];
+
   categoryName: string = "";
-  items: Array<category>;
+  itemsExpensesCategory: Array<ExpensesCategory>;
+
+  expensesItem: ExpensesItem = new ExpensesItem();
+  itemsExpensesItems: Array<ExpensesItem>;
 
   constructor(private service: WaterService) {}
 
@@ -18,12 +24,21 @@ export class SettingsComponent implements OnInit {
     if(this.service.current_user.role != this.service.user_roles.Admin)
       this.service.router.navigateByUrl('/menu');
 
-    this.service.db.list<category>('settings/items', ref => ref.orderByChild('group').equalTo('expenses')).snapshotChanges().subscribe(records => {
-      this.items = new Array<category>();
+    this.service.db.list<ExpensesCategory>('settings/items', ref => ref.orderByChild('group').equalTo(this.service.setting_types.ExpensesCategory)).snapshotChanges().subscribe(records => {
+      this.itemsExpensesCategory = new Array<ExpensesCategory>();
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
-        this.items.push(i);
+        this.itemsExpensesCategory.push(i);
+      });
+    });
+
+    this.service.db.list<ExpensesItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.service.setting_types.ExpensesItem)).snapshotChanges().subscribe(records => {
+      this.itemsExpensesItems = new Array<ExpensesItem>();
+      records.forEach(item => {
+        let i = item.payload.val();
+        i.key = item.key;
+        this.itemsExpensesItems.push(i);
       });
     });
   }
@@ -32,13 +47,23 @@ export class SettingsComponent implements OnInit {
     return this.service.actionDayToDate(action_date);
   }
 
-  add() {
-    let item = new category();
+  addExpenseCategory() {
+    let item = new ExpensesCategory();
     item.name = this.categoryName;
-    item.group = "expenses";
+    item.group = this.service.setting_types.ExpensesCategory;
     item.action_date = this.service.actionDate();
     item.action_day =  this.service.action_day;
     this.service.db.list('settings/items').push(item);
     this.categoryName = "";
+  }
+
+  addExpenseItem() {
+    let item = new ExpensesItem();
+    item.name = this.expensesItem.name;
+    item.group = this.service.setting_types.ExpensesItem;
+    item.action_date = this.service.actionDate();
+    item.action_day =  this.service.action_day;
+    this.service.db.list('settings/items').push(item);
+    this.expensesItem = new ExpensesItem();
   }
 }

@@ -1,25 +1,58 @@
 <div class="header">Settings</div>
-<!-- Table list -->
-<div>
-    <mat-table [dataSource]="items">
-        <!-- name column -->
-        <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
-        </ng-container>
+ <!-- expenses category -->
+<mat-card style="width: 80%;">
+    <mat-card-header>
+        <mat-card-title>Expenses Category</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-table [dataSource]="itemsExpensesCategory">
+            <!-- name column -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+            </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table>
-</div>
+            <mat-header-row *matHeaderRowDef="displayedExpensesCategoryColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedExpensesCategoryColumns;"></mat-row>
+        </mat-table>
+    </mat-card-content>
+    <mat-card-actions style="text-align: right;">
+        <div style="padding: 10px; margin-bottom: 10px;">
+            <div class="long" style="float: left; width: 300px; text-align: left;">
+                <mat-form-field style="width: 100%;">
+                    <input matInput placeholder="Name" [(ngModel)]="categoryName" />
+                </mat-form-field>
+            </div>
+            <button mat-raised-button [disabled]="categoryName == ''" (click)="addExpenseCategory()">Add</button>
+        </div>
+    </mat-card-actions>
+</mat-card>
 
-<!-- Actions -->
-<div class="actions">
-    <div class="long" style="float: left; width: 300px; text-align: left;">
-        <mat-form-field style="width: 100%;">
-            <input matInput placeholder="Name" [(ngModel)]="categoryName" />
-        </mat-form-field>
-    </div>
+ <!-- expenses items -->
+<mat-card style="width: 80%; margin-top: 20px;">
+    <mat-card-header>
+        <mat-card-title>Expenses Item</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-table [dataSource]="itemsExpensesItems">
+            <!-- name column -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+            </ng-container>
 
-    <button mat-raised-button [disabled]="categoryName == ''" (click)="add()">Add</button>
-</div>
+            <mat-header-row *matHeaderRowDef="displayedExpensesItemColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedExpensesItemColumns;"></mat-row>
+        </mat-table>
+    </mat-card-content>
+    <mat-card-actions style="text-align: right;">
+        <div style="padding: 10px; margin-bottom: 10px;">
+            <div class="long" style="float: left; width: 300px; text-align: left;">
+                <mat-form-field style="width: 100%;">
+                    <input matInput placeholder="Name" [(ngModel)]="expensesItem.name" />
+                </mat-form-field>
+            </div>
+            <button mat-raised-button [disabled]="expensesItem.name == ''" (click)="addExpenseItem()">Add</button>
+        </div>
+    </mat-card-actions>
+</mat-card>

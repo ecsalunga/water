@@ -1,8 +1,9 @@
 export class sales {
     key: string;
-    address: string;
+    name: string;
     block: string;
     lot: string;
+    address: string;
     contact: string;
     slim: number;
     round: number;

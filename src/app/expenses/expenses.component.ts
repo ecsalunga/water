@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { expenses } from '../models/expenses';
-import { category } from '../models/category';
+import { ExpensesCategory } from '../models/expenses-category';
+import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-expenses',
@@ -13,10 +16,14 @@ export class ExpensesComponent implements OnInit {
   selected: number;
   selectedDate = new Date();
   display: string = 'list';
-  displayedColumns: string[] = ['name', 'category', 'amount', 'key'];
+  displayedColumns: string[] = ['name', 'amount', 'key'];
   item: expenses;
   items: Array<expenses>;
-  categories: Array<category>;
+  categories: Array<ExpensesCategory>;
+
+  nameControl = new FormControl();
+  nameFilteredOptions: Observable<string[]>;
+  nameOptions: string[] = [];
 
   constructor(private service: WaterService) { }
 
@@ -43,8 +50,7 @@ export class ExpensesComponent implements OnInit {
   }
 
   add() {
-    this.display = 'form';
-    this.categories = this.service.expenses_categories;
+    this.setCommon();
     this.item = new expenses();
     this.item.category = "Others";
   }
@@ -54,9 +60,14 @@ export class ExpensesComponent implements OnInit {
   }
 
   edit(item: expenses) {
+    this.setCommon();
+    this.item = Object.assign({}, item);
+  }
+
+  private setCommon() {
     this.display = 'form';
     this.categories = this.service.expenses_categories;
-    this.item = Object.assign({}, item);
+    this.setNameOptions();
   }
 
   toDate(action_date: number): Date {
@@ -79,5 +90,23 @@ export class ExpensesComponent implements OnInit {
       this.service.db.object('expenses/items/' + item.key).update(item);
 
     this.display = 'list';
+  }
+
+  private setNameOptions() {
+    this.nameOptions = [];
+    this.service.expneses_items.forEach(item => {
+      this.nameOptions.push(item.name);
+    });
+
+    this.nameOptions = this.nameOptions.sort((a, b) => a > b ? 1 : -1);
+    this.nameFilteredOptions = this.nameControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterName(value))
+    );
+  }
+
+  private _filterName(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.nameOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
   }
 }

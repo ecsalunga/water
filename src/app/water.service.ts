@@ -1,24 +1,28 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { category } from './models/category';
+import { ExpensesCategory } from './models/expenses-category';
+import { ExpensesItem } from './models/expenses-item';
 import { users } from './models/users';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WaterService {
-  expenses_categories: Array<category>;
+  expenses_categories: Array<ExpensesCategory>;
+  expneses_items: Array<ExpensesItem>;
+  
   app_users: Array<users>;
   action_day: number;
-  order_status = { New: 'new', Delivery: 'delivery', Delivered: "delivered", Cancelled: "cancelled" };
+  order_status = { Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Cancelled: "cancelled" };
   user_roles = { Admin: 'Admin', Manager: 'Manager', Staff: "Staff" };
   current_user = { name: '', username: '', role: '', isLogin: false };
+  setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item' };
   
   constructor(public db: AngularFireDatabase, public router: Router) {
     this.action_day =  this.actionDay();
     this.loadUsers();
-    this.loadExpensesCategory();
+    this.loadSettings();
   }
 
   public actionDate(): number {
@@ -65,13 +69,22 @@ export class WaterService {
     return num;
   }
 
-  private loadExpensesCategory() {
-    this.db.list<category>('settings/items', ref => ref.orderByChild('group').equalTo('expenses')).snapshotChanges().subscribe(records => {
-      this.expenses_categories = new Array<category>();
+  private loadSettings() {
+    this.db.list<ExpensesCategory>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.ExpensesCategory)).snapshotChanges().subscribe(records => {
+      this.expenses_categories = new Array<ExpensesCategory>();
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
         this.expenses_categories.push(i);
+      });
+    });
+
+    this.db.list<ExpensesItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.ExpensesItem)).snapshotChanges().subscribe(records => {
+      this.expneses_items = new Array<ExpensesItem>();
+      records.forEach(item => {
+        let i = item.payload.val();
+        i.key = item.key;
+        this.expneses_items.push(i);
       });
     });
   }

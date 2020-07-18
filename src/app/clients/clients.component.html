@@ -2,16 +2,16 @@
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <mat-table [dataSource]="items" class="mat-elevation-z8">
-        <!-- address column -->
-        <ng-container matColumnDef="address">
-            <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.address}} </mat-cell>
-        </ng-container>
-
         <!-- name column -->
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+        </ng-container>
+
+        <!-- address column -->
+        <ng-container matColumnDef="address">
+            <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.address}} </mat-cell>
         </ng-container>
 
         <!-- contact column -->
@@ -39,32 +39,42 @@
 <div class="form" *ngIf="display=='form'">
     <div>
         <mat-form-field>
-            <input matInput required (change)="updateAddress()" placeholder="Block" [(ngModel)]="item.block" />
+            <input matInput required placeholder="Name" [(ngModel)]="item.name" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput required (change)="updateAddress()" placeholder="Lot" [(ngModel)]="item.lot" />
+            <input matInput (change)="updateAddress()" placeholder="Block" [(ngModel)]="item.block" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput (change)="updateAddress()" placeholder="Lot" [(ngModel)]="item.lot" />
         </mat-form-field>
     </div>
     <div class="long">
         <mat-form-field>
-            <input matInput required placeholder="Address" [(ngModel)]="item.address" [matAutocomplete]="auto" />
-            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                    {{ option }}
-                </mat-option>
-            </mat-autocomplete>
-        </mat-form-field>
-    </div>
-    <div>
-        <mat-form-field>
-            <input matInput placeholder="Name" [(ngModel)]="item.name" [matAutocomplete]="auto" />
+            <input matInput required placeholder="Address" [(ngModel)]="item.address" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
             <input matInput placeholder="Contact" [(ngModel)]="item.contact" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput type="number" placeholder="Slim" [(ngModel)]="item.slim" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput type="number" placeholder="Round" [(ngModel)]="item.round" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput type="number" placeholder="Price" [(ngModel)]="item.price" />
         </mat-form-field>
     </div>
     <div class="long">

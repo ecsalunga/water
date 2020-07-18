@@ -4,7 +4,7 @@
       "items": {
         ".read": "true",
         ".write": "true",
-        ".indexOn": "action_day"
+        ".indexOn": "name"
       }
     },
     "expenses": {

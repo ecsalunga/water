@@ -1,4 +1,15 @@
 <div class="header">Expenses</div>
+<!-- controls -->
+<div class="controls">
+    <div class="date" class="left" *ngIf="role == 'Admin' || role == 'Manager'">
+        <mat-form-field style="width: 200px;">
+            <mat-label>Transaction date</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    </div>
+</div>
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <mat-table [dataSource]="items" class="mat-elevation-z8">
@@ -6,12 +17,6 @@
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
-        </ng-container>
-
-        <!-- category column -->
-        <ng-container matColumnDef="category">
-            <mat-header-cell *matHeaderCellDef> Category </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.category}} </mat-cell>
         </ng-container>
 
         <!-- amount column -->
@@ -39,7 +44,13 @@
 <div class="form" *ngIf="display=='form'">
     <div class="long">
         <mat-form-field>
-            <input matInput required placeholder="Name" [(ngModel)]="item.name" />
+            <input matInput placeholder="Name" [(ngModel)]="item.name"
+                [formControl]="nameControl" [matAutocomplete]="autoName" />
+            <mat-autocomplete autoActiveFirstOption #autoName="matAutocomplete">
+                <mat-option *ngFor="let option of nameFilteredOptions | async" [value]="option">
+                    {{ option }}
+                </mat-option>
+            </mat-autocomplete>
         </mat-form-field>
     </div>
     <div>
@@ -67,14 +78,6 @@
 
 <!-- Actions -->
 <div class="actions">
-    <div class="date" *ngIf="role == 'Admin' || role == 'Manager'">
-        <mat-form-field style="width: 200px;">
-            <mat-label>Transaction date</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-    </div>
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>

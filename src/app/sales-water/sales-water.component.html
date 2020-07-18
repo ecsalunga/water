@@ -1,11 +1,42 @@
 <div class="header">Water Sales</div>
+<!-- controls -->
+<div class="controls">
+    <div class="date left" *ngIf="role == 'Admin' || role == 'Manager'">
+        <mat-form-field style="width: 200px;">
+            <mat-label>Transaction date</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    </div>
+    <div [hidden]="display=='form'" class="right">
+        <mat-button-toggle-group value='all'>
+            <mat-button-toggle value="all" (click)="show('all')">
+                <mat-icon class="status-all">check_box</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('preparing')">
+                <mat-icon class="status-preparing">wash</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('delivery')">
+                <mat-icon class="status-delivery">two_wheeler</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('delivered')">
+                <mat-icon class="status-delivered">check</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('cancelled')">
+                <mat-icon class="status-cancelled">cancel</mat-icon>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>
+
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <mat-table [dataSource]="items" class="mat-elevation-z8">
         <!-- address column -->
-        <ng-container matColumnDef="address">
-            <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.address}} </mat-cell>
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
         </ng-container>
 
         <!-- round column -->
@@ -30,9 +61,9 @@
                             <mat-icon class="status-all">edit</mat-icon>
                             <span>Edit</span>
                         </button>
-                        <button mat-menu-item (click)="setStatus('new', element)">
-                            <mat-icon class="status-new">fiber_new</mat-icon>
-                            <span>New</span>
+                        <button mat-menu-item (click)="setStatus('preparing', element)">
+                            <mat-icon class="status-preparing">wash</mat-icon>
+                            <span>Preparing</span>
                         </button>
                         <button mat-menu-item (click)="setStatus('delivery', element)">
                             <mat-icon class="status-delivery">two_wheeler</mat-icon>
@@ -64,8 +95,20 @@
 <div class="form" *ngIf="display=='form'">
     <div>
         <mat-form-field>
-            <input matInput required placeholder="Block" (change)="updateLotOptions()" [(ngModel)]="item.block" [formControl]="blockControl" [matAutocomplete]="autoBlock" />
-            <mat-autocomplete (optionSelected)="updateLotOptions()"  autoActiveFirstOption #autoBlock="matAutocomplete">
+            <input matInput required placeholder="Name" (change)="updateName()" [(ngModel)]="item.name"
+                [formControl]="nameControl" [matAutocomplete]="autoName" />
+            <mat-autocomplete (optionSelected)="updateName()" autoActiveFirstOption #autoName="matAutocomplete">
+                <mat-option *ngFor="let option of nameFilteredOptions | async" [value]="option">
+                    {{ option }}
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="Block" (change)="updateLotOptions()" [(ngModel)]="item.block"
+                [formControl]="blockControl" [matAutocomplete]="autoBlock" />
+            <mat-autocomplete (optionSelected)="updateLotOptions()" autoActiveFirstOption #autoBlock="matAutocomplete">
                 <mat-option *ngFor="let option of blockFilteredOptions | async" [value]="option">
                     {{ option }}
                 </mat-option>
@@ -74,8 +117,9 @@
     </div>
     <div>
         <mat-form-field>
-            <input matInput required placeholder="Lot" (change)="updateAddress()" [(ngModel)]="item.lot" [formControl]="lotControl" [matAutocomplete]="autoLot" />
-            <mat-autocomplete (optionSelected)="updateAddress()" autoActiveFirstOption #autoLot="matAutocomplete">
+            <input matInput placeholder="Lot" (change)="blockLotUpdate()" [(ngModel)]="item.lot"
+                [formControl]="lotControl" [matAutocomplete]="autoLot" />
+            <mat-autocomplete (optionSelected)="blockLotUpdate()" autoActiveFirstOption #autoLot="matAutocomplete">
                 <mat-option *ngFor="let option of lotFilteredOptions | async" [value]="option">
                     {{ option }}
                 </mat-option>
@@ -84,7 +128,13 @@
     </div>
     <div class="long">
         <mat-form-field>
-            <input matInput required placeholder="Address" [(ngModel)]="item.address" />
+            <input matInput required placeholder="Address" (change)="updateAddress()" [(ngModel)]="item.address"
+                [formControl]="addressControl" [matAutocomplete]="autoAddress" />
+            <mat-autocomplete (optionSelected)="updateAddress()" autoActiveFirstOption #autoAddress="matAutocomplete">
+                <mat-option *ngFor="let option of addressFilteredOptions | async" [value]="option">
+                    {{ option }}
+                </mat-option>
+            </mat-autocomplete>
         </mat-form-field>
     </div>
     <div>
@@ -111,8 +161,7 @@
         <mat-form-field>
             <mat-label>Select Status</mat-label>
             <mat-select [(value)]="item.status" required>
-                <mat-option>None</mat-option>
-                <mat-option value="new">New</mat-option>
+                <mat-option value="preparing">Preparing</mat-option>
                 <mat-option value="delivery">For Delivery</mat-option>
                 <mat-option value="delivered">Delivered</mat-option>
                 <mat-option value="cancelled">Cancelled</mat-option>
@@ -128,34 +177,6 @@
 
 <!-- Actions -->
 <div class="actions">
-    <div class="date" *ngIf="role == 'Admin' || role == 'Manager'">
-        <mat-form-field style="width: 200px;">
-            <mat-label>Transaction date</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-    </div>
-
-    <div [hidden]="display=='form'" style="float: left;">
-        <mat-button-toggle-group value='all'>
-            <mat-button-toggle value="all" (click)="show('all')">
-                <mat-icon class="status-all">check_box</mat-icon>
-            </mat-button-toggle>
-            <mat-button-toggle (click)="show('new')">
-                <mat-icon class="status-new">fiber_new</mat-icon>
-            </mat-button-toggle>
-            <mat-button-toggle (click)="show('delivery')">
-                <mat-icon class="status-delivery">two_wheeler</mat-icon>
-            </mat-button-toggle>
-            <mat-button-toggle (click)="show('delivered')">
-                <mat-icon class="status-delivered">check</mat-icon>
-            </mat-button-toggle>
-            <mat-button-toggle (click)="show('cancelled')">
-                <mat-icon class="status-cancelled">cancel</mat-icon>
-            </mat-button-toggle>
-        </mat-button-toggle-group>
-    </div>
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>

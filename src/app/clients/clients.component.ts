@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { clients } from '../models/clients';
-import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-clients',
@@ -15,58 +12,27 @@ export class ClientsComponent implements OnInit {
   displayedColumns: string[] = ['name', 'address', 'contact', 'key'];
   item: clients;
   items: Array<clients>;
-  myControl = new FormControl();
-  filteredOptions: Observable<string[]>;
-  options: string[] = ['Block'];
   
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
     this.loadData();
-    this.setOption();
   }
 
   updateAddress() {
     let block = this.item.block ?? "";
     let lot = this.item.lot ?? "";
     let address = (block != "") ? block + ", " + lot : lot;
-    this.options = [address=="" ? "Block" : address];
-    this.setOption();
-  }
-
-  private setOption() {
-    this.filteredOptions = this.myControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value))
-    );
-  }
-
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-
-    return this.options.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+    this.item.address = address;
   }
 
   loadData() {
-    this.service.db.list<clients>('clients/items').snapshotChanges().subscribe(records => {
+    this.service.db.list<clients>('clients/items', ref => ref.orderByChild('name')).snapshotChanges().subscribe(records => {
       this.items = new Array<clients>();
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
         this.items.push(i);
-      });
-
-      this.items = this.items.sort((a, b) => {
-        let isLess = false;
-
-        if(a.block == b.block) {
-          if(a.lot > b.lot)
-            isLess = true;
-        }
-        else if(a.block > b.block)
-          isLess = true;
-
-        return isLess ? 1 : -1;
       });
     });
   }
@@ -83,7 +49,6 @@ export class ClientsComponent implements OnInit {
   edit(item: clients) {
     this.display = 'form';
     this.item = Object.assign({}, item);
-    this.updateAddress();
   }
 
   toDate(action_date: number): Date {
@@ -93,12 +58,15 @@ export class ClientsComponent implements OnInit {
   save() {
     let item = new clients();
     item.key = this.item.key ?? "";
+    item.name = this.item.name ?? "";
     item.block = this.item.block;
     item.lot = this.item.lot;
     item.address = this.item.address ?? "";
-    item.name = this.item.name ?? "";
     item.contact = this.item.contact ?? "";
     item.remarks = this.item.remarks ?? "";
+    item.slim = this.item.slim ?? 0;
+    item.round = this.item.round ?? 0;
+    item.price = this.item.price ?? 0;
     item.action_date = this.service.actionDate();
     item.action_day = this.service.action_day;
 

@@ -1,4 +1,4 @@
-export class category {
+export class ExpensesCategory {
     key: string;
     name: string;
     group: string;
