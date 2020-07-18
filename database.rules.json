@@ -42,6 +42,10 @@
         ".read": "true",
         ".write": "true",
         ".indexOn": "group"
+      },
+      "common": {
+        ".read": "true",
+        ".write": "true"
       }
     },
     "users": {

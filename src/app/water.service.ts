@@ -7,6 +7,7 @@ import { ExpensesItem } from './models/expenses-item';
 import { users } from './models/users';
 import { Access } from './models/access';
 import { Command } from './models/command';
+import { SettingsCommon } from './models/settings-common';
 import { SalesOthersItem } from './models/sales-others-item';
 
 @Injectable({
@@ -22,6 +23,7 @@ export class WaterService {
   expenses_categories: Array<ExpensesCategory>;
   expenses_items: Array<ExpensesItem>;
   other_sales_items: Array<SalesOthersItem>;
+  settings_common: SettingsCommon = new SettingsCommon();
 
   app_users: Array<users>;
   action_day: number;
@@ -34,6 +36,7 @@ export class WaterService {
   
   constructor(public db: AngularFireDatabase, public store: AngularFireStorage, public router: Router) {
     this.action_day =  this.actionDay();
+    this.loadSettingsCommon();
     this.loadUsers();
     this.loadSettings();
   }
@@ -122,6 +125,16 @@ export class WaterService {
     });
   }
 
+  private loadSettingsCommon() {
+    this.db.object<SettingsCommon>('/settings/common').snapshotChanges().subscribe(item => {
+      this.settings_common = item.payload.val();
+    });
+  }
+
+  public SaveSettingsCommon() {
+    this.db.object('/settings/common').set(this.settings_common);
+  }
+
   public saveLogin() {
     localStorage.setItem('name', this.current_user.name);
     localStorage.setItem('username', this.current_user.username);
@@ -175,17 +188,19 @@ export class WaterService {
       cmd.data = 1;
       this.Changed.emit(cmd);
 
-      this.store.upload(this.imagePath, selectedFile).snapshotChanges().subscribe(item => {
+      let task = this.store.upload(this.imagePath, selectedFile);
+
+      task.snapshotChanges().subscribe(item => {
         if(item.bytesTransferred == item.totalBytes) {
           item.ref.getDownloadURL().then(path => {
             cmd = new Command();
-            cmd.type = this.command_types.ImageUploaded;
-            cmd.data = path;
+            cmd.type = this.command_types.Progress;
+            cmd.data = 100;
             this.Changed.emit(cmd);
 
             cmd = new Command();
-            cmd.type = this.command_types.Progress;
-            cmd.data = 100;
+            cmd.type = this.command_types.ImageUploaded;
+            cmd.data = path;
             this.Changed.emit(cmd);
           });
 

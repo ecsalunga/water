@@ -91,6 +91,7 @@ export class ExpensesComponent implements OnInit {
     item.remarks = this.item.remarks ?? "";
     item.imagePath = this.item.imagePath;
     item.action_day = this.selected;
+    item.action_date = this.item.action_date;
 
     if (item.key == null || item.key == "")
       this.service.db.list('expenses/items').push(item);

@@ -11,6 +11,7 @@ import { expenses } from '../models/expenses';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
+  date_locked: string = 'lock';
   role: string = "";
   selected: number;
   selectedDate = new Date();
@@ -22,11 +23,55 @@ export class SummaryComponent implements OnInit {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
+    this.setLock();
   }
 
   dateSelected() {
     this.selected = this.service.getActionDay(this.selectedDate);
     this.loadData();
+    this.setLock();
+  }
+
+  toggleLock() {
+    if(this.date_locked == 'lock') {
+      if(this.service.settings_common.Unlocked == null)
+        this.service.settings_common.Unlocked = new Array<number>();
+
+      this.service.settings_common.Unlocked.push(this.selected);
+      if(this.selected == this.service.action_day)
+        this.service.settings_common.Locked = 0;
+
+      this.service.SaveSettingsCommon();
+      this.date_locked = 'lock_open';
+    }
+    else {
+      let items = new Array<number>();
+      if(this.service.settings_common.Unlocked != null) {
+        this.service.settings_common.Unlocked.forEach(item => {
+          if(item != this.selected)
+            items.push(item);
+        });
+      }
+
+      this.service.settings_common.Unlocked = items;
+      if(this.selected == this.service.action_day)
+        this.service.settings_common.Locked = this.selected;
+
+      this.service.SaveSettingsCommon();
+      this.date_locked = 'lock';
+    }
+  }
+
+  setLock() {
+    this.date_locked = 'lock';
+    if(this.service.action_day == this.selected && this.service.settings_common.Locked != this.selected)
+      this.date_locked = 'lock_open';
+    else if(this.service.settings_common.Unlocked != null && this.service.settings_common.Unlocked.length > 0) {
+      this.service.settings_common.Unlocked.forEach(item => {
+        if(this.selected == item)
+          this.date_locked = 'lock_open';
+      });
+    }
   }
 
   loadData() {
