@@ -6,6 +6,7 @@ import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { SalesOthersItem } from '../models/sales-others-item';
+import { Command } from '../models/command';
 
 @Component({
   selector: 'app-sales-others',
@@ -13,6 +14,7 @@ import { SalesOthersItem } from '../models/sales-others-item';
   styleUrls: ['./sales-others.component.scss']
 })
 export class SalesOthersComponent implements OnInit {
+  IsAllowed: boolean = false;
   role: string = "";
   selected: number;
   selectedDate = new Date();
@@ -46,10 +48,21 @@ export class SalesOthersComponent implements OnInit {
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
-    this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
+    this.role = this.service.current_user.role;
     this.loadData();
     this.loadAutoComplete();
+    this.setLocked();
+    if(this.service.settings_common == null) {
+      this.service.Changed.subscribe((cmd: Command) => {
+        if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
+        this.setLocked();
+      });
+    }
+  }
+
+  setLocked() {
+    this.IsAllowed = this.service.IsAllowed(this.selected);
   }
 
   loadData() {

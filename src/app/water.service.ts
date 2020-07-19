@@ -23,7 +23,7 @@ export class WaterService {
   expenses_categories: Array<ExpensesCategory>;
   expenses_items: Array<ExpensesItem>;
   other_sales_items: Array<SalesOthersItem>;
-  settings_common: SettingsCommon = new SettingsCommon();
+  settings_common: SettingsCommon;
 
   app_users: Array<users>;
   action_day: number;
@@ -32,7 +32,7 @@ export class WaterService {
   user_access: Access;
   current_user = { name: '', username: '', role: '', isLogin: false };
   setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item' };
-  command_types = { ImageUploaded: 'image-uploaded', Progress: 'progress' };
+  command_types = { ImageUploaded: 'image-uploaded', Progress: 'progress', Loader: 'loader' };
   
   constructor(public db: AngularFireDatabase, public store: AngularFireStorage, public router: Router) {
     this.action_day =  this.actionDay();
@@ -128,6 +128,10 @@ export class WaterService {
   private loadSettingsCommon() {
     this.db.object<SettingsCommon>('/settings/common').snapshotChanges().subscribe(item => {
       this.settings_common = item.payload.val();
+      let cmd = new Command();
+      cmd.type = this.command_types.Loader;
+      cmd.data = 'settings-common';
+      this.Changed.emit(cmd);
     });
   }
 
@@ -219,5 +223,64 @@ export class WaterService {
       nativeElement.value = "";
       console.log('Invalid image.');
     }
+  }
+
+  public IsAllowed(actionDay: number): boolean {
+    if(this.current_user.role == this.user_roles.Admin)
+      return true;
+    else if(this.current_user.role == this.user_roles.Delivery)
+      return false;
+    else
+      return !this.IsLocked(actionDay);
+  }
+
+  public IsLocked(actionDay: number): boolean {
+    if(this.settings_common == null)
+      return true;
+
+    let isLocked = true;
+    if(this.settings_common.Unlocked != null) {
+      this.settings_common.Unlocked.forEach(item => {
+        if(item == actionDay)
+          isLocked = false;
+      });
+    }
+
+    if(isLocked && this.action_day == actionDay && this.settings_common.Locked != actionDay)
+      isLocked = false;
+
+    return isLocked;
+  }
+
+  public ToggleLock(actionDay: number): boolean {
+    let isLocked = this.IsLocked(actionDay);
+
+    if(isLocked) {
+      if(this.settings_common.Unlocked == null)
+        this.settings_common.Unlocked = new Array<number>();
+
+      this.settings_common.Unlocked.push(actionDay);
+      if(this.action_day == actionDay)
+        this.settings_common.Locked = 0;
+
+      this.SaveSettingsCommon();
+    }
+    else {
+      let items = new Array<number>();
+      if(this.settings_common.Unlocked != null) {
+        this.settings_common.Unlocked.forEach(item => {
+          if(item != actionDay)
+            items.push(item);
+        });
+      }
+
+      this.settings_common.Unlocked = items;
+      if(this.action_day == actionDay)
+        this.settings_common.Locked = actionDay;
+
+      this.SaveSettingsCommon();
+    }
+
+    return !isLocked;
   }
 }

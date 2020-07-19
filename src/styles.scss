@@ -76,6 +76,7 @@ body {
   }
 
   .controls {
+    padding-bottom: 15px;
     margin: 3px;
     margin-top: 15px;
     overflow: auto;
@@ -89,8 +90,8 @@ body {
   }
 
   .mat-button-toggle-label-content {
-    line-height: 5px !important;
-    padding: 8px !important
+    line-height: 4px !important;
+    padding: 6px !important
   }
 
   .mat-column-key {

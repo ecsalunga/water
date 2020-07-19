@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { sales } from '../models/sales-water';
 import { clients } from '../models/clients';
+import { Command } from '../models/command';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { Access } from '../models/access';
 
 @Component({
   selector: 'app-sales-water',
@@ -13,7 +13,7 @@ import { Access } from '../models/access';
   styleUrls: ['./sales-water.component.scss']
 })
 export class SalesWaterComponent implements OnInit {
-  access: Access;
+  IsAllowed: boolean = false;
   role: string = "";
   selected: number;
   selectedDate = new Date();
@@ -43,10 +43,20 @@ export class SalesWaterComponent implements OnInit {
 
   ngOnInit(): void {
     this.role = this.service.current_user.role;
-    this.access = this.service.user_access;
     this.selected = this.service.action_day;
     this.loadData();
     this.loadClientData();
+    this.setLocked();
+    if(this.service.settings_common == null) {
+      this.service.Changed.subscribe((cmd: Command) => {
+        if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
+        this.setLocked();
+      });
+    }
+  }
+
+  setLocked() {
+    this.IsAllowed = this.service.IsAllowed(this.selected);
   }
 
   loadData() {
@@ -79,6 +89,7 @@ export class SalesWaterComponent implements OnInit {
   dateSelected() {
     this.selected = this.service.getActionDay(this.selectedDate);
     this.loadData();
+    this.setLocked();
   }
 
   getIcon(status: string): string {

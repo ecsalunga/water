@@ -61,7 +61,7 @@
                             <mat-icon class="status-all">edit</mat-icon>
                             <span>Edit</span>
                         </button>
-                        <ng-container *ngIf="access.WaterSalesEdit">
+                        <ng-container *ngIf="IsAllowed">
                             <button mat-menu-item (click)="setStatus('preparing', element)">
                                 <mat-icon class="status-preparing">wash</mat-icon>
                                 <span>Preparing</span>
@@ -179,7 +179,7 @@
 
 <!-- Actions -->
 <div class="actions">
-    <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
+    <button mat-raised-button *ngIf="display=='list'" (click)="add()" [disabled]="!IsAllowed">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
-    <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!access.WaterSalesEdit">Save</button>
+    <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!IsAllowed">Save</button>
 </div>

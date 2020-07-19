@@ -14,6 +14,7 @@ import { map, startWith } from 'rxjs/operators';
   styleUrls: ['./expenses.component.scss']
 })
 export class ExpensesComponent implements OnInit {
+  IsAllowed: boolean = false;
   role: string = "";
   selected: number;
   selectedDate = new Date();
@@ -33,10 +34,17 @@ export class ExpensesComponent implements OnInit {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
+    this.setLocked();
     this.service.Changed.subscribe((cmd: Command) => {
       if(cmd.type == this.service.command_types.ImageUploaded)
         this.item.imagePath = cmd.data;
+      else if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
+      this.setLocked();
     });
+  }
+
+  setLocked() {
+    this.IsAllowed = this.service.IsAllowed(this.selected);
   }
 
   loadData() {
@@ -120,8 +128,10 @@ export class ExpensesComponent implements OnInit {
   }
 
   upload() {
-    this.service.imagePath = "/images/expenses/" + this.item.action_date + ".png";
-    this.service.selectImage();
+    if(this.IsAllowed) {
+      this.service.imagePath = "/images/expenses/" + this.item.action_date + ".png";
+      this.service.selectImage();
+    }
   }
 
   private setNameOptions() {

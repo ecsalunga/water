@@ -4,6 +4,7 @@ import { WaterService } from '../water.service';
 import { others } from '../models/sales-others';
 import { sales } from '../models/sales-water';
 import { expenses } from '../models/expenses';
+import { Command } from '../models/command';
 
 @Component({
   selector: 'app-summary',
@@ -11,6 +12,7 @@ import { expenses } from '../models/expenses';
   styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit {
+  IsLockDisplayed: boolean = false;
   date_locked: string = 'lock';
   role: string = "";
   selected: number;
@@ -24,6 +26,15 @@ export class SummaryComponent implements OnInit {
     this.selected = this.service.action_day;
     this.loadData();
     this.setLock();
+    this.setIsLockDisplayed();
+    if(this.service.settings_common == null) {
+      this.service.Changed.subscribe((cmd: Command) => {
+        if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common') {
+          this.setLock();
+          this.setIsLockDisplayed();
+        }
+      });
+    }
   }
 
   dateSelected() {
@@ -33,45 +44,24 @@ export class SummaryComponent implements OnInit {
   }
 
   toggleLock() {
-    if(this.date_locked == 'lock') {
-      if(this.service.settings_common.Unlocked == null)
-        this.service.settings_common.Unlocked = new Array<number>();
+    let isLocked = this.service.ToggleLock(this.selected);
+    this.date_locked = (isLocked ? 'lock' : 'lock_open');
+    
+    if(this.role == this.service.user_roles.Monitor)
+      this.IsLockDisplayed = !this.service.IsLocked(this.selected);
+  }
 
-      this.service.settings_common.Unlocked.push(this.selected);
-      if(this.selected == this.service.action_day)
-        this.service.settings_common.Locked = 0;
-
-      this.service.SaveSettingsCommon();
-      this.date_locked = 'lock_open';
-    }
-    else {
-      let items = new Array<number>();
-      if(this.service.settings_common.Unlocked != null) {
-        this.service.settings_common.Unlocked.forEach(item => {
-          if(item != this.selected)
-            items.push(item);
-        });
-      }
-
-      this.service.settings_common.Unlocked = items;
-      if(this.selected == this.service.action_day)
-        this.service.settings_common.Locked = this.selected;
-
-      this.service.SaveSettingsCommon();
-      this.date_locked = 'lock';
-    }
+  setIsLockDisplayed() {
+    this.IsLockDisplayed = false;
+    if(this.role == this.service.user_roles.Admin)
+      this.IsLockDisplayed = true;
+    else if(this.role == this.service.user_roles.Monitor)
+      this.IsLockDisplayed = !this.service.IsLocked(this.selected);
   }
 
   setLock() {
-    this.date_locked = 'lock';
-    if(this.service.action_day == this.selected && this.service.settings_common.Locked != this.selected)
-      this.date_locked = 'lock_open';
-    else if(this.service.settings_common.Unlocked != null && this.service.settings_common.Unlocked.length > 0) {
-      this.service.settings_common.Unlocked.forEach(item => {
-        if(this.selected == item)
-          this.date_locked = 'lock_open';
-      });
-    }
+    let isLocked = this.service.IsLocked(this.selected);
+    this.date_locked = (isLocked ? 'lock' : 'lock_open');
   }
 
   loadData() {

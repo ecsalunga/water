@@ -127,7 +127,7 @@
 
 <!-- Actions -->
 <div class="actions">
-    <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
+    <button mat-raised-button *ngIf="display=='list'" (click)="add()" [disabled]="!IsAllowed">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
-    <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>
+    <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!IsAllowed">Save</button>
 </div>
