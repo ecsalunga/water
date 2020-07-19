@@ -26,9 +26,7 @@ export class SettingsComponent implements OnInit {
   constructor(private service: WaterService) {}
 
   ngOnInit(): void {
-    if(this.service.current_user.role != this.service.user_roles.Admin)
-      this.service.router.navigateByUrl('/menu');
-
+    this.service.ForAdminOnly();
     this.service.db.list<ExpensesCategory>('settings/items', ref => ref.orderByChild('group').equalTo(this.service.setting_types.ExpensesCategory)).snapshotChanges().subscribe(records => {
       this.itemsExpensesCategory = new Array<ExpensesCategory>();
       records.forEach(item => {

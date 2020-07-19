@@ -16,6 +16,7 @@ export class ClientsComponent implements OnInit {
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
+    this.service.ForAdminOnly();
     this.loadData();
   }
 

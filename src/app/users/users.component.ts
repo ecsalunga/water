@@ -17,8 +17,7 @@ export class UsersComponent implements OnInit {
   constructor(private service: WaterService) {}
 
   ngOnInit(): void {
-    if(this.service.current_user.role != this.service.user_roles.Admin)
-      this.service.router.navigateByUrl('/menu');
+    this.service.ForAdminOnly();
       
     this.roles = [this.service.user_roles.Admin, this.service.user_roles.Monitor, this.service.user_roles.Delivery];
     this.service.db.list<users>('users/items').snapshotChanges().subscribe(records => {

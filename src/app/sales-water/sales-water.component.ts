@@ -14,6 +14,8 @@ import { map, startWith } from 'rxjs/operators';
 })
 export class SalesWaterComponent implements OnInit {
   IsAllowed: boolean = false;
+  IsOpenDaysShowed: boolean = false;
+  openDays: Array<number>;
   role: string = "";
   selected: number;
   selectedDate = new Date();
@@ -46,13 +48,30 @@ export class SalesWaterComponent implements OnInit {
     this.selected = this.service.action_day;
     this.loadData();
     this.loadClientData();
+    this.loadCommonSettingsData();
+    this.service.Changed.subscribe((cmd: Command) => {
+      if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
+      this.loadCommonSettingsData();
+    });
+  }
+
+  private loadCommonSettingsData() {
     this.setLocked();
-    if(this.service.settings_common == null) {
-      this.service.Changed.subscribe((cmd: Command) => {
-        if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
-        this.setLocked();
-      });
-    }
+    this.loadOpenDays();
+  }
+
+  GetDate(action_day: number): Date {
+    return this.service.actionDayToDate(action_day);
+  }
+
+  SetDate() {
+    this.loadData();
+    this.loadCommonSettingsData();
+  }
+
+  private loadOpenDays() {
+    this.openDays = this.service.GetOpenDays();
+    this.IsOpenDaysShowed = this.service.IsShowOpenDays();
   }
 
   setLocked() {

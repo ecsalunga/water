@@ -1,6 +1,14 @@
 <div class="header">Other Sales</div>
 <!-- controls -->
 <div class="controls">
+    <mat-form-field *ngIf="IsOpenDaysShowed" style="width: 110px;">
+        <mat-label>Select date</mat-label>
+        <mat-select [(value)]="selected">
+            <mat-option (click)="SetDate()" [value]="option" *ngFor="let option of openDays">
+                {{ GetDate(option) | date }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
     <div class="date" class="left" *ngIf="role == 'Admin'">
         <mat-form-field style="width: 115px;">
             <mat-label>Transaction date</mat-label>

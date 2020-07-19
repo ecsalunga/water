@@ -15,6 +15,7 @@ import { map, startWith } from 'rxjs/operators';
 })
 export class ExpensesComponent implements OnInit {
   IsAllowed: boolean = false;
+  IsOpenDaysShowed: boolean = false;
   role: string = "";
   selected: number;
   selectedDate = new Date();
@@ -23,6 +24,7 @@ export class ExpensesComponent implements OnInit {
   item: expenses;
   items: Array<expenses>;
   categories: Array<ExpensesCategory>;
+  openDays: Array<number>;
 
   nameControl = new FormControl();
   nameFilteredOptions: Observable<string[]>;
@@ -34,13 +36,32 @@ export class ExpensesComponent implements OnInit {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
-    this.setLocked();
+    this.loadCommonSettingsData();
     this.service.Changed.subscribe((cmd: Command) => {
       if(cmd.type == this.service.command_types.ImageUploaded)
         this.item.imagePath = cmd.data;
       else if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
-      this.setLocked();
+        this.loadCommonSettingsData();
     });
+  }
+
+  private loadCommonSettingsData() {
+    this.setLocked();
+    this.loadOpenDays();
+  }
+
+  GetDate(action_day: number): Date {
+    return this.service.actionDayToDate(action_day);
+  }
+
+  SetDate() {
+    this.loadData();
+    this.loadCommonSettingsData();
+  }
+
+  private loadOpenDays() {
+    this.openDays = this.service.GetOpenDays();
+    this.IsOpenDaysShowed = this.service.IsShowOpenDays();
   }
 
   setLocked() {

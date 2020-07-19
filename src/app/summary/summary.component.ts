@@ -13,7 +13,10 @@ import { Command } from '../models/command';
 })
 export class SummaryComponent implements OnInit {
   IsLockDisplayed: boolean = false;
+  IsOpenDaysShowed: boolean = false;
+  openDays: Array<number>;
   date_locked: string = 'lock';
+  LockColor: string = 'warn';
   role: string = "";
   selected: number;
   selectedDate = new Date();
@@ -25,16 +28,31 @@ export class SummaryComponent implements OnInit {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
+    this.loadCommonSettingsData();
+    this.service.Changed.subscribe((cmd: Command) => {
+      if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
+        this.loadCommonSettingsData();
+    });
+  }
+
+  private loadCommonSettingsData() {
     this.setLock();
+    this.loadOpenDays();
     this.setIsLockDisplayed();
-    if(this.service.settings_common == null) {
-      this.service.Changed.subscribe((cmd: Command) => {
-        if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common') {
-          this.setLock();
-          this.setIsLockDisplayed();
-        }
-      });
-    }
+  }
+
+  GetDate(action_day: number): Date {
+    return this.service.actionDayToDate(action_day);
+  }
+
+  SetDate() {
+    this.loadData();
+    this.loadCommonSettingsData();
+  }
+
+  private loadOpenDays() {
+    this.openDays = this.service.GetOpenDays();
+    this.IsOpenDaysShowed = this.service.IsShowOpenDays();
   }
 
   dateSelected() {
@@ -47,8 +65,11 @@ export class SummaryComponent implements OnInit {
     let isLocked = this.service.ToggleLock(this.selected);
     this.date_locked = (isLocked ? 'lock' : 'lock_open');
     
-    if(this.role == this.service.user_roles.Monitor)
+    if(this.role == this.service.user_roles.Monitor) {
       this.IsLockDisplayed = !this.service.IsLocked(this.selected);
+      this.selected = this.service.action_day;
+      this.loadData();
+    }
   }
 
   setIsLockDisplayed() {
@@ -62,6 +83,7 @@ export class SummaryComponent implements OnInit {
   setLock() {
     let isLocked = this.service.IsLocked(this.selected);
     this.date_locked = (isLocked ? 'lock' : 'lock_open');
+    this.LockColor = (isLocked ? 'warn' : 'primary');
   }
 
   loadData() {

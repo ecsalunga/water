@@ -1,13 +1,21 @@
 <div class="header">Summary</div>
 <!-- controls -->
 <div class="controls">
-    <mat-form-field style="width: 115px;" *ngIf="role == 'Admin'">
+    <mat-form-field *ngIf="IsOpenDaysShowed" style="width: 110px;">
+        <mat-label>Select date</mat-label>
+        <mat-select [(value)]="selected">
+            <mat-option (click)="SetDate()" [value]="option" *ngFor="let option of openDays">
+                {{ GetDate(option) | date }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field style="width: 110px;" *ngIf="role == 'Admin'">
         <mat-label>Transaction date</mat-label>
         <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
-    <button *ngIf="IsLockDisplayed" (click)="toggleLock()" style="margin-left: 10px;" mat-mini-fab color="primary">
+    <button *ngIf="IsLockDisplayed" (click)="toggleLock()" style="margin-left: 10px;" mat-mini-fab [color]="LockColor">
         <mat-icon>{{date_locked}}</mat-icon>
     </button>
 </div>

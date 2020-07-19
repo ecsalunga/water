@@ -125,6 +125,33 @@ export class WaterService {
     });
   }
 
+  public GetOpenDays(): Array<number> {
+    let days = new Array<number>();
+    days.push(this.action_day);
+
+    if(this.settings_common != null && this.settings_common.Unlocked != null) {
+      this.settings_common.Unlocked.forEach(day => {
+        if(days.indexOf(day) == -1)
+          days.push(day);
+      });
+    }
+
+    days.sort();
+
+    return days;
+  }
+
+  public IsShowOpenDays(): boolean {
+    let isShow = false;
+    if(this.current_user.role == this.user_roles.Monitor) {
+      let openDays = this.GetOpenDays();
+      if(openDays.length > 1 || (openDays.length == 1 && openDays[0] != this.action_day))
+        isShow = true;
+    }
+
+    return isShow;
+  }
+
   private loadSettingsCommon() {
     this.db.object<SettingsCommon>('/settings/common').snapshotChanges().subscribe(item => {
       this.settings_common = item.payload.val();
@@ -178,6 +205,11 @@ export class WaterService {
 
   selectImage() {
     this.imageSelector.nativeElement.click();
+  }
+
+  ForAdminOnly() {
+    if(this.current_user.role != this.user_roles.Admin)
+      this.router.navigateByUrl('/menu');
   }
 
   upload() {
