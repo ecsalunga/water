@@ -16,6 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -32,6 +33,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { LoginComponent } from './login/login.component';
 import { UsersComponent } from './users/users.component';
 import { ClientsComponent } from './clients/clients.component';
+import { DailyComponent } from './daily/daily.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,8 @@ import { ClientsComponent } from './clients/clients.component';
     SettingsComponent,
     LoginComponent,
     UsersComponent,
-    ClientsComponent
+    ClientsComponent,
+    DailyComponent
   ],
   imports: [
     BrowserModule,
@@ -67,7 +70,8 @@ import { ClientsComponent } from './clients/clients.component';
     MatMenuModule,
     MatCardModule,
     MatAutocompleteModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

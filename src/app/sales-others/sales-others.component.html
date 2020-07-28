@@ -11,7 +11,7 @@
     </mat-form-field>
     <div class="date" class="left" *ngIf="role == 'Admin'">
         <mat-form-field style="width: 115px;">
-            <mat-label>Transaction date</mat-label>
+            <mat-label>Date</mat-label>
             <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="dateSelected()" />
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>

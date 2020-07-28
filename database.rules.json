@@ -61,6 +61,13 @@
         ".write": "true",
         ".indexOn": "role"
       }
+    },
+    "daily": {
+      "items": {
+        ".read": "true",
+        ".write": "true",
+        ".indexOn": "action_day"
+      }
     }
   }
 }

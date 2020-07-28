@@ -1,0 +1,30 @@
+<div class="header">Daily</div>
+<!-- Form -->
+<div class="form">
+    <div>
+        <mat-form-field>
+            <input matInput type="number" required placeholder="COH" [(ngModel)]="item.coh" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput type="number" placeholder="TDS" [(ngModel)]="item.tds" />
+        </mat-form-field>
+    </div>
+    <div>
+        <img class="upload-image" [src]="item.tdsPath" (click)="uploadTds()" />
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput type="number" placeholder="Meter" [(ngModel)]="item.meter" />
+        </mat-form-field>
+    </div>
+    <div>
+        <img class="upload-image" [src]="item.meterPath" (click)="uploadMeter()" />
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="actions">
+    <button mat-raised-button (click)="submit()">Submit</button>
+</div>

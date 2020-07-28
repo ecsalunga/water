@@ -2,6 +2,7 @@ import { Injectable, ElementRef, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireStorage } from '@angular/fire/storage';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ExpensesCategory } from './models/expenses-category';
 import { ExpensesItem } from './models/expenses-item';
 import { users } from './models/users';
@@ -34,7 +35,7 @@ export class WaterService {
   setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item' };
   command_types = { ImageUploaded: 'image-uploaded', Progress: 'progress', Loader: 'loader' };
   
-  constructor(public db: AngularFireDatabase, public store: AngularFireStorage, public router: Router) {
+  constructor(public db: AngularFireDatabase, public store: AngularFireStorage, public router: Router, public snackBar: MatSnackBar) {
     this.action_day =  this.actionDay();
     this.loadSettingsCommon();
     this.loadUsers();
@@ -314,5 +315,11 @@ export class WaterService {
     }
 
     return !isLocked;
+  }
+
+  public Message(message: string) {
+    this.snackBar.open(message, "Done", {
+      duration: 2000,
+    });
   }
 }
