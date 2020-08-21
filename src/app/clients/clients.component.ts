@@ -11,7 +11,7 @@ import { clients } from '../models/clients';
 export class ClientsComponent implements OnInit {
   elementType = NgxQrcodeElementTypes.URL;
   correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
-  display: string = 'list';
+  display: string = 'none';
   displayedColumns: string[] = ['name', 'address', 'contact', 'key'];
   item: clients;
   items: Array<clients>;
@@ -26,8 +26,10 @@ export class ClientsComponent implements OnInit {
     this.currentURL = path[0];
     if(path.length > 1 && path[1].length > 0)
       this.clientId = path[1].replace("/", "");
-    else
+    else {
       this.service.ForAdminOnly();
+      this.display = 'list';
+    }
 
     this.loadData();
   }
