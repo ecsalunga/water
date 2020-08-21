@@ -89,9 +89,7 @@ export class ClientsComponent implements OnInit {
     item.contact = this.item.contact ?? "";
     item.remarks = this.item.remarks ?? "";
     item.slim = this.item.slim ?? 0;
-    item.total_slim = this.item.total_slim ?? 0;
     item.round = this.item.round ?? 0;
-    item.total_round = this.item.total_round ?? 0;
     item.price = this.item.price ?? 0;
     item.action_date = this.service.actionDate();
     item.action_day = this.service.action_day;
