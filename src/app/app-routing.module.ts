@@ -25,6 +25,7 @@ const routes: Routes = [
   { path: 'users', component: UsersComponent },
   { path: 'login', component: LoginComponent },
   { path: 'clients', component: ClientsComponent },
+  { path: 'clients/:id', component: ClientsComponent },
   { path: 'daily', component: DailyComponent },
   { path: '**', component: MenuComponent }
 ];

@@ -186,7 +186,9 @@ export class SalesWaterComponent implements OnInit {
     this.itemClients.forEach(item => {
       if (item.name.toLowerCase() == this.item.name.toLowerCase() && item.address.toLowerCase() == this.item.address.toLowerCase()) {
         item.slim = this.item.slim ?? 0;
+        item.total_slim = (item.total_slim ?? 0) + item.slim;
         item.round = this.item.round ?? 0;
+        item.total_round = (item.total_round ?? 0) + item.round;
         item.last_order = item.action_date = item.action_date;
         this.service.db.object('clients/items/' + item.key).update(item);
         isExists = true;
@@ -203,7 +205,9 @@ export class SalesWaterComponent implements OnInit {
       item.name = this.item.address ?? "";
       item.contact = this.item.contact ?? "";
       item.slim = this.item.slim ?? 0;
+      item.total_slim = (item.total_slim ?? 0) + item.slim;
       item.round = this.item.round ?? 0;
+      item.total_round = (item.total_round ?? 0) + item.round;
       item.price = (this.item.amount / (item.slim + item.round));
       item.remarks = this.item.remarks ?? "";
       item.action_date = this.service.actionDate();

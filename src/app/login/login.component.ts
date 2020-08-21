@@ -30,8 +30,13 @@ export class LoginComponent implements OnInit {
         }
       });
 
-      if(this.service.current_user.isLogin)
-        this.service.router.navigateByUrl('/menu');
+      if(this.service.current_user.isLogin) {
+        let requestPath = this.service.getRequestPath();
+        if(requestPath == null || requestPath.toLowerCase().indexOf('login') > -1)
+          this.service.router.navigateByUrl('/menu');
+        else
+          window.location.href = requestPath;
+      }
       else
         this.error = "Invalid information";
     }

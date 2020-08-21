@@ -6,7 +6,9 @@ export class clients {
     lot: string;
     contact: string;
     slim: number;
+    total_slim: number;
     round: number;
+    total_round: number;
     price: number;
     last_order: number;
     remarks: string;

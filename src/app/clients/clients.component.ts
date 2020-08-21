@@ -12,11 +12,20 @@ export class ClientsComponent implements OnInit {
   displayedColumns: string[] = ['name', 'address', 'contact', 'key'];
   item: clients;
   items: Array<clients>;
+  currentURL: string;
+  clientId: string;
+  clientPath: string;
   
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
-    this.service.ForAdminOnly();
+    let path = window.location.href.split('clients');
+    this.currentURL = path[0];
+    if(path.length > 1 && path[1].length > 0)
+      this.clientId = path[1].replace("/", "");
+    else
+      this.service.ForAdminOnly();
+
     this.loadData();
   }
 
@@ -35,6 +44,13 @@ export class ClientsComponent implements OnInit {
         i.key = item.key;
         this.items.push(i);
       });
+
+      if(this.clientId != null) {
+        this.items.forEach(item => {
+          if(item.key == this.clientId)
+           this.promo(item);
+        });
+      }
     });
   }
 
@@ -50,6 +66,13 @@ export class ClientsComponent implements OnInit {
   edit(item: clients) {
     this.display = 'form';
     this.item = Object.assign({}, item);
+    this.clientPath = this.currentURL + "clients/" + item.key;
+  }
+
+  promo(item: clients) {
+    this.display = 'promo';
+    this.item = Object.assign({}, item);
+    this.clientPath = this.currentURL + "clients/" + item.key;
   }
 
   toDate(action_date: number): Date {
@@ -66,7 +89,9 @@ export class ClientsComponent implements OnInit {
     item.contact = this.item.contact ?? "";
     item.remarks = this.item.remarks ?? "";
     item.slim = this.item.slim ?? 0;
+    item.total_slim = this.item.total_slim ?? 0;
     item.round = this.item.round ?? 0;
+    item.total_round = this.item.total_round ?? 0;
     item.price = this.item.price ?? 0;
     item.action_date = this.service.actionDate();
     item.action_day = this.service.action_day;

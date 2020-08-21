@@ -173,6 +173,14 @@ export class WaterService {
     localStorage.setItem('role', this.current_user.role);
   }
 
+  public saveRequestPath(requestPath: string) {
+    localStorage.setItem('requestPath', requestPath);
+  }
+
+  public getRequestPath() {
+    return localStorage.getItem('requestPath');
+  }
+
   public loadAccess() {
     this.user_access =  new Access();
     this.user_access.WaterSalesEdit = true;

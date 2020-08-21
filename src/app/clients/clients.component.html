@@ -77,15 +77,57 @@
             <input matInput type="number" placeholder="Price" [(ngModel)]="item.price" />
         </mat-form-field>
     </div>
+    <div>
+        <mat-form-field>
+            <input matInput readonly type="number" placeholder="Total Slim Bought" [(ngModel)]="item.total_slim" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput readonly type="number" placeholder="Total Round Bought" [(ngModel)]="item.total_round" />
+        </mat-form-field>
+    </div>
     <div class="long">
         <mat-form-field>
             <input matInput placeholder="Remarks" [(ngModel)]="item.remarks" />
         </mat-form-field>
     </div>
+     <div>
+       <a [href]="clientPath">{{ clientPath }}</a>
+    </div>
+</div>
+
+<!-- Form -->
+<div class="form" *ngIf="display=='promo'">
+    <div>
+        <mat-form-field>
+            <input matInput required placeholder="Name" [(ngModel)]="item.name" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput (change)="updateAddress()" placeholder="Block" [(ngModel)]="item.block" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput (change)="updateAddress()" placeholder="Lot" [(ngModel)]="item.lot" />
+        </mat-form-field>
+    </div>
+    <div class="long">
+        <mat-form-field>
+            <input matInput required placeholder="Address" [(ngModel)]="item.address" />
+        </mat-form-field>
+    </div>
+    <div>
+        <mat-form-field>
+            <input matInput placeholder="Contact" [(ngModel)]="item.contact" />
+        </mat-form-field>
+    </div>
 </div>
 
 <!-- Actions -->
-<div class="actions">
+<div class="actions" *ngIf="display!='promo'">
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>

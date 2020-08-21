@@ -25,8 +25,10 @@ export class AppComponent implements OnInit {
     if(!this.service.current_user.isLogin)
       this.service.getLogin();
 
-    if(!this.service.current_user.isLogin)
+    if(!this.service.current_user.isLogin) {
+      this.service.saveRequestPath(window.location.href);
       this.service.router.navigateByUrl('/login');
+    }
 
     this.service.Changed.subscribe((cmd: Command) => {
       if(cmd.type == this.service.command_types.Progress) {
