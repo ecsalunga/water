@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { NgxQRCodeModule } from '@techiediaries/ngx-qrcode';
+
 import { AngularFireModule } from '@angular/fire';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -54,6 +56,7 @@ import { DailyComponent } from './daily/daily.component';
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
+    NgxQRCodeModule,
     AngularFireModule.initializeApp(environment.firebase),
     AppRoutingModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),

@@ -82,8 +82,9 @@
             <input matInput placeholder="Remarks" [(ngModel)]="item.remarks" />
         </mat-form-field>
     </div>
-     <div>
+     <div *ngIf="clientPath != ''">
        <a [href]="clientPath">{{ clientPath }}</a>
+       <ngx-qrcode [elementType]="elementType" [errorCorrectionLevel]="correctionLevel" [value]="clientPath" cssClass="bshadow"></ngx-qrcode>
     </div>
 </div>
 

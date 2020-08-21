@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 import { WaterService } from '../water.service';
 import { clients } from '../models/clients';
 
@@ -8,6 +9,8 @@ import { clients } from '../models/clients';
   styleUrls: ['./clients.component.scss']
 })
 export class ClientsComponent implements OnInit {
+  elementType = NgxQrcodeElementTypes.URL;
+  correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
   display: string = 'list';
   displayedColumns: string[] = ['name', 'address', 'contact', 'key'];
   item: clients;
@@ -57,6 +60,7 @@ export class ClientsComponent implements OnInit {
   add() {
     this.display = 'form';
     this.item = new clients();
+    this.clientPath = "";
   }
 
   cancel() {
