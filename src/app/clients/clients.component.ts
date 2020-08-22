@@ -16,7 +16,6 @@ export class ClientsComponent implements OnInit {
   item: clients;
   items: Array<clients>;
   currentURL: string;
-  clientId: string;
   clientPath: string;
   
   constructor(private service: WaterService) { }
@@ -24,13 +23,8 @@ export class ClientsComponent implements OnInit {
   ngOnInit(): void {
     let path = window.location.href.split('clients');
     this.currentURL = path[0];
-    if(path.length > 1 && path[1].length > 0)
-      this.clientId = path[1].replace("/", "");
-    else {
-      this.service.ForAdminOnly();
-      this.display = 'list';
-    }
-
+    this.service.ForAdminOnly();
+    this.display = 'list';
     this.loadData();
   }
 
@@ -49,13 +43,6 @@ export class ClientsComponent implements OnInit {
         i.key = item.key;
         this.items.push(i);
       });
-
-      if(this.clientId != null) {
-        this.items.forEach(item => {
-          if(item.key == this.clientId)
-           this.promo(item);
-        });
-      }
     });
   }
 
@@ -72,13 +59,7 @@ export class ClientsComponent implements OnInit {
   edit(item: clients) {
     this.display = 'form';
     this.item = Object.assign({}, item);
-    this.clientPath = this.currentURL + "clients/" + item.key;
-  }
-
-  promo(item: clients) {
-    this.display = 'promo';
-    this.item = Object.assign({}, item);
-    this.clientPath = this.currentURL + "clients/" + item.key;
+    this.clientPath = this.currentURL + "billing/" + item.key;
   }
 
   toDate(action_date: number): Date {

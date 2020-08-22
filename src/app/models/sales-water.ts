@@ -1,5 +1,6 @@
 export class sales {
     key: string;
+    client_key: string;
     name: string;
     block: string;
     lot: string;
@@ -11,6 +12,7 @@ export class sales {
     amount: number;
     remarks: string;
     status: string;
+    promo: number;
     action_day: number;
     action_date: number;
 }

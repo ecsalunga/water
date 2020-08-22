@@ -23,7 +23,7 @@ export class SalesOthersComponent implements OnInit {
   display: string = 'list';
   displayedColumns: string[] = ['name', 'item', 'amount', 'key'];
   item: others;
-  itemClients: Array<clients>;
+  itemClients = new Array<clients>();
   items: Array<others>;
   matchItem: SalesOthersItem = new SalesOthersItem();
 
@@ -90,6 +90,7 @@ export class SalesOthersComponent implements OnInit {
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
+        this.mapClient(i);
         this.items.push(i);
       });
     });
@@ -109,6 +110,15 @@ export class SalesOthersComponent implements OnInit {
   dateSelected() {
     this.selected = this.service.getActionDay(this.selectedDate);
     this.loadData();
+  }
+
+  mapClient(item: others) {
+    this.itemClients.forEach(client => {
+      if (item.name.toLowerCase() == client.name.toLowerCase() && item.address.toLowerCase() == client.address.toLowerCase()) {
+        item.client_key = client.key;
+        this.service.db.object('sales/others/items/' + item.key).update(item);
+      }
+    });
   }
 
   add() {
@@ -154,6 +164,7 @@ export class SalesOthersComponent implements OnInit {
     item.quantity = this.item.quantity;
     item.amount = this.item.amount;
     item.remarks = this.item.remarks ?? "";
+    item.status = this.service.order_status.Preparing;
     item.action_date = this.service.actionDate();
     item.action_day = this.selected;
 

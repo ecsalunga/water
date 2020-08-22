@@ -12,6 +12,7 @@ import { UsersComponent } from './users/users.component';
 import { LoginComponent } from './login/login.component';
 import { ClientsComponent } from './clients/clients.component';
 import { DailyComponent } from './daily/daily.component';
+import { BillingComponent } from './billing/billing.component';
 
 
 const routes: Routes = [
@@ -25,7 +26,7 @@ const routes: Routes = [
   { path: 'users', component: UsersComponent },
   { path: 'login', component: LoginComponent },
   { path: 'clients', component: ClientsComponent },
-  { path: 'clients/:id', component: ClientsComponent },
+  { path: 'billing/:id', component: BillingComponent },
   { path: 'daily', component: DailyComponent },
   { path: '**', component: MenuComponent }
 ];

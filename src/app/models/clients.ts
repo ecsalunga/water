@@ -10,6 +10,7 @@ export class clients {
     price: number;
     last_order: number;
     remarks: string;
+    counter: number;
     action_day: number;
     action_date: number;
 }

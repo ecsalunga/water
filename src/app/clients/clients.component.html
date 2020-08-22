@@ -1,4 +1,4 @@
-<div class="header" *ngIf="display != 'promo'">Clients</div>
+<div class="header">Clients</div>
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <mat-table [dataSource]="items" class="mat-elevation-z8">
@@ -89,29 +89,8 @@
     </div>
 </div>
 
-<!-- Promo -->
-<div class="form" *ngIf="display=='promo'">
-    <mat-card>
-        <mat-card-header>
-            <mat-card-title>Promo page</mat-card-title>
-            <mat-card-subtitle>10 + 1 Promo page
-            </mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-            <div style="margin-left: 25px;">
-                <div>
-                    Name: {{ item.name }}
-                </div>
-                <div>
-                    Contact: {{ item.contact }}
-                </div>
-            </div>
-        </mat-card-content>
-    </mat-card>
-</div>
-
 <!-- Actions -->
-<div class="actions" *ngIf="display!='promo'">
+<div class="actions">
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>

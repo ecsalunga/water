@@ -22,9 +22,10 @@ export class SalesWaterComponent implements OnInit {
   display: string = 'list';
   displayedColumns: string[] = ['name', 'round', 'slim', 'key'];
   item: sales;
-  itemClients: Array<clients>;
+  itemClients = new Array<clients>();
   items: Array<sales>;
   filter: string = 'all';
+
   blockControl = new FormControl();
   blockFilteredOptions: Observable<string[]>;
   blockOptions: string[] = ['Block'];
@@ -84,6 +85,10 @@ export class SalesWaterComponent implements OnInit {
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
+
+        if(i.client_key == null)
+          this.mapClient(i)
+
         if (this.filter == 'all' || i.status == this.filter)
           this.items.push(i);
       });
@@ -124,6 +129,15 @@ export class SalesWaterComponent implements OnInit {
       icon = 'cancel';
 
     return icon;
+  }
+
+  mapClient(item: sales) {
+    this.itemClients.forEach(client => {
+      if (item.name.toLowerCase() == client.name.toLowerCase() && item.address.toLowerCase() == client.address.toLowerCase()) {
+        item.client_key = client.key;
+        this.service.db.object('sales/water/items/' + item.key).update(item);
+      }
+    });
   }
 
   setStatus(status: string, item: sales) {
