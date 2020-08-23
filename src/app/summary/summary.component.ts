@@ -92,7 +92,7 @@ export class SummaryComponent implements OnInit {
       
       records.forEach(item => {
         let i = item.payload.val();
-        if(i.status == this.service.order_status.Delivered)
+        if(i.status == this.service.order_status.Paid)
           this.summary.water += i.amount;
       });
 

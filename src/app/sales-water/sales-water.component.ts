@@ -14,6 +14,7 @@ import { map, startWith } from 'rxjs/operators';
 })
 export class SalesWaterComponent implements OnInit {
   IsAllowed: boolean = false;
+  IsLocked: boolean = false;
   CanSave: boolean = false;
   IsOpenDaysShowed: boolean = false;
   openDays: Array<number>;
@@ -77,6 +78,7 @@ export class SalesWaterComponent implements OnInit {
   }
 
   setLocked() {
+    this.IsLocked = this.service.IsLocked(this.selected);
     this.IsAllowed = this.service.IsAllowed(this.selected);
   }
 
@@ -169,6 +171,19 @@ export class SalesWaterComponent implements OnInit {
     if (this.service.current_user.role == this.service.user_roles.Admin)
       return true;
     else if (this.IsAllowed
+      && item.status != this.service.order_status.Delivered
+      && item.status != this.service.order_status.Paid
+      && item.status != this.service.order_status.Cancelled)
+      return true;
+
+    return false;
+  }
+
+  canSetToDelivered(item: sales): boolean {
+    if (this.service.current_user.role != this.service.user_roles.Delivery)
+      return false;
+
+    else if (!this.IsLocked
       && item.status != this.service.order_status.Delivered
       && item.status != this.service.order_status.Paid
       && item.status != this.service.order_status.Cancelled)

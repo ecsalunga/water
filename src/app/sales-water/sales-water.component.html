@@ -101,6 +101,11 @@
                                 <span>Cancelled</span>
                             </button>
                         </ng-container>
+                        <button mat-menu-item *ngIf="canSetToDelivered(element)" (click)="setStatus('delivered', element)">
+                            <mat-icon class="status-delivered">house</mat-icon>
+                            <span>Delivered</span>
+                        </button>
+                        
                     </ng-template>
                 </mat-menu>
 
