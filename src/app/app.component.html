@@ -1,5 +1,5 @@
 <div class="toolbar" role="banner">
-  <a *ngIf="showLogout()" style="margin-left: 10px;" [routerLink]="['/menu']">Menu</a>
+  <a *ngIf="showLogout()" class="brand" [routerLink]="['/menu']">Acqua Perfetta</a>
   <div class="spacer"></div>
   <button mat-raised-button *ngIf="showLogout()" style="margin-right: 5px;" (click)="logout()">Logout</button>
 </div>

@@ -75,37 +75,30 @@
                             <mat-icon class="status-all">edit</mat-icon>
                             <span>Edit</span>
                         </button>
-                        <ng-container *ngIf="CanEdit(element)">
-                            <button mat-menu-item (click)="setStatus('pickup', element)">
-                                <mat-icon class="status-pickup">connect_without_contact</mat-icon>
-                                <span>Pickup</span>
-                            </button>
-                            <button mat-menu-item (click)="setStatus('preparing', element)">
-                                <mat-icon class="status-preparing">wash</mat-icon>
-                                <span>Preparing</span>
-                            </button>
-                            <button mat-menu-item (click)="setStatus('delivery', element)">
-                                <mat-icon class="status-delivery">two_wheeler</mat-icon>
-                                <span>Delivery</span>
-                            </button>
-                            <button mat-menu-item (click)="setStatus('delivered', element)">
-                                <mat-icon class="status-delivered">house</mat-icon>
-                                <span>Delivered</span>
-                            </button>
-                            <button mat-menu-item (click)="setStatus('paid', element)">
-                                <mat-icon class="status-paid">check</mat-icon>
-                                <span>Paid</span>
-                            </button>
-                            <button mat-menu-item (click)="setStatus('cancelled', element)">
-                                <mat-icon class="status-cancelled">cancel</mat-icon>
-                                <span>Cancelled</span>
-                            </button>
-                        </ng-container>
-                        <button mat-menu-item *ngIf="canSetToDelivered(element)" (click)="setStatus('delivered', element)">
+                        <button mat-menu-item *ngIf="canExecute('pickup', element)" (click)="setStatus('pickup', element)">
+                            <mat-icon class="status-pickup">connect_without_contact</mat-icon>
+                            <span>Pickup</span>
+                        </button>
+                        <button mat-menu-item *ngIf="canExecute('preparing', element)" (click)="setStatus('preparing', element)">
+                            <mat-icon class="status-preparing">wash</mat-icon>
+                            <span>Preparing</span>
+                        </button>
+                        <button mat-menu-item *ngIf="canExecute('delivery', element)" (click)="setStatus('delivery', element)">
+                            <mat-icon class="status-delivery">two_wheeler</mat-icon>
+                            <span>Delivery</span>
+                        </button>
+                        <button mat-menu-item *ngIf="canExecute('delivered', element)" (click)="setStatus('delivered', element)">
                             <mat-icon class="status-delivered">house</mat-icon>
                             <span>Delivered</span>
                         </button>
-                        
+                        <button mat-menu-item *ngIf="canExecute('paid', element)" (click)="setStatus('paid', element)">
+                            <mat-icon class="status-paid">check</mat-icon>
+                            <span>Paid</span>
+                        </button>
+                        <button mat-menu-item *ngIf="canExecute('cancelled', element)" (click)="setStatus('cancelled', element)">
+                            <mat-icon class="status-cancelled">cancel</mat-icon>
+                            <span>Cancelled</span>
+                        </button>
                     </ng-template>
                 </mat-menu>
 
@@ -210,5 +203,5 @@
 <div class="actions">
     <button mat-raised-button *ngIf="display=='list'" (click)="add()" [disabled]="!IsAllowed">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
-    <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!CanSave">Save</button>
+    <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!canSave()">Save</button>
 </div>

@@ -8,6 +8,7 @@ import { ExpensesItem } from './models/expenses-item';
 import { users } from './models/users';
 import { Access } from './models/access';
 import { Command } from './models/command';
+import { sales } from './models/sales-water';
 import { SettingsCommon } from './models/settings-common';
 import { SalesOthersItem } from './models/sales-others-item';
 
@@ -296,6 +297,37 @@ export class WaterService {
       isLocked = false;
 
     return isLocked;
+  }
+
+  public CanExecute(status: string, item: sales): boolean {
+    if(this.current_user.role == this.user_roles.Monitor)
+    {
+      if(item.status == this.order_status.Pickup &&
+        (status == this.order_status.Preparing
+          || status == this.order_status.Paid
+          || status == this.order_status.Cancelled))
+        return true;
+
+      if(item.status == this.order_status.Preparing &&
+        (status == this.order_status.Pickup
+          || status == this.order_status.Delivery
+          || status == this.order_status.Paid
+          || status == this.order_status.Cancelled))
+        return true;
+        
+      if(item.status == this.order_status.Delivery && status == this.order_status.Preparing)
+        return true;
+
+      if(item.status == this.order_status.Delivered && status == this.order_status.Paid)
+        return true;
+    } 
+
+    if(this.current_user.role == this.user_roles.Delivery 
+      && item.status == this.order_status.Delivery
+      && status == this.order_status.Delivered)
+      return true;
+
+    return false;
   }
 
   public ToggleLock(actionDay: number): boolean {

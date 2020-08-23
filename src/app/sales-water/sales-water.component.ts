@@ -15,7 +15,6 @@ import { map, startWith } from 'rxjs/operators';
 export class SalesWaterComponent implements OnInit {
   IsAllowed: boolean = false;
   IsLocked: boolean = false;
-  CanSave: boolean = false;
   IsOpenDaysShowed: boolean = false;
   openDays: Array<number>;
   role: string = "";
@@ -23,6 +22,7 @@ export class SalesWaterComponent implements OnInit {
   selectedDate = new Date();
   display: string = 'list';
   displayedColumns: string[] = ['name', 'round', 'slim', 'key'];
+  itemOrig: sales;
   item: sales;
   itemClients = new Array<clients>();
   items: Array<sales>;
@@ -179,31 +179,43 @@ export class SalesWaterComponent implements OnInit {
     return false;
   }
 
-  canSetToDelivered(item: sales): boolean {
-    if (this.service.current_user.role != this.service.user_roles.Delivery)
+  canSave(): boolean {
+    if (this.service.current_user.role == this.service.user_roles.Admin)
+      return true;
+  
+    if(this.IsLocked)
       return false;
 
-    else if (!this.IsLocked
-      && item.status != this.service.order_status.Delivered
-      && item.status != this.service.order_status.Paid
-      && item.status != this.service.order_status.Cancelled)
+    if (this.service.current_user.role == this.service.user_roles.Monitor
+      && (this.itemOrig == null 
+        || this.item.status == this.itemOrig.status))
       return true;
+    
+    return this.canExecute(this.item.status, this.itemOrig);
+  }
 
-    return false;
+  canExecute(status: string, item: sales): boolean {
+    if (this.service.current_user.role == this.service.user_roles.Admin)
+      return true;
+  
+    if(this.IsLocked)
+      return false;
+
+    return this.service.CanExecute(status, item);
   }
 
   add() {
     this.display = 'form';
+    this.itemOrig = null;
     this.item = new sales();
     this.item.status = this.service.order_status.Pickup;
     this.item.counted = false;
-    this.CanSave = this.CanEdit(this.item);
   }
 
   edit(item: sales) {
     this.display = 'form';
+    this.itemOrig = item;
     this.item = Object.assign({}, item);
-    this.CanSave = this.CanEdit(this.item);
   }
 
   cancel() {
