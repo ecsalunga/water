@@ -13,6 +13,7 @@ export class sales {
     remarks: string;
     status: string;
     promo: number;
+    counted: boolean;
     action_day: number;
     action_date: number;
 }

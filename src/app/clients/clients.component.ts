@@ -23,7 +23,7 @@ export class ClientsComponent implements OnInit {
   ngOnInit(): void {
     let path = window.location.href.split('clients');
     this.currentURL = path[0];
-    this.service.ForAdminOnly();
+    this.service.NotForDelivery();
     this.display = 'list';
     this.loadData();
   }
@@ -78,6 +78,7 @@ export class ClientsComponent implements OnInit {
     item.slim = this.item.slim ?? 0;
     item.round = this.item.round ?? 0;
     item.price = this.item.price ?? 0;
+    item.counter = this.item.counter ?? 0;
     item.action_date = this.service.actionDate();
     item.action_day = this.service.action_day;
 

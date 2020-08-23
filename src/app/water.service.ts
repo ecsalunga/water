@@ -28,7 +28,7 @@ export class WaterService {
 
   app_users: Array<users>;
   action_day: number;
-  order_status = { Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Cancelled: "cancelled" };
+  order_status = { Pickup: "pickup", Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Paid: "paid", Cancelled: "cancelled" };
   user_roles = { Admin: 'Admin', Monitor: 'Monitor', Delivery: "Delivery" };
   user_access: Access;
   current_user = { name: '', username: '', role: '', isLogin: false };
@@ -218,6 +218,11 @@ export class WaterService {
 
   ForAdminOnly() {
     if(this.current_user.role != this.user_roles.Admin)
+      this.router.navigateByUrl('/menu');
+  }
+
+  NotForDelivery() {
+    if(this.current_user.role == this.user_roles.Delivery)
       this.router.navigateByUrl('/menu');
   }
 

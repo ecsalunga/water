@@ -14,6 +14,7 @@ import { map, startWith } from 'rxjs/operators';
 })
 export class SalesWaterComponent implements OnInit {
   IsAllowed: boolean = false;
+  CanSave: boolean = false;
   IsOpenDaysShowed: boolean = false;
   openDays: Array<number>;
   role: string = "";
@@ -51,8 +52,8 @@ export class SalesWaterComponent implements OnInit {
     this.loadClientData();
     this.loadCommonSettingsData();
     this.service.Changed.subscribe((cmd: Command) => {
-      if(cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
-      this.loadCommonSettingsData();
+      if (cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
+        this.loadCommonSettingsData();
     });
   }
 
@@ -86,7 +87,7 @@ export class SalesWaterComponent implements OnInit {
         let i = item.payload.val();
         i.key = item.key;
 
-        if(i.client_key == null)
+        if (i.client_key == null)
           this.mapClient(i)
 
         if (this.filter == 'all' || i.status == this.filter)
@@ -119,11 +120,15 @@ export class SalesWaterComponent implements OnInit {
   getIcon(status: string): string {
     let icon = '';
 
-    if (status == this.service.order_status.Preparing)
+    if (status == this.service.order_status.Pickup)
+      icon = 'connect_without_contact';
+    else  if (status == this.service.order_status.Preparing)
       icon = 'wash';
     else if (status == this.service.order_status.Delivery)
       icon = 'two_wheeler';
     else if (status == this.service.order_status.Delivered)
+      icon = 'house';
+    else if (status == this.service.order_status.Paid)
       icon = 'check';
     else if (status == this.service.order_status.Cancelled)
       icon = 'cancel';
@@ -142,18 +147,48 @@ export class SalesWaterComponent implements OnInit {
 
   setStatus(status: string, item: sales) {
     item.status = status;
+    if (!item.counted && (item.status == this.service.order_status.Delivered || item.status == this.service.order_status.Paid))
+      this.countOrder(item);
+
     this.service.db.object('sales/water/items/' + item.key).update(item);
+  }
+
+  countOrder(item: sales) {
+    this.itemClients.forEach(client => {
+      if (client.key == item.client_key) {
+        client.slim = item.slim ?? 0;
+        client.round = item.round ?? 0;
+        client.counter += client.slim + client.round;
+        this.service.db.object('clients/items/' + client.key).update(client);
+        item.counted = true;
+      }
+    });
+  }
+
+  CanEdit(item: sales): boolean {
+    if (this.service.current_user.role == this.service.user_roles.Admin)
+      return true;
+    else if (this.IsAllowed
+      && item.status != this.service.order_status.Delivered
+      && item.status != this.service.order_status.Paid
+      && item.status != this.service.order_status.Cancelled)
+      return true;
+
+    return false;
   }
 
   add() {
     this.display = 'form';
     this.item = new sales();
-    this.item.status = this.service.order_status.Preparing;
+    this.item.status = this.service.order_status.Pickup;
+    this.item.counted = false;
+    this.CanSave = this.CanEdit(this.item);
   }
 
   edit(item: sales) {
     this.display = 'form';
     this.item = Object.assign({}, item);
+    this.CanSave = this.CanEdit(this.item);
   }
 
   cancel() {
@@ -186,12 +221,14 @@ export class SalesWaterComponent implements OnInit {
     item.action_date = this.service.actionDate();
     item.action_day = this.selected;
 
+    this.saveClient();
+    item.counted = this.item.counted ?? false;
+
     if (item.key == null || item.key == "")
       this.service.db.list('sales/water/items').push(item);
     else
       this.service.db.object('sales/water/items/' + item.key).update(item);
 
-    this.saveClient();
     this.display = 'list';
   }
 
@@ -199,15 +236,20 @@ export class SalesWaterComponent implements OnInit {
     let isExists = false;
     this.itemClients.forEach(item => {
       if (item.name.toLowerCase() == this.item.name.toLowerCase() && item.address.toLowerCase() == this.item.address.toLowerCase()) {
-        item.slim = this.item.slim ?? 0;
-        item.round = this.item.round ?? 0;
-        item.last_order = item.action_date = item.action_date;
-        this.service.db.object('clients/items/' + item.key).update(item);
+        if (!this.item.counted && (this.item.status == this.service.order_status.Delivered || this.item.status == this.service.order_status.Paid)) {
+          item.slim = this.item.slim ?? 0;
+          item.round = this.item.round ?? 0;
+          item.counter += item.slim + item.round;
+          item.last_order = item.action_date = item.action_date;
+          this.service.db.object('clients/items/' + item.key).update(item);
+          this.item.counted = true;
+        }
+
         isExists = true;
       }
     });
 
-    if(!isExists) {
+    if (!isExists) {
       let item = new clients();
       item.key = "";
       item.name = this.item.name;
@@ -217,6 +259,14 @@ export class SalesWaterComponent implements OnInit {
       item.contact = this.item.contact ?? "";
       item.slim = this.item.slim ?? 0;
       item.round = this.item.round ?? 0;
+
+      if (!this.item.counted && this.item.status == this.service.order_status.Paid) {
+        item.counter = item.slim + item.round;
+        this.item.counted = true;
+      }
+      else
+        item.counter = 0;
+
       item.price = (this.item.amount / (item.slim + item.round));
       item.remarks = this.item.remarks ?? "";
       item.action_date = this.service.actionDate();
@@ -252,8 +302,7 @@ export class SalesWaterComponent implements OnInit {
 
   blockLotUpdate() {
     this.itemClients.forEach(item => {
-      if (item.block == this.item.block && item.lot == this.item.lot)
-      {
+      if (item.block == this.item.block && item.lot == this.item.lot) {
         this.item.name = item.name;
         this.item.address = item.address;
         this.updateCommon(item);
@@ -262,14 +311,13 @@ export class SalesWaterComponent implements OnInit {
   }
 
   priceUpdate() {
-    if(this.item.price != null && this.item.price > 0)
+    if (this.item.price != null && this.item.price > 0)
       this.item.amount = (((this.item.slim ?? 0) * this.item.price) + ((this.item.round ?? 0) * this.item.price));
   }
 
   updateName() {
     this.itemClients.forEach(item => {
-      if (item.name.toLowerCase() == this.item.name.toLowerCase())
-      {
+      if (item.name.toLowerCase() == this.item.name.toLowerCase()) {
         this.item.block = item.block;
         this.item.lot = item.lot;
         this.item.address = item.address;
@@ -280,8 +328,7 @@ export class SalesWaterComponent implements OnInit {
 
   updateAddress() {
     this.itemClients.forEach(item => {
-      if (item.address.toLowerCase() == this.item.address.toLowerCase())
-      {
+      if (item.address.toLowerCase() == this.item.address.toLowerCase()) {
         this.item.name = item.name;
         this.item.block = item.block;
         this.item.lot = item.lot;

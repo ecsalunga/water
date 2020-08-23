@@ -4,7 +4,7 @@
     </mat-card-header>
     <mat-card-content>
         <div style="margin-left: 25px; margin-top: 25px;">
-            <div *ngIf="total > 0">
+            <div style="margin-bottom: 20px;">
                 <table>
                     <tr>
                         <td style="width: 100px;">Name</td>
@@ -16,11 +16,10 @@
                         <td>{{ item.contact }}</td>
                         <td></td>
                     </tr>
-                    <tr style="height: 20px;">
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                </table>
+            </div>
+            <div *ngIf="itemSales.length > 0">
+                <table>
                     <tr *ngIf="slim > 0">
                         <td>Slim</td>
                         <td>{{ slim }}</td>

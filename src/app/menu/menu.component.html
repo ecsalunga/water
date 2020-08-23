@@ -14,10 +14,12 @@
 <div>
     <a [routerLink]="['/summary']">Summary</a>
 </div>
-<ng-container *ngIf="role == 'Admin'">
+<ng-container *ngIf="role == 'Admin' || role == 'Monitor'">
     <div>
         <a [routerLink]="['/clients']">Clients</a>
     </div>
+</ng-container>
+<ng-container *ngIf="role == 'Admin'">
     <div>
         <a [routerLink]="['/users']">Users</a>
     </div>

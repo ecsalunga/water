@@ -57,10 +57,11 @@ export class BillingComponent implements OnInit {
           i.promo = 0;
           for(let x = 0; x < i.slim + i.round; x++) {
             this.counter++;
-            if(this.counter == 11) {
-              this.counter = 0;
+
+            while(this.counter > 10) {
+              this.counter = this.counter - 11;
               this.promo += 1;
-              i.promo =+ 1;
+              i.promo += 1;
             }
           }
 
@@ -107,6 +108,7 @@ export class BillingComponent implements OnInit {
 
     this.itemSales.forEach(item => {
       item.status = this.service.order_status.Delivered;
+      item.counted = true;
       this.service.db.object('sales/water/items/' + item.key).update(item);
     });
 

@@ -22,6 +22,9 @@
             <mat-button-toggle value="all" (click)="show('all')">
                 <mat-icon class="status-all">check_box</mat-icon>
             </mat-button-toggle>
+            <mat-button-toggle (click)="show('pickup')">
+                <mat-icon class="status-pickup">connect_without_contact</mat-icon>
+            </mat-button-toggle>
             <mat-button-toggle (click)="show('preparing')">
                 <mat-icon class="status-preparing">wash</mat-icon>
             </mat-button-toggle>
@@ -29,7 +32,10 @@
                 <mat-icon class="status-delivery">two_wheeler</mat-icon>
             </mat-button-toggle>
             <mat-button-toggle (click)="show('delivered')">
-                <mat-icon class="status-delivered">check</mat-icon>
+                <mat-icon class="status-delivered">house</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle (click)="show('paid')">
+                <mat-icon class="status-paid">check</mat-icon>
             </mat-button-toggle>
             <mat-button-toggle (click)="show('cancelled')">
                 <mat-icon class="status-cancelled">cancel</mat-icon>
@@ -69,18 +75,26 @@
                             <mat-icon class="status-all">edit</mat-icon>
                             <span>Edit</span>
                         </button>
-                        <ng-container *ngIf="IsAllowed">
+                        <ng-container *ngIf="CanEdit(element)">
+                            <button mat-menu-item (click)="setStatus('pickup', element)">
+                                <mat-icon class="status-pickup">connect_without_contact</mat-icon>
+                                <span>Pickup</span>
+                            </button>
                             <button mat-menu-item (click)="setStatus('preparing', element)">
                                 <mat-icon class="status-preparing">wash</mat-icon>
                                 <span>Preparing</span>
                             </button>
                             <button mat-menu-item (click)="setStatus('delivery', element)">
                                 <mat-icon class="status-delivery">two_wheeler</mat-icon>
-                                <span>For Delivery</span>
+                                <span>Delivery</span>
                             </button>
                             <button mat-menu-item (click)="setStatus('delivered', element)">
-                                <mat-icon class="status-delivered">check</mat-icon>
-                                <span>Deliverd</span>
+                                <mat-icon class="status-delivered">house</mat-icon>
+                                <span>Delivered</span>
+                            </button>
+                            <button mat-menu-item (click)="setStatus('paid', element)">
+                                <mat-icon class="status-paid">check</mat-icon>
+                                <span>Paid</span>
                             </button>
                             <button mat-menu-item (click)="setStatus('cancelled', element)">
                                 <mat-icon class="status-cancelled">cancel</mat-icon>
@@ -171,10 +185,12 @@
         <mat-form-field>
             <mat-label>Select Status</mat-label>
             <mat-select [(value)]="item.status" required>
-                <mat-option value="preparing">Preparing</mat-option>
-                <mat-option value="delivery">For Delivery</mat-option>
-                <mat-option value="delivered">Delivered</mat-option>
-                <mat-option value="cancelled">Cancelled</mat-option>
+                <mat-option value="pickup">Pickup</mat-option>
+                <mat-option *ngIf="item.key != null" value="preparing">Preparing</mat-option>
+                <mat-option *ngIf="item.key != null" value="delivery">Delivery</mat-option>
+                <mat-option *ngIf="item.key != null" value="delivered">Delivered</mat-option>
+                <mat-option value="paid">Paid</mat-option>
+                <mat-option *ngIf="item.key != null" value="cancelled">Cancelled</mat-option>
             </mat-select>
         </mat-form-field>
     </div>
@@ -189,5 +205,5 @@
 <div class="actions">
     <button mat-raised-button *ngIf="display=='list'" (click)="add()" [disabled]="!IsAllowed">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
-    <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!IsAllowed">Save</button>
+    <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!CanSave">Save</button>
 </div>
