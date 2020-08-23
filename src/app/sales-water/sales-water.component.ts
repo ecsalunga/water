@@ -214,7 +214,6 @@ export class SalesWaterComponent implements OnInit {
       item.block = this.item.block ?? "";
       item.lot = this.item.lot ?? "";
       item.address = this.item.address;
-      item.name = this.item.address ?? "";
       item.contact = this.item.contact ?? "";
       item.slim = this.item.slim ?? 0;
       item.round = this.item.round ?? 0;
