@@ -37,6 +37,7 @@ import { UsersComponent } from './users/users.component';
 import { ClientsComponent } from './clients/clients.component';
 import { DailyComponent } from './daily/daily.component';
 import { BillingComponent } from './billing/billing.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { BillingComponent } from './billing/billing.component';
     UsersComponent,
     ClientsComponent,
     DailyComponent,
-    BillingComponent
+    BillingComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,

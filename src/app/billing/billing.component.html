@@ -1,6 +1,6 @@
 <mat-card>
     <mat-card-header>
-        <mat-card-title>Billing page</mat-card-title>
+        <mat-card-title>Billing</mat-card-title>
     </mat-card-header>
     <mat-card-content>
         <div style="margin-left: 25px; margin-top: 25px;">
@@ -19,6 +19,7 @@
                 </table>
             </div>
             <div *ngIf="itemSales.length > 0">
+                <hr />
                 <table>
                     <tr *ngIf="slim > 0">
                         <td>Slim</td>
@@ -58,6 +59,37 @@
             <div *ngIf="total < 1" class="message">
                 {{ message }}
             </div>
+        </div>
+    </mat-card-content>
+</mat-card>
+<mat-card style="margin-top: 20px;" *ngIf="itemPrevious.length > 0">
+    <mat-card-header>
+        <mat-card-title>Order History</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <table>
+                <tr class="table-header">
+                    <td style="width: 110px;">Date</td>
+                    <td>Slim</td>
+                    <td>Round</td>
+                    <td>Total</td>
+                </tr>
+                <tr style="height: 20px;">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr *ngFor="let item of itemPrevious" [class.promo]="item.promo > 0">
+                    <td>{{ GetDate(item.action_day) | date }}</td>
+                    <td>{{ item.slim }}</td>
+                    <td>{{ item.round }}</td>
+                    <td>{{ item.amount | number:'1.2-2' }} <span *ngIf="item.promo > 0">*</span></td>
+                </tr>
+            </table>
+
+            <div class="promo" style="font-style: italic; margin-top: 25px; font-size: smaller;">* 10 + 1</div>
         </div>
     </mat-card-content>
 </mat-card>

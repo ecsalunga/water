@@ -32,7 +32,7 @@ export class WaterService {
   order_status = { Pickup: "pickup", Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Paid: "paid", Cancelled: "cancelled" };
   user_roles = { Admin: 'Admin', Monitor: 'Monitor', Delivery: "Delivery" };
   user_access: Access;
-  current_user = { name: '', username: '', role: '', isLogin: false };
+  current_user = { key: '', name: '', username: '', role: '', isLogin: false };
   setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item' };
   command_types = { ImageUploaded: 'image-uploaded', Progress: 'progress', Loader: 'loader' };
   
@@ -169,6 +169,7 @@ export class WaterService {
   }
 
   public saveLogin() {
+    localStorage.setItem('key', this.current_user.key);
     localStorage.setItem('name', this.current_user.name);
     localStorage.setItem('username', this.current_user.username);
     localStorage.setItem('role', this.current_user.role);
@@ -192,11 +193,13 @@ export class WaterService {
   }
 
   public getLogin() {
+    let key = localStorage.getItem('key');
     let name = localStorage.getItem('name');
     let username = localStorage.getItem('username');
     let role = localStorage.getItem('role');
 
     if(username != null && username != '') {
+      this.current_user.key = key;
       this.current_user.name = name;
       this.current_user.username = username;
       this.current_user.role = role;
@@ -206,10 +209,11 @@ export class WaterService {
   }
 
   public logOut() {
+    localStorage.setItem('key', '');
     localStorage.setItem('name', '');
     localStorage.setItem('username', '');
     localStorage.setItem('role', '');
-    this.current_user = { name: '', username: '', role: '', isLogin: false };
+    this.current_user = { key: '', name: '', username: '', role: '', isLogin: false };
     this.router.navigateByUrl('/login');
   }
 
@@ -364,7 +368,7 @@ export class WaterService {
 
   public Message(message: string) {
     this.snackBar.open(message, "Done", {
-      duration: 2000,
+      duration: 3000,
     });
   }
 }

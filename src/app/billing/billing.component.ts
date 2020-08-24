@@ -12,7 +12,8 @@ import { BillItem } from '../models/bill-item';
 })
 export class BillingComponent implements OnInit {
   item: clients = new clients();
-  itemSales: Array<sales>
+  itemSales: Array<sales>;
+  itemPrevious: Array<sales>
   itemOthers: Array<others>;
   billItems = Array<BillItem>();
   clientId: string;
@@ -46,11 +47,12 @@ export class BillingComponent implements OnInit {
       this.round = 0;
       this.promo = 0;
       this.itemSales = new Array<sales>();
+      this.itemPrevious = new Array<sales>();
 
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
-        if(i.status == this.service.order_status.Delivery) {
+        if(i.status == this.service.order_status.Delivery && !i.counted) {
           this.slim += i.slim;
           this.round += i.round;
 
@@ -70,7 +72,13 @@ export class BillingComponent implements OnInit {
             
           this.itemSales.push(i);
         }
+        else if(i.counted)
+          this.itemPrevious.push(i);
       });
+
+      this.itemPrevious = this.itemPrevious.sort((a, b) => a.action_date > b.action_date ? -1 : 1);
+      if(this.itemPrevious.length > 10)
+        this.itemPrevious = this.itemPrevious.slice(0, 10);
 
       this.compute();
     });
@@ -96,6 +104,10 @@ export class BillingComponent implements OnInit {
 
       this.compute();
     });
+  }
+
+  GetDate(action_day: number): Date {
+    return this.service.actionDayToDate(action_day);
   }
 
   compute() {

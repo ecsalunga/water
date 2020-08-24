@@ -1,4 +1,10 @@
 <div class="header">Clients</div>
+
+<!-- Actions -->
+<div class="actions" style="margin-bottom: 15px;">
+    <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
+</div>
+
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <mat-table [dataSource]="items" class="mat-elevation-z8">

@@ -13,7 +13,7 @@ import { LoginComponent } from './login/login.component';
 import { ClientsComponent } from './clients/clients.component';
 import { DailyComponent } from './daily/daily.component';
 import { BillingComponent } from './billing/billing.component';
-
+import { ProfileComponent } from './profile/profile.component'
 
 const routes: Routes = [
   { path: 'menu', component: MenuComponent },
@@ -24,6 +24,7 @@ const routes: Routes = [
   { path: 'summary', component: SummaryComponent },
   { path: 'settings', component: SettingsComponent },
   { path: 'users', component: UsersComponent },
+  { path: 'profile', component: ProfileComponent },
   { path: 'login', component: LoginComponent },
   { path: 'clients', component: ClientsComponent },
   { path: 'billing/:id', component: BillingComponent },

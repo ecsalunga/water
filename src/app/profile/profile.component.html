@@ -1,0 +1,23 @@
+<div class="header">User Profile</div>
+<mat-card style="margin-top: 20px;">
+    <mat-card-content>
+        <div>
+            <mat-form-field>
+                <input matInput type="password" required placeholder="Current Password" [(ngModel)]="passwordCurrent" />
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field>
+                <input matInput type="password" required placeholder="New Password" [(ngModel)]="passwordNew" />
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field>
+                <input matInput type="password" required placeholder="Confirm Password" [(ngModel)]="passwordConfirm" />
+            </mat-form-field>
+        </div>
+    </mat-card-content>
+    <mat-card-actions style="text-align: right;">
+        <button mat-raised-button (click)="update()">Update</button>
+    </mat-card-actions>
+</mat-card>

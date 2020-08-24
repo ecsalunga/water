@@ -10,6 +10,7 @@ import { Command } from './models/command';
 export class AppComponent implements OnInit {
   @ViewChild('imageSelector', {static: false}) imageSelector: ElementRef;
 
+  loginAs = "";
   progress: number = 0;
   showProgress: boolean = false;
   constructor(private service: WaterService, private renderer: Renderer2) {}
@@ -47,6 +48,11 @@ export class AppComponent implements OnInit {
   }
 
   showLogout() {
+    if(this.service.current_user.isLogin)
+      this.loginAs = "logged: " + this.service.current_user.name;
+    else
+      this.loginAs = "";
+
     return this.service.current_user.isLogin;
   }
 }
