@@ -180,7 +180,9 @@ export class WaterService {
   }
 
   public getRequestPath() {
-    return localStorage.getItem('requestPath');
+    let requestPath = localStorage.getItem('requestPath');
+    localStorage.setItem('requestPath', '');
+    return requestPath;
   }
 
   public loadAccess() {

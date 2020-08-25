@@ -2,19 +2,20 @@
 <div>
     <a [routerLink]="['/sales']">Water Sales</a>
 </div>
-<div>
-    <a [routerLink]="['/others']">Others Sales</a>
-</div>
-<div>
-    <a [routerLink]="['/expenses']">Expenses</a>
-</div>
-<div>
-    <a [routerLink]="['/daily']">Daily</a>
-</div>
-<div>
-    <a [routerLink]="['/summary']">Summary</a>
-</div>
 <ng-container *ngIf="role == 'Admin' || role == 'Monitor'">
+    <div>
+        <a [routerLink]="['/others']">Others Sales</a>
+    </div>
+    <div>
+        <a [routerLink]="['/expenses']">Expenses</a>
+    </div>
+    <div>
+        <a [routerLink]="['/daily']">Daily</a>
+    </div>
+    <div>
+        <a [routerLink]="['/summary']">Summary</a>
+    </div>
+
     <div>
         <a [routerLink]="['/clients']">Clients</a>
     </div>

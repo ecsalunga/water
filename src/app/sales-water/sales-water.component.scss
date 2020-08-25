@@ -43,6 +43,23 @@
     color: rgb(255, 0, 170);
 }
 
+.selected {
+    background-color: rgb(243, 243, 116);
+}
+
+.add {
+    color: rgb(91, 175, 13);
+}
+
 .promo {
     color: rgb(18, 131, 18);
+}
+
+table {
+    width: 90%;
+}
+
+.total td {
+    font-size: 18px;
+    font-weight: bold;
 }

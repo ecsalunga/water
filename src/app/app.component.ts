@@ -23,12 +23,16 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(!this.service.current_user.isLogin)
-      this.service.getLogin();
+    let url = window.location.href;
 
-    if(!this.service.current_user.isLogin) {
-      this.service.saveRequestPath(window.location.href);
-      this.service.router.navigateByUrl('/login');
+    if(url.indexOf('billing') == -1) {
+      if(!this.service.current_user.isLogin)
+        this.service.getLogin();
+
+      if(!this.service.current_user.isLogin) {
+        this.service.saveRequestPath(url);
+        this.service.router.navigateByUrl('/login');
+      }
     }
 
     this.service.Changed.subscribe((cmd: Command) => {
@@ -49,7 +53,7 @@ export class AppComponent implements OnInit {
 
   showLogout() {
     if(this.service.current_user.isLogin)
-      this.loginAs = "logged: " + this.service.current_user.name;
+      this.loginAs = "Hello, " + this.service.current_user.name;
     else
       this.loginAs = "";
 

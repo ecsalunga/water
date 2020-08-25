@@ -23,7 +23,7 @@ export class BillingComponent implements OnInit {
   round = 0;
   othersTotal = 0;
   total = 0;
-  message = "No open billing";
+  message = "";
 
   constructor(private service: WaterService) { }
 

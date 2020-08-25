@@ -19,6 +19,9 @@
     </div>
     <div [hidden]="display=='form'" class="right">
         <mat-button-toggle-group value='all'>
+            <mat-button-toggle (click)="add()" *ngIf="IsAllowed">
+                <mat-icon class="add">add_box</mat-icon>
+            </mat-button-toggle>
             <mat-button-toggle value="all" (click)="show('all')">
                 <mat-icon class="status-all">check_box</mat-icon>
             </mat-button-toggle>
@@ -50,25 +53,25 @@
         <!-- address column -->
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-            <mat-cell *matCellDef="let element"><span [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
+            <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)"><span [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
         </ng-container>
 
         <!-- round column -->
         <ng-container matColumnDef="round">
             <mat-header-cell *matHeaderCellDef> Round </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.round}} </mat-cell>
+            <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)"> {{element.round}} </mat-cell>
         </ng-container>
 
         <!-- slim column -->
         <ng-container matColumnDef="slim">
             <mat-header-cell *matHeaderCellDef> Slim </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.slim}} </mat-cell>
+            <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)"> {{element.slim}} </mat-cell>
         </ng-container>
 
         <!-- status column -->
         <ng-container matColumnDef="key">
             <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
-            <mat-cell *matCellDef="let element">
+            <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)">
                 <mat-menu #appMenu="matMenu">
                     <ng-template matMenuContent>
                         <button mat-menu-item (click)="edit(element)">
@@ -199,9 +202,26 @@
     </div>
 </div>
 
+<mat-card style="margin-top: 20px;" *ngIf="itemSelected.length > 0 && display == 'list'">
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <div>
+                <table>
+                    <tr class="total">
+                        <td>Total</td>
+                        <td>{{ total | number:'1.2-2' }}</td>
+                    </tr>
+                </table>
+                <div class="actions">
+                    <button mat-raised-button (click)="setToPaid()">Paid</button>
+                </div>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>
+
 <!-- Actions -->
 <div class="actions">
-    <button mat-raised-button *ngIf="display=='list'" (click)="add()" [disabled]="!IsAllowed">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!canSave()">Save</button>
 </div>

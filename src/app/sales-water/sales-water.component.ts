@@ -26,6 +26,7 @@ export class SalesWaterComponent implements OnInit {
   item: sales;
   itemClients = new Array<clients>();
   items: Array<sales>;
+  itemSelected = new Array<sales>();
   filter: string = 'all';
 
   blockControl = new FormControl();
@@ -43,6 +44,8 @@ export class SalesWaterComponent implements OnInit {
   addressControl = new FormControl();
   addressFilteredOptions: Observable<string[]>;
   addressOptions: string[] = [];
+
+  total = 0;
 
   constructor(private service: WaterService) { }
 
@@ -80,6 +83,59 @@ export class SalesWaterComponent implements OnInit {
   setLocked() {
     this.IsLocked = this.service.IsLocked(this.selected);
     this.IsAllowed = this.service.IsAllowed(this.selected);
+  }
+
+  select(item: sales) {
+    if(this.service.current_user.role == this.service.user_roles.Delivery || this.filter != this.service.order_status.Delivered)
+      return;
+
+    let reSelected = false;
+    this.itemSelected.forEach(i => {
+      let items = new Array<sales>();
+      this.itemSelected.forEach(i => {
+        if(i.key != item.key)
+          items.push(i);
+      });
+
+      if(items.length != this.itemSelected.length) {
+        reSelected = true;
+        this.itemSelected = items;
+        this.computeSelected();
+      }
+    });
+    
+    if(!reSelected) {
+        this.itemSelected.push(item);
+        this.computeSelected();
+    }
+  }
+
+  computeSelected() {
+    this.total = 0;
+
+    this.itemSelected.forEach(item => {
+      this.total += item.amount;
+    });
+  }
+
+  setToPaid() {
+    this.itemSelected.forEach(item => {
+      this.setStatus(this.service.order_status.Paid, item);
+    });
+
+    this.itemSelected = new Array<sales>();
+  }
+
+  isSelected(item: sales): boolean {
+    let isSelected = false;
+    this.itemSelected.forEach(i => {
+      this.itemSelected.forEach(i => {
+        if(i.key == item.key)
+          isSelected = true;
+      });
+    });
+
+    return isSelected;
   }
 
   loadData() {
@@ -227,6 +283,7 @@ export class SalesWaterComponent implements OnInit {
   }
 
   show(status: string) {
+    this.itemSelected = new Array<sales>();
     this.filter = status;
     this.loadData();
   }
