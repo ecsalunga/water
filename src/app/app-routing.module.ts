@@ -13,7 +13,8 @@ import { LoginComponent } from './login/login.component';
 import { ClientsComponent } from './clients/clients.component';
 import { DailyComponent } from './daily/daily.component';
 import { BillingComponent } from './billing/billing.component';
-import { ProfileComponent } from './profile/profile.component'
+import { ProfileComponent } from './profile/profile.component';
+import { CardMakerComponent } from './card-maker/card-maker.component';
 
 const routes: Routes = [
   { path: 'menu', component: MenuComponent },
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'login', component: LoginComponent },
   { path: 'clients', component: ClientsComponent },
+  { path: 'card', component: CardMakerComponent },
   { path: 'billing/:id', component: BillingComponent },
   { path: 'daily', component: DailyComponent },
   { path: '**', component: MenuComponent }

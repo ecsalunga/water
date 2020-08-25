@@ -38,6 +38,7 @@ import { ClientsComponent } from './clients/clients.component';
 import { DailyComponent } from './daily/daily.component';
 import { BillingComponent } from './billing/billing.component';
 import { ProfileComponent } from './profile/profile.component';
+import { CardMakerComponent } from './card-maker/card-maker.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { ProfileComponent } from './profile/profile.component';
     ClientsComponent,
     DailyComponent,
     BillingComponent,
-    ProfileComponent
+    ProfileComponent,
+    CardMakerComponent
   ],
   imports: [
     BrowserModule,

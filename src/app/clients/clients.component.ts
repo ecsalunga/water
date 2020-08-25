@@ -56,6 +56,10 @@ export class ClientsComponent implements OnInit {
     this.display = 'list';
   }
 
+  cardBuilder() {
+    this.service.router.navigateByUrl('/card');
+  }
+
   edit(item: clients) {
     this.display = 'form';
     this.item = Object.assign({}, item);

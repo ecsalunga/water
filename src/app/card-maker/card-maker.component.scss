@@ -1,0 +1,20 @@
+:host {
+    width: 100%;     
+}
+
+.bshadow {
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(5px 5px 5px #222222);
+    opacity: .5;
+}
+
+.selection {
+    cursor: pointer;
+}
+
+.selected {
+    background-color: rgb(243, 243, 116);
+}

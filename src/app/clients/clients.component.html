@@ -2,12 +2,13 @@
 
 <!-- Actions -->
 <div class="actions" style="margin-bottom: 15px;">
+    <button mat-raised-button *ngIf="display=='list'" (click)="cardBuilder()" style="margin-right: 5px;">Card Builder</button>
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
 </div>
 
 <!-- Table list -->
 <div *ngIf="display=='list'">
-    <mat-table [dataSource]="items" class="mat-elevation-z8">
+    <mat-table [dataSource]="items">
         <!-- name column -->
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
@@ -97,6 +98,7 @@
 
 <!-- Actions -->
 <div class="actions">
+    <button mat-raised-button *ngIf="display=='list'" (click)="cardBuilder()" style="margin-right: 5px;">Card Builder</button>
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>

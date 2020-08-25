@@ -1,0 +1,58 @@
+<div class="header">Card Builder</div>
+<mat-card style="margin-top: 20px;" *ngIf="itemCards.length > 0">
+    <mat-card-header>
+        <mat-card-title>Selected items</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <table #dataContainer>
+                <tr *ngFor="let card of itemCards">
+                    <td (click)="select(card.item1)" class="selection" id="{{ card.item1.key }}">
+                        <div>
+                            {{ card.item1.name }}
+                        </div>
+                        <ngx-qrcode [elementType]="elementType" [innerHTML] [errorCorrectionLevel]="correctionLevel"
+                            [value]="getClientPath(card.item1)" cssClass="bshadow"></ngx-qrcode>
+                    </td>
+                    <td (click)="select(card.item2)" class="selection" *ngIf="card.item2 != null" id="{{ card.item2.key }}">
+                        <div>
+                            {{ card.item2.name }}
+                        </div>
+                        <ngx-qrcode [elementType]="elementType" [innerHTML] [errorCorrectionLevel]="correctionLevel"
+                            [value]="getClientPath(card.item2)" cssClass="bshadow"></ngx-qrcode>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Actions -->
+        <div class="actions" style="margin-bottom: 15px;">
+            <button mat-raised-button (click)="generate()">Generate</button>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<mat-card style="margin-top: 20px;">
+    <mat-card-header>
+        <mat-card-title>Clients</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <mat-table [dataSource]="items">
+                <!-- name column -->
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                    <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" class="selection" (click)="select(element)"> {{element.name}} </mat-cell>
+                </ng-container>
+        
+                <!-- address column -->
+                <ng-container matColumnDef="address">
+                    <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
+                    <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" class="selection" (click)="select(element)"> {{element.address}} </mat-cell>
+                </ng-container>
+        
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+        </div>
+    </mat-card-content>
+</mat-card>
