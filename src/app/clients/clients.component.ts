@@ -14,18 +14,16 @@ export class ClientsComponent implements OnInit {
   display: string = 'none';
   displayedColumns: string[] = ['name', 'address', 'contact', 'key'];
   item: clients;
-  items: Array<clients>;
   currentURL: string;
   clientPath: string;
-  
-  constructor(private service: WaterService) { }
+
+  constructor(public service: WaterService) { }
 
   ngOnInit(): void {
     let path = window.location.href.split('clients');
     this.currentURL = path[0];
     this.service.NotForDelivery();
     this.display = 'list';
-    this.loadData();
   }
 
   updateAddress() {
@@ -33,17 +31,6 @@ export class ClientsComponent implements OnInit {
     let lot = this.item.lot ?? "";
     let address = (block != "") ? block + ", " + lot : lot;
     this.item.address = address;
-  }
-
-  loadData() {
-    this.service.db.list<clients>('clients/items', ref => ref.orderByChild('name')).snapshotChanges().subscribe(records => {
-      this.items = new Array<clients>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.items.push(i);
-      });
-    });
   }
 
   add() {

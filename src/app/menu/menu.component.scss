@@ -6,3 +6,75 @@ div {
     padding-top: 15px;
     font-size: 20px;
 }
+
+.item-selection {
+    display: table-cell;
+    border-radius: 2px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    width: 95%;
+    margin-left: 2%;
+    float: left;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+    box-sizing: border-box;
+    transition: 0.5s;
+    border-radius: 8px;
+    background-color: rgb(255, 255, 255);
+}
+
+.item-selection:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.header {
+    text-align: center;
+    overflow: hidden;
+    padding: 0px;
+}
+
+.menu-title {
+    font-size: 15px;
+    font-weight: bold;
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+.menu-img {
+    height: 250px;
+    transition: 0.5s;
+    width: 100%;
+}
+
+.blurb {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    height: 55px;
+}
+
+.contents {
+    padding: 15px;
+    border: none;
+}
+
+.container:after {
+    content: "";
+    display: table;
+    clear: both; 
+}
+
+@media (min-width: 550px) {
+    .item-selection { margin-left: 4%; width: 44%; }
+    .menu-img { height: 180px; }
+    .contents { padding: 20px; }
+}
+
+@media (min-width: 720px) {
+    .item-selection { margin-left: 4%; width: 28%; }
+    .menu-img { height: 150px; }
+}
+
+@media (min-width: 1200px) {
+    .item-selection { margin-left: 2%; width: 22%; }
+    .menu-img { height: 130px; }
+}

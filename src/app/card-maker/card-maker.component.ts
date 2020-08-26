@@ -22,25 +22,12 @@ export class CardMakerComponent implements OnInit {
   itemSelected = new Array<clients>();
   itemCards = new Array<any>();
   cards: Array<Card>;
-  items: Array<clients>;
 
-  constructor(private service: WaterService) { }
+  constructor(public service: WaterService) { }
 
   ngOnInit(): void {
     let path = window.location.href.split('card');
     this.currentURL = path[0];
-    this.loadData();
-  }
-
-  loadData() {
-    this.service.db.list<clients>('clients/items', ref => ref.orderByChild('name')).snapshotChanges().subscribe(records => {
-      this.items = new Array<clients>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.items.push(i);
-      });
-    });
   }
 
   select(item: clients) {

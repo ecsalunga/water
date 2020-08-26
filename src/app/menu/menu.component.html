@@ -1,30 +1,13 @@
-<div class="header">Menu</div>
-<div>
-    <a [routerLink]="['/sales']">Water Sales</a>
+<div class="container">
+    <ng-container *ngFor="let item of menu.items">
+        <div *ngIf="isVisible(item)" (click)="navigate(item)" class="item-selection">
+            <div class="header">
+                <img class="menu-img" [src]="item.imgSrc">
+            </div>
+            <div class="contents">
+                <div class="menu-title">{{ item.title }}</div>
+                <div class="blurb">{{ item.blurb }}</div>
+            </div>
+        </div>
+    </ng-container>
 </div>
-<ng-container *ngIf="role == 'Admin' || role == 'Monitor'">
-    <div>
-        <a [routerLink]="['/others']">Others Sales</a>
-    </div>
-    <div>
-        <a [routerLink]="['/expenses']">Expenses</a>
-    </div>
-    <div>
-        <a [routerLink]="['/daily']">Daily</a>
-    </div>
-    <div>
-        <a [routerLink]="['/summary']">Summary</a>
-    </div>
-
-    <div>
-        <a [routerLink]="['/clients']">Clients</a>
-    </div>
-</ng-container>
-<ng-container *ngIf="role == 'Admin'">
-    <div>
-        <a [routerLink]="['/users']">Users</a>
-    </div>
-    <div>
-        <a [routerLink]="['/settings']">Settings</a>
-    </div>
-</ng-container>

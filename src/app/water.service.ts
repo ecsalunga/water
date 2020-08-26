@@ -9,6 +9,7 @@ import { users } from './models/users';
 import { Access } from './models/access';
 import { Command } from './models/command';
 import { sales } from './models/sales-water';
+import { clients } from './models/clients';
 import { SettingsCommon } from './models/settings-common';
 import { SalesOthersItem } from './models/sales-others-item';
 
@@ -26,8 +27,8 @@ export class WaterService {
   expenses_items: Array<ExpensesItem>;
   other_sales_items: Array<SalesOthersItem>;
   settings_common: SettingsCommon;
-
   app_users: Array<users>;
+  clients = new Array<clients>();
   action_day: number;
   order_status = { Pickup: "pickup", Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Paid: "paid", Cancelled: "cancelled" };
   user_roles = { Admin: 'Admin', Monitor: 'Monitor', Delivery: "Delivery" };
@@ -40,6 +41,7 @@ export class WaterService {
     this.action_day =  this.actionDay();
     this.loadSettingsCommon();
     this.loadUsers();
+    this.loadClients();
     this.loadSettings();
   }
 
@@ -123,6 +125,17 @@ export class WaterService {
         let i = item.payload.val();
         i.key = item.key;
         this.app_users.push(i);
+      });
+    });
+  }
+
+  private loadClients() {
+    this.db.list<clients>('clients/items', ref => ref.orderByChild('name')).snapshotChanges().subscribe(records => {
+      this.clients = new Array<clients>();
+      records.forEach(item => {
+        let i = item.payload.val();
+        i.key = item.key;
+        this.clients.push(i);
       });
     });
   }
