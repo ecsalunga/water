@@ -8,9 +8,9 @@ export const Menu = {
             path: "/sales",
         },
         {
-            title: "Others Sales",
+            title: "Other Sales",
             imgSrc: "assets/images/other.jpg",
-            blurb: "Others sales, includes bottle, caps and others",
+            blurb: "Other sales, includes bottle, caps and others",
             roles: "Admin, Monitor",
             path: "/others",
         },
