@@ -9,6 +9,7 @@
 
 td {
     padding: 5px;
+    padding-left: 10px;
 }
 
 .bshadow {
@@ -29,7 +30,7 @@ td {
 }
 
 .table-area {
-    height: calc(100vh - 650px);
+    height: calc(100vh - 700px);
     min-height: 200px;
     overflow: auto;
     overflow-x: hidden;
