@@ -40,7 +40,7 @@
                     </button>
                 </mat-form-field>
             </div>
-            <div style="max-height: 500px; overflow: auto; overflow-x: hidden;">
+            <div class="table-area">
                 <mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" matSortDisableClear>
                     <!-- name column -->
                     <ng-container matColumnDef="name">

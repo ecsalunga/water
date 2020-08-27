@@ -1,12 +1,5 @@
 <div class="header">Clients</div>
 
-<!-- Actions -->
-<div class="actions" style="margin-bottom: 15px;">
-    <button mat-raised-button *ngIf="display=='list'" (click)="cardBuilder()" style="margin-right: 5px;">Card
-        Builder</button>
-    <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
-</div>
-
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <div>
@@ -17,7 +10,7 @@
             </button>
         </mat-form-field>
     </div>
-    <div style="max-height: 585px; overflow: auto; overflow-x: hidden;">
+    <div class="table-area">
         <mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" matSortDisableClear>
             <!-- name column -->
             <ng-container matColumnDef="name">

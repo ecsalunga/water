@@ -22,3 +22,10 @@ td {
 .selected {
     background-color: rgb(243, 243, 116);
 }
+
+.table-area {
+    height: calc(100vh - 650px);
+    min-height: 200px;
+    overflow: auto;
+    overflow-x: hidden;
+}
