@@ -27,7 +27,6 @@ export class SalesWaterComponent implements OnInit {
   item: sales;
   itemClients = new Array<clients>();
   items: Array<sales>;
-  itemSelected = new Array<sales>();
   filter: string = 'all';
 
   blockControl = new FormControl();
@@ -45,8 +44,6 @@ export class SalesWaterComponent implements OnInit {
   addressControl = new FormControl();
   addressFilteredOptions: Observable<string[]>;
   addressOptions: string[] = [];
-
-  total = 0;
 
   constructor(private service: WaterService) { }
 
@@ -88,68 +85,38 @@ export class SalesWaterComponent implements OnInit {
 
   isSelected(item: sales): boolean {
     let isSelected = false;
-    if (this.filter == this.service.order_status.Delivered) {
-      this.itemSelected.forEach(i => {
-        this.itemSelected.forEach(i => {
-          if (i.key == item.key)
-            isSelected = true;
-        });
-      });
-    }
+
+
+    if(item.key == "total")
+      return false;
     else if (this.filter == this.service.order_status.Pickup && item.status == this.service.order_status.Pickup)
       isSelected = (item.isSelected);
     else if (this.filter == this.service.order_status.Preparing && item.status == this.service.order_status.Preparing)
+      isSelected = (item.isSelected);
+    else if (this.filter == this.service.order_status.Delivered && item.status == this.service.order_status.Delivered)
       isSelected = (item.isSelected);
 
     return isSelected;
   }
 
   select(item: sales) {
-    if (this.filter == this.service.order_status.Delivered && this.service.current_user.role != this.service.user_roles.Delivery) {
-      let reSelected = false;
-      this.itemSelected.forEach(i => {
-        let items = new Array<sales>();
-        this.itemSelected.forEach(i => {
-          if (i.key != item.key)
-            items.push(i);
-        });
+    if(item.key == "total")
+      return;
 
-        if (items.length != this.itemSelected.length) {
-          reSelected = true;
-          this.itemSelected = items;
-          this.computeSelected();
-        }
-      });
-
-      if (!reSelected) {
-        this.itemSelected.push(item);
-        this.computeSelected();
+    if (this.filter == this.service.order_status.Pickup && this.service.current_user.role != this.service.user_roles.Monitor) {
+      item.isSelected = !item.isSelected;
+      this.service.db.object('sales/water/items/' + item.key).update(item);
+    }
+    else if (this.service.current_user.role != this.service.user_roles.Delivery) {
+      if (this.filter == this.service.order_status.Preparing) {
+        item.isSelected = !item.isSelected;
+        this.service.db.object('sales/water/items/' + item.key).update(item);
+      }
+      else if (this.filter == this.service.order_status.Delivered) {
+        item.isSelected = !item.isSelected;
+        this.service.db.object('sales/water/items/' + item.key).update(item);
       }
     }
-    else if(this.filter == this.service.order_status.Pickup  && this.service.current_user.role != this.service.user_roles.Monitor) {
-      item.isSelected = !item.isSelected;
-      this.service.db.object('sales/water/items/' + item.key).update(item);
-    }
-    else if(this.filter == this.service.order_status.Preparing  && this.service.current_user.role != this.service.user_roles.Delivery) {
-      item.isSelected = !item.isSelected;
-      this.service.db.object('sales/water/items/' + item.key).update(item);
-    }
-  }
-
-  computeSelected() {
-    this.total = 0;
-
-    this.itemSelected.forEach(item => {
-      this.total += item.amount;
-    });
-  }
-
-  setToPaid() {
-    this.itemSelected.forEach(item => {
-      this.setStatus(this.service.order_status.Paid, item);
-    });
-
-    this.itemSelected = new Array<sales>();
   }
 
   loadData() {
@@ -166,30 +133,55 @@ export class SalesWaterComponent implements OnInit {
           this.items.push(i);
       });
 
-      if(this.filter == this.service.order_status.Pickup || this.filter == this.service.order_status.Preparing) {
+      if (this.filter == this.service.order_status.Pickup 
+        || this.filter == this.service.order_status.Preparing
+        || this.filter == this.service.order_status.Delivered) {
+
         let total = new sales();
+        let status = this.service.order_status.Preparing;
+
+        if (this.filter == this.service.order_status.Preparing)
+          status = this.service.order_status.Delivery;
+        else if (this.filter == this.service.order_status.Delivered) {
+          status = this.service.order_status.Paid;
+        }
+
+        total.status = status;
         total.key = "total";
         total.name = "Total";
-        total.status = (this.filter == this.service.order_status.Pickup ? this.service.order_status.Preparing : this.service.order_status.Delivery)
+        
         total.slim = 0;
         total.round = 0;
         this.items.forEach(item => {
-          if(item.status == this.filter && item.isSelected) {
-            total.slim += item.slim;
-            total.round += item.round;
+          if (this.filter == item.status  && item.isSelected) {
+            if(this.filter == this.service.order_status.Delivered)
+              total.slim += item.amount;
+            else {
+              total.slim += item.slim;
+              total.round += item.round;
+            }
           }
         });
 
-        if(total.round > 0 || total.slim > 0)
+        if (total.round > 0 || total.slim > 0)
           this.items.push(total);
       }
     });
   }
 
+  isPayment(item: sales) {
+    let isPayment = false;
+
+    if (item.key == 'total' && this.filter == this.service.order_status.Delivered)
+      isPayment = true;
+
+    return isPayment;
+  }
+
   showNext(item: sales): boolean {
     let show = false;
 
-    if(item.key == 'total' && this.service.current_user.role != this.service.user_roles.Delivery)
+    if (item.key == 'total' && this.service.current_user.role != this.service.user_roles.Delivery)
       show = true;
 
     return show;
@@ -197,10 +189,16 @@ export class SalesWaterComponent implements OnInit {
 
   setNext() {
     this.items.forEach(item => {
-      if(item.isSelected) {
-        item.status = (this.filter == this.service.order_status.Pickup ? this.service.order_status.Preparing : this.service.order_status.Delivery);
-        item.isSelected = false;
-        this.service.db.object('sales/water/items/' + item.key).update(item);
+      if (item.isSelected) {
+        let status = this.service.order_status.Preparing;
+
+        if (this.filter == this.service.order_status.Preparing)
+          status = this.service.order_status.Delivery;
+        else if (this.filter == this.service.order_status.Delivered) {
+          status = this.service.order_status.Paid;
+        }
+
+        this.setStatus(status, item)
       }
     });
   }
@@ -335,7 +333,6 @@ export class SalesWaterComponent implements OnInit {
   }
 
   show(status: string) {
-    this.itemSelected = new Array<sales>();
     this.filter = status;
     this.loadData();
   }

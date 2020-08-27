@@ -59,13 +59,24 @@
         <!-- round column -->
         <ng-container matColumnDef="round">
             <mat-header-cell *matHeaderCellDef> Round </mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)"> {{element.round}} </mat-cell>
+            <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)">
+                <ng-container *ngIf="!isPayment(element)">
+                    {{ element.round }} 
+                </ng-container>
+            </mat-cell>
         </ng-container>
 
         <!-- slim column -->
         <ng-container matColumnDef="slim">
             <mat-header-cell *matHeaderCellDef> Slim </mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)"> {{element.slim}} </mat-cell>
+            <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"> 
+                <ng-container *ngIf="!isPayment(element)">
+                    {{ element.slim }} 
+                </ng-container>
+                <ng-container *ngIf="isPayment(element)">
+                    {{ element.slim | number:'1.2-2' }} 
+                </ng-container>
+            </mat-cell>
         </ng-container>
 
         <!-- status column -->
@@ -207,24 +218,6 @@
         </mat-form-field>
     </div>
 </div>
-
-<mat-card style="margin-top: 20px;" *ngIf="itemSelected.length > 0 && display == 'list'">
-    <mat-card-content>
-        <div style="margin-left: 25px; margin-top: 25px;">
-            <div>
-                <table>
-                    <tr class="total">
-                        <td>Total</td>
-                        <td>{{ total | number:'1.2-2' }}</td>
-                    </tr>
-                </table>
-                <div class="actions">
-                    <button mat-raised-button (click)="setToPaid()"><mat-icon class='status-paid'>check</mat-icon> Paid</button>
-                </div>
-            </div>
-        </div>
-    </mat-card-content>
-</mat-card>
 
 <!-- Actions -->
 <div class="actions">
