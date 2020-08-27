@@ -6,6 +6,7 @@ import { Command } from '../models/command';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { TableFloatOptionsAttributes } from 'docx';
 
 @Component({
   selector: 'app-sales-water',
@@ -85,28 +86,47 @@ export class SalesWaterComponent implements OnInit {
     this.IsAllowed = this.service.IsAllowed(this.selected);
   }
 
-  select(item: sales) {
-    if(this.service.current_user.role == this.service.user_roles.Delivery || this.filter != this.service.order_status.Delivered)
-      return;
-
-    let reSelected = false;
-    this.itemSelected.forEach(i => {
-      let items = new Array<sales>();
+  isSelected(item: sales): boolean {
+    let isSelected = false;
+    if (this.filter == this.service.order_status.Delivered) {
       this.itemSelected.forEach(i => {
-        if(i.key != item.key)
-          items.push(i);
+        this.itemSelected.forEach(i => {
+          if (i.key == item.key)
+            isSelected = true;
+        });
+      });
+    }
+    else if (this.filter == this.service.order_status.Pickup)
+      isSelected = (item.isPicked);
+
+    return isSelected;
+  }
+
+  select(item: sales) {
+    if (this.filter == this.service.order_status.Delivered && this.service.current_user.role != this.service.user_roles.Delivery) {
+      let reSelected = false;
+      this.itemSelected.forEach(i => {
+        let items = new Array<sales>();
+        this.itemSelected.forEach(i => {
+          if (i.key != item.key)
+            items.push(i);
+        });
+
+        if (items.length != this.itemSelected.length) {
+          reSelected = true;
+          this.itemSelected = items;
+          this.computeSelected();
+        }
       });
 
-      if(items.length != this.itemSelected.length) {
-        reSelected = true;
-        this.itemSelected = items;
-        this.computeSelected();
-      }
-    });
-    
-    if(!reSelected) {
+      if (!reSelected) {
         this.itemSelected.push(item);
         this.computeSelected();
+      }
+    }
+    else if(this.filter == this.service.order_status.Pickup  && this.service.current_user.role != this.service.user_roles.Monitor) {
+      item.isPicked = !item.isPicked;
+      this.service.db.object('sales/water/items/' + item.key).update(item);
     }
   }
 
@@ -126,18 +146,6 @@ export class SalesWaterComponent implements OnInit {
     this.itemSelected = new Array<sales>();
   }
 
-  isSelected(item: sales): boolean {
-    let isSelected = false;
-    this.itemSelected.forEach(i => {
-      this.itemSelected.forEach(i => {
-        if(i.key == item.key)
-          isSelected = true;
-      });
-    });
-
-    return isSelected;
-  }
-
   loadData() {
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.items = new Array<sales>();
@@ -151,6 +159,37 @@ export class SalesWaterComponent implements OnInit {
         if (this.filter == 'all' || i.status == this.filter)
           this.items.push(i);
       });
+
+      if(this.filter == this.service.order_status.Pickup) {
+        let total = new sales();
+        total.key = "total";
+        total.name = "Total";
+        total.status = this.service.order_status.Preparing;
+        total.slim = 0;
+        total.round = 0;
+        this.items.forEach(item => {
+          if(item.isPicked) {
+            total.slim += item.slim;
+            total.round += item.round;
+          }
+        });
+
+        if(total.round > 0 || total.slim > 0)
+          this.items.push(total);
+      }
+    });
+  }
+
+  showSetToPreparing(item: sales): boolean {
+    return (item.key == 'total' && this.service.current_user.role != this.service.user_roles.Delivery);
+  }
+
+  setToPreparing() {
+    this.items.forEach(item => {
+      if(item.isPicked) {
+        item.status = this.service.order_status.Preparing;
+        this.service.db.object('sales/water/items/' + item.key).update(item);
+      }
     });
   }
 
@@ -180,7 +219,7 @@ export class SalesWaterComponent implements OnInit {
 
     if (status == this.service.order_status.Pickup)
       icon = 'connect_without_contact';
-    else  if (status == this.service.order_status.Preparing)
+    else if (status == this.service.order_status.Preparing)
       icon = 'wash';
     else if (status == this.service.order_status.Delivery)
       icon = 'two_wheeler';
@@ -238,23 +277,23 @@ export class SalesWaterComponent implements OnInit {
   canSave(): boolean {
     if (this.service.current_user.role == this.service.user_roles.Admin)
       return true;
-  
-    if(this.IsLocked)
+
+    if (this.IsLocked)
       return false;
 
     if (this.service.current_user.role == this.service.user_roles.Monitor
-      && (this.itemOrig == null 
+      && (this.itemOrig == null
         || this.item.status == this.itemOrig.status))
       return true;
-    
+
     return this.canExecute(this.item.status, this.itemOrig);
   }
 
   canExecute(status: string, item: sales): boolean {
     if (this.service.current_user.role == this.service.user_roles.Admin)
       return true;
-  
-    if(this.IsLocked)
+
+    if (this.IsLocked)
       return false;
 
     return this.service.CanExecute(status, item);

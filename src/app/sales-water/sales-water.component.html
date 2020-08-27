@@ -53,7 +53,7 @@
         <!-- address column -->
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)"><span [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
+            <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"><span [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
         </ng-container>
 
         <!-- round column -->
@@ -104,10 +104,16 @@
                         </button>
                     </ng-template>
                 </mat-menu>
-
-                <button mat-icon-button [matMenuTriggerFor]="appMenu">
-                    <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
-                </button>
+                <ng-container *ngIf="element.key != 'total'">
+                    <button mat-icon-button [matMenuTriggerFor]="appMenu">
+                        <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
+                    </button>
+                </ng-container>
+                <ng-container *ngIf="showSetToPreparing(element)">
+                    <button mat-icon-button (click)="setToPreparing()">
+                        <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
+                    </button>
+                </ng-container>
             </mat-cell>
         </ng-container>
 

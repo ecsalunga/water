@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
 
   showLogout() {
     if(this.service.current_user.isLogin)
-      this.loginAs = "Hello, " + this.service.current_user.username;
+      this.loginAs = "Hello " + this.service.current_user.username;
     else
       this.loginAs = "";
 

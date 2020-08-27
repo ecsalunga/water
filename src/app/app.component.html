@@ -1,13 +1,17 @@
 <div class="toolbar" role="banner">
   <a *ngIf="showLogout()" class="brand" [routerLink]="['/menu']">Acqua Perfetta</a>
-  <div *ngIf="!showLogout()" class="brand">Acqua Perfetta</div>
+  <div *ngIf="!showLogout()" class="brand"> Acqua Perfetta</div>
   <div class="spacer"></div>
-  <a class="user" [routerLink]="['/profile']">{{ loginAs }}</a>
-  <button mat-raised-button *ngIf="showLogout()" style="margin-right: 5px;" (click)="logout()">Logout</button>
+  <div *ngIf="showLogout()" style="margin-right: 5px;">
+    <a class="user" [routerLink]="['/profile']">{{ loginAs }}</a>
+    <span style="color: silver; font-size: 16px;">| </span>
+    <span style="font-size: smaller; text-decoration: none; color: rgb(21, 245, 88); cursor: pointer;" (click)="logout()">Logout</span>
+  </div>
 </div>
 
 <div class="content">
-  <mat-progress-bar style="top: 0px; position: absolute; z-index: 1000;" *ngIf="showProgress" mode="determinate" [value]="progress">
+  <mat-progress-bar style="top: 0px; position: absolute; z-index: 1000;" *ngIf="showProgress" mode="determinate"
+    [value]="progress">
   </mat-progress-bar>
   <router-outlet></router-outlet>
   <div style="height: 20px;"></div>
