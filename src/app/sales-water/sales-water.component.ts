@@ -96,8 +96,10 @@ export class SalesWaterComponent implements OnInit {
         });
       });
     }
-    else if (this.filter == this.service.order_status.Pickup)
-      isSelected = (item.isPicked);
+    else if (this.filter == this.service.order_status.Pickup && item.status == this.service.order_status.Pickup)
+      isSelected = (item.isSelected);
+    else if (this.filter == this.service.order_status.Preparing && item.status == this.service.order_status.Preparing)
+      isSelected = (item.isSelected);
 
     return isSelected;
   }
@@ -125,7 +127,11 @@ export class SalesWaterComponent implements OnInit {
       }
     }
     else if(this.filter == this.service.order_status.Pickup  && this.service.current_user.role != this.service.user_roles.Monitor) {
-      item.isPicked = !item.isPicked;
+      item.isSelected = !item.isSelected;
+      this.service.db.object('sales/water/items/' + item.key).update(item);
+    }
+    else if(this.filter == this.service.order_status.Preparing  && this.service.current_user.role != this.service.user_roles.Delivery) {
+      item.isSelected = !item.isSelected;
       this.service.db.object('sales/water/items/' + item.key).update(item);
     }
   }
@@ -160,15 +166,15 @@ export class SalesWaterComponent implements OnInit {
           this.items.push(i);
       });
 
-      if(this.filter == this.service.order_status.Pickup) {
+      if(this.filter == this.service.order_status.Pickup || this.filter == this.service.order_status.Preparing) {
         let total = new sales();
         total.key = "total";
         total.name = "Total";
-        total.status = this.service.order_status.Preparing;
+        total.status = (this.filter == this.service.order_status.Pickup ? this.service.order_status.Preparing : this.service.order_status.Delivery)
         total.slim = 0;
         total.round = 0;
         this.items.forEach(item => {
-          if(item.isPicked) {
+          if(item.status == this.filter && item.isSelected) {
             total.slim += item.slim;
             total.round += item.round;
           }
@@ -180,14 +186,20 @@ export class SalesWaterComponent implements OnInit {
     });
   }
 
-  showSetToPreparing(item: sales): boolean {
-    return (item.key == 'total' && this.service.current_user.role != this.service.user_roles.Delivery);
+  showNext(item: sales): boolean {
+    let show = false;
+
+    if(item.key == 'total' && this.service.current_user.role != this.service.user_roles.Delivery)
+      show = true;
+
+    return show;
   }
 
-  setToPreparing() {
+  setNext() {
     this.items.forEach(item => {
-      if(item.isPicked) {
-        item.status = this.service.order_status.Preparing;
+      if(item.isSelected) {
+        item.status = (this.filter == this.service.order_status.Pickup ? this.service.order_status.Preparing : this.service.order_status.Delivery);
+        item.isSelected = false;
         this.service.db.object('sales/water/items/' + item.key).update(item);
       }
     });
@@ -244,6 +256,7 @@ export class SalesWaterComponent implements OnInit {
 
   setStatus(status: string, item: sales) {
     item.status = status;
+    item.isSelected = false;
     if (!item.counted && (item.status == this.service.order_status.Delivered || item.status == this.service.order_status.Paid))
       this.countOrder(item);
 
@@ -341,6 +354,7 @@ export class SalesWaterComponent implements OnInit {
     item.status = this.item.status;
     item.price = this.item.price ?? 0;
     item.remarks = this.item.remarks ?? "";
+    item.isSelected = false;
     item.action_date = this.service.actionDate();
     item.action_day = this.selected;
 

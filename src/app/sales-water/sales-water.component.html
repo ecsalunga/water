@@ -109,8 +109,8 @@
                         <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
                     </button>
                 </ng-container>
-                <ng-container *ngIf="showSetToPreparing(element)">
-                    <button mat-icon-button (click)="setToPreparing()">
+                <ng-container *ngIf="showNext(element)">
+                    <button mat-icon-button (click)="setNext()">
                         <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
                     </button>
                 </ng-container>
