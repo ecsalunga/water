@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Sort } from '@angular/material/sort';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 import { WaterService } from '../water.service';
 import { clients } from '../models/clients';
@@ -13,9 +14,11 @@ export class ClientsComponent implements OnInit {
   correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
   display: string = 'none';
   displayedColumns: string[] = ['name', 'address', 'contact', 'key'];
+  dataSource = new Array<clients>();
   item: clients;
   currentURL: string;
   clientPath: string;
+  filter: string = '';
 
   constructor(public service: WaterService) { }
 
@@ -24,6 +27,53 @@ export class ClientsComponent implements OnInit {
     this.currentURL = path[0];
     this.service.NotForDelivery();
     this.display = 'list';
+    this.dataSource = this.service.clients;
+  }
+
+  clearFilter() {
+    this.filter = '';
+    this.updateFilter();
+  }
+
+  updateFilter() {
+    if(this.filter != '') {
+      let items = new Array<clients>();
+      let toFilter = this.filter.toLowerCase();
+  
+      this.service.clients.forEach(item => {
+        if(item.name.toLowerCase().indexOf(toFilter) > -1
+          || item.address.toLowerCase().indexOf(toFilter) > -1
+          || item.contact.toLowerCase().indexOf(toFilter) > -1)
+          items.push(item);
+      });
+
+      this.dataSource = items;
+    }
+    else
+      this.dataSource = this.service.clients;
+  }
+
+  sortData(sort: Sort) {
+    let data = new Array<clients>();
+    if(this.filter == '')
+      data = this.service.clients.slice();
+    else
+      data = this.dataSource.slice();
+    
+    if (!sort.active || sort.direction === '') {
+      this.dataSource = data;
+      return;
+    }
+
+    this.dataSource = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'name': return this.service.compare(a.name, b.name, isAsc);
+        case 'address': return this.service.compare(a.address, b.address, isAsc);
+        case 'contacts': return this.service.compare(a.contact, b.contact, isAsc);
+        default: return 0;
+      }
+    });
   }
 
   updateAddress() {

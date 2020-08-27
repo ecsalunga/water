@@ -81,6 +81,10 @@ export class WaterService {
     return this.actionDateToDate(parseInt(keyDay + '000000'));
   }
 
+  public compare(a: number | string, b: number | string, isAsc: boolean): number {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
   private az(val: number): string {
     let num = val.toString();
     if (num.length < 2)

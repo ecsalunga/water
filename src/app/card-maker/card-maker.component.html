@@ -1,25 +1,22 @@
 <div class="header">Card Builder</div>
 <mat-card style="margin-top: 20px;" *ngIf="itemCards.length > 0">
-    <mat-card-header>
-        <mat-card-title>Selected items</mat-card-title>
-    </mat-card-header>
     <mat-card-content>
         <div style="margin-left: 25px; margin-top: 25px;">
             <table #dataContainer>
                 <tr *ngFor="let card of itemCards">
                     <td (click)="select(card.item1)" class="selection" id="{{ card.item1.key }}">
                         <div>
-                            {{ card.item1.name }}
+                            {{ card.item1.address }}
                         </div>
-                        <ngx-qrcode [elementType]="elementType" [innerHTML] [errorCorrectionLevel]="correctionLevel"
+                        <ngx-qrcode style="display: none;" [elementType]="elementType" [innerHTML] [errorCorrectionLevel]="correctionLevel"
                             [value]="getClientPath(card.item1)" cssClass="bshadow"></ngx-qrcode>
                     </td>
                     <td (click)="select(card.item2)" class="selection" *ngIf="card.item2 != null"
                         id="{{ card.item2.key }}">
                         <div>
-                            {{ card.item2.name }}
+                            {{ card.item2.address }}
                         </div>
-                        <ngx-qrcode [elementType]="elementType" [innerHTML] [errorCorrectionLevel]="correctionLevel"
+                        <ngx-qrcode style="display: none;" [elementType]="elementType" [innerHTML] [errorCorrectionLevel]="correctionLevel"
                             [value]="getClientPath(card.item2)" cssClass="bshadow"></ngx-qrcode>
                     </td>
                 </tr>
@@ -35,18 +32,26 @@
 <mat-card style="margin-top: 20px;">
     <mat-card-content>
         <div style="margin-left: 25px; margin-top: 25px;">
+            <div>
+                <mat-form-field>
+                    <input matInput (keydown.enter)="updateFilter()" placeholder="Filter clients" [(ngModel)]="filter" />
+                    <button mat-button *ngIf="filter" matSuffix mat-icon-button aria-label="Clear" (click)="clearFilter()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
             <div style="max-height: 500px; overflow: auto; overflow-x: hidden;">
-                <mat-table [dataSource]="service.clients">
+                <mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" matSortDisableClear>
                     <!-- name column -->
                     <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header="name"> Name </mat-header-cell>
                         <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" class="selection"
                             (click)="select(element)"> {{element.name}} </mat-cell>
                     </ng-container>
 
                     <!-- address column -->
                     <ng-container matColumnDef="address">
-                        <mat-header-cell *matHeaderCellDef>Address</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header="address">Address</mat-header-cell>
                         <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" class="selection"
                             (click)="select(element)"> {{element.address}} </mat-cell>
                     </ng-container>

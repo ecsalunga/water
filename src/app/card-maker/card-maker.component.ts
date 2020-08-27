@@ -3,6 +3,7 @@ import { WaterService } from '../water.service';
 import { clients } from '../models/clients';
 import { Card } from '../models/card';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
+import { Sort } from '@angular/material/sort';
 import { Document, Packer, Paragraph, Media, Table, TableRow, TableCell, AlignmentType, HeadingLevel, WidthType } from "docx";
 import { saveAs } from "file-saver/FileSaver";
 
@@ -22,12 +23,60 @@ export class CardMakerComponent implements OnInit {
   itemSelected = new Array<clients>();
   itemCards = new Array<any>();
   cards: Array<Card>;
+  dataSource = new Array<clients>();
+  filter: string = '';
 
   constructor(public service: WaterService) { }
 
   ngOnInit(): void {
     let path = window.location.href.split('card');
     this.currentURL = path[0];
+    this.dataSource = this.service.clients;
+  }
+
+  clearFilter() {
+    this.filter = '';
+    this.updateFilter();
+  }
+
+  updateFilter() {
+    if(this.filter != '') {
+      let items = new Array<clients>();
+      let toFilter = this.filter.toLowerCase();
+  
+      this.service.clients.forEach(item => {
+        if(item.name.toLowerCase().indexOf(toFilter) > -1
+          || item.address.toLowerCase().indexOf(toFilter) > -1
+          || item.contact.toLowerCase().indexOf(toFilter) > -1)
+          items.push(item);
+      });
+
+      this.dataSource = items;
+    }
+    else
+      this.dataSource = this.service.clients;
+  }
+
+  sortData(sort: Sort) {
+    let data = new Array<clients>();
+    if(this.filter == '')
+      data = this.service.clients.slice();
+    else
+      data = this.dataSource.slice();
+    
+    if (!sort.active || sort.direction === '') {
+      this.dataSource = data;
+      return;
+    }
+
+    this.dataSource = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'name': return this.service.compare(a.name, b.name, isAsc);
+        case 'address': return this.service.compare(a.address, b.address, isAsc);
+        default: return 0;
+      }
+    });
   }
 
   select(item: clients) {

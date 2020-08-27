@@ -39,6 +39,7 @@ import { DailyComponent } from './daily/daily.component';
 import { BillingComponent } from './billing/billing.component';
 import { ProfileComponent } from './profile/profile.component';
 import { CardMakerComponent } from './card-maker/card-maker.component';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { CardMakerComponent } from './card-maker/card-maker.component';
     MatCardModule,
     MatAutocompleteModule,
     MatProgressBarModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSortModule
   ],
   providers: [],
   bootstrap: [AppComponent]
