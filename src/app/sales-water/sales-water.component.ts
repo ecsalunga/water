@@ -46,6 +46,7 @@ export class SalesWaterComponent implements OnInit {
   addressOptions: string[] = [];
 
   constructor(private service: WaterService) { }
+  isPriceLocked: boolean = false;
 
   ngOnInit(): void {
     this.role = this.service.current_user.role;
@@ -85,7 +86,6 @@ export class SalesWaterComponent implements OnInit {
 
   isSelected(item: sales): boolean {
     let isSelected = false;
-
 
     if(item.key == "total")
       return false;
@@ -351,7 +351,7 @@ export class SalesWaterComponent implements OnInit {
     item.status = this.item.status;
     item.price = this.item.price ?? 0;
     item.remarks = this.item.remarks ?? "";
-    item.isSelected = false;
+    item.isSelected = (this.role == this.service.user_roles.Delivery && item.status == this.service.order_status.Pickup);
     item.action_date = this.service.actionDate();
     item.action_day = this.selected;
 
@@ -370,16 +370,30 @@ export class SalesWaterComponent implements OnInit {
     let isExists = false;
     this.itemClients.forEach(item => {
       if (item.name.toLowerCase() == this.item.name.toLowerCase() && item.address.toLowerCase() == this.item.address.toLowerCase()) {
+
+        let hasUpdate = false;
+        isExists = true;
+
+        if(item.price < 1) {
+          item.slim = this.item.slim ?? 0;
+          item.round = this.item.round ?? 0;
+          item.price = (this.item.amount / (item.slim + item.round));
+          hasUpdate = true;
+        }
+        
         if (!this.item.counted && (this.item.status == this.service.order_status.Delivered || this.item.status == this.service.order_status.Paid)) {
           item.slim = this.item.slim ?? 0;
           item.round = this.item.round ?? 0;
           item.counter += item.slim + item.round;
           item.last_order = item.action_date = item.action_date;
-          this.service.db.object('clients/items/' + item.key).update(item);
+
           this.item.counted = true;
+          hasUpdate = true;
         }
 
-        isExists = true;
+        if(hasUpdate) {
+          this.service.db.object('clients/items/' + item.key).update(item);
+        }
       }
     });
 
@@ -478,6 +492,8 @@ export class SalesWaterComponent implements OnInit {
     this.item.price = item.price;
     this.item.amount = ((this.item.slim * item.price) + (this.item.round * item.price));
     this.item.remarks = item.remarks;
+
+    this.isPriceLocked = (item.price > 0);
   }
 
   private setLotOptions() {

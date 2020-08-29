@@ -3,6 +3,7 @@ import { Sort } from '@angular/material/sort';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 import { WaterService } from '../water.service';
 import { clients } from '../models/clients';
+import { Command } from '../models/command';
 
 @Component({
   selector: 'app-clients',
@@ -28,6 +29,10 @@ export class ClientsComponent implements OnInit {
     this.service.NotForDelivery();
     this.display = 'list';
     this.dataSource = this.service.clients;
+    this.service.Changed.subscribe((cmd: Command) => {
+      if (cmd.type == this.service.command_types.Loader && cmd.data == 'clients')
+        this.dataSource = this.service.clients;
+    });
   }
 
   clearFilter() {

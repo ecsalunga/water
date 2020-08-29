@@ -141,6 +141,11 @@ export class WaterService {
         i.key = item.key;
         this.clients.push(i);
       });
+
+      let cmd = new Command();
+      cmd.type = this.command_types.Loader;
+      cmd.data = 'clients';
+      this.Changed.emit(cmd);
     });
   }
 

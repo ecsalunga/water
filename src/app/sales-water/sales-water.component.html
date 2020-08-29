@@ -19,7 +19,7 @@
     </div>
     <div [hidden]="display=='form'" class="right">
         <mat-button-toggle-group value='all'>
-            <mat-button-toggle (click)="add()" *ngIf="IsAllowed">
+            <mat-button-toggle (click)="add()">
                 <mat-icon class="add">add_box</mat-icon>
             </mat-button-toggle>
             <mat-button-toggle value="all" (click)="show('all')">
@@ -196,7 +196,7 @@
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" placeholder="Amount" [(ngModel)]="item.amount" />
+            <input matInput [disabled]="isPriceLocked" required type="number" placeholder="Amount" [(ngModel)]="item.amount" />
         </mat-form-field>
     </div>
     <div>
@@ -207,7 +207,7 @@
                 <mat-option *ngIf="item.key != null" value="preparing">Preparing</mat-option>
                 <mat-option *ngIf="item.key != null" value="delivery">Delivery</mat-option>
                 <mat-option *ngIf="item.key != null" value="delivered">Delivered</mat-option>
-                <mat-option value="paid">Paid</mat-option>
+                <mat-option *ngIf="role != 'Delivery'" value="paid">Paid</mat-option>
                 <mat-option *ngIf="item.key != null" value="cancelled">Cancelled</mat-option>
             </mat-select>
         </mat-form-field>
