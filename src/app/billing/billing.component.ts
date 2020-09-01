@@ -52,7 +52,7 @@ export class BillingComponent implements OnInit {
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
-        if(i.status == this.service.order_status.Delivery && !i.counted) {
+        if(i.status == this.service.order_status.Delivery && !i.counted && i.action_day == this.service.action_day) {
           this.slim += i.slim;
           this.round += i.round;
 
@@ -91,7 +91,7 @@ export class BillingComponent implements OnInit {
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
-        if(i.status != this.service.order_status.Delivered) {
+        if(i.status != this.service.order_status.Delivered && i.action_day == this.service.action_day) {
           let bill = new BillItem();
           bill.name = i.item;
           bill.quantity = i.quantity;

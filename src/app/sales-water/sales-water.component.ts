@@ -6,7 +6,6 @@ import { Command } from '../models/command';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { TableFloatOptionsAttributes } from 'docx';
 
 @Component({
   selector: 'app-sales-water',
@@ -135,16 +134,19 @@ export class SalesWaterComponent implements OnInit {
 
       if (this.filter == this.service.order_status.Pickup 
         || this.filter == this.service.order_status.Preparing
-        || this.filter == this.service.order_status.Delivered) {
+        || this.filter == this.service.order_status.Delivery
+        || this.filter == this.service.order_status.Delivered
+        || this.filter == this.service.order_status.Paid) {
 
         let total = new sales();
         let status = this.service.order_status.Preparing;
 
         if (this.filter == this.service.order_status.Preparing)
           status = this.service.order_status.Delivery;
-        else if (this.filter == this.service.order_status.Delivered) {
+        else if (this.filter == this.service.order_status.Delivered)
           status = this.service.order_status.Paid;
-        }
+        else if(this.filter == this.service.order_status.Delivery || this.filter == this.service.order_status.Paid)
+          status = this.service.order_status.None;
 
         total.status = status;
         total.key = "total";
@@ -153,7 +155,13 @@ export class SalesWaterComponent implements OnInit {
         total.slim = 0;
         total.round = 0;
         this.items.forEach(item => {
-          if (this.filter == item.status  && item.isSelected) {
+          if(this.filter == this.service.order_status.Delivery && this.filter == item.status) {
+              total.slim += item.slim;
+              total.round += item.round;
+          }
+          else if(this.filter == this.service.order_status.Paid && this.filter == item.status)
+            total.slim += item.amount;
+          else if (item.isSelected) {
             if(this.filter == this.service.order_status.Delivered)
               total.slim += item.amount;
             else {
@@ -169,19 +177,24 @@ export class SalesWaterComponent implements OnInit {
     });
   }
 
-  isPayment(item: sales) {
-    let isPayment = false;
+  isAmount(item: sales) {
+    let isAmount = false;
 
-    if (item.key == 'total' && this.filter == this.service.order_status.Delivered)
-      isPayment = true;
+    if (item.key == 'total' && 
+      (this.filter == this.service.order_status.Delivered 
+        || this.filter == this.service.order_status.Paid))
+      isAmount = true;
 
-    return isPayment;
+    return isAmount;
   }
 
   showNext(item: sales): boolean {
     let show = false;
 
-    if (item.key == 'total' && this.service.current_user.role != this.service.user_roles.Delivery)
+    if (item.key == 'total' 
+    && this.service.current_user.role != this.service.user_roles.Delivery 
+    && this.filter != this.service.order_status.Delivery
+    && this.filter != this.service.order_status.Paid)
       show = true;
 
     return show;
@@ -288,13 +301,13 @@ export class SalesWaterComponent implements OnInit {
   canSave(): boolean {
     if (this.service.current_user.role == this.service.user_roles.Admin)
       return true;
-
+    
     if (this.IsLocked)
       return false;
 
     if (this.service.current_user.role == this.service.user_roles.Monitor
       && (this.itemOrig == null
-        || this.item.status == this.itemOrig.status))
+        || (this.item.status == this.itemOrig.status && this.itemOrig.status != this.service.order_status.Paid)))
       return true;
 
     return this.canExecute(this.item.status, this.itemOrig);
@@ -321,6 +334,7 @@ export class SalesWaterComponent implements OnInit {
   edit(item: sales) {
     this.display = 'form';
     this.itemOrig = item;
+    this.isPriceLocked = true;
     this.item = Object.assign({}, item);
   }
 
@@ -349,7 +363,7 @@ export class SalesWaterComponent implements OnInit {
     item.round = this.item.round ?? 0;
     item.amount = this.item.amount;
     item.status = this.item.status;
-    item.price = this.item.price ?? 0;
+    item.price =  (item.amount / (item.slim + item.round));
     item.remarks = this.item.remarks ?? "";
     item.isSelected = (this.role == this.service.user_roles.Delivery && item.status == this.service.order_status.Pickup);
     item.action_date = this.service.actionDate();

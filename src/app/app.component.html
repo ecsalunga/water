@@ -10,7 +10,7 @@
 </div>
 
 <div class="content">
-  <mat-progress-bar style="top: 0px; position: absolute; z-index: 1000;" *ngIf="showProgress" mode="determinate"
+  <mat-progress-bar style="position: fixed; top: 0px; z-index: 1000;" *ngIf="showProgress" mode="determinate"
     [value]="progress">
   </mat-progress-bar>
   <router-outlet></router-outlet>

@@ -30,7 +30,7 @@ export class WaterService {
   app_users: Array<users>;
   clients = new Array<clients>();
   action_day: number;
-  order_status = { Pickup: "pickup", Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Paid: "paid", Cancelled: "cancelled" };
+  order_status = { None: 'none', Pickup: "pickup", Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Paid: "paid", Cancelled: "cancelled" };
   user_roles = { Admin: 'Admin', Monitor: 'Monitor', Delivery: "Delivery" };
   user_access: Access;
   current_user = { key: '', name: '', username: '', role: '', isLogin: false };

@@ -60,7 +60,7 @@
         <ng-container matColumnDef="round">
             <mat-header-cell *matHeaderCellDef> Round </mat-header-cell>
             <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)">
-                <ng-container *ngIf="!isPayment(element)">
+                <ng-container *ngIf="!isAmount(element)">
                     {{ element.round }} 
                 </ng-container>
             </mat-cell>
@@ -70,10 +70,10 @@
         <ng-container matColumnDef="slim">
             <mat-header-cell *matHeaderCellDef> Slim </mat-header-cell>
             <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"> 
-                <ng-container *ngIf="!isPayment(element)">
+                <ng-container *ngIf="!isAmount(element)">
                     {{ element.slim }} 
                 </ng-container>
-                <ng-container *ngIf="isPayment(element)">
+                <ng-container *ngIf="isAmount(element)">
                     {{ element.slim | number:'1.2-2' }} 
                 </ng-container>
             </mat-cell>
@@ -186,17 +186,17 @@
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" (change)="priceUpdate()" placeholder="Slim" [(ngModel)]="item.slim" />
+            <input matInput required type="number" (click)="$event.target.select()" (change)="priceUpdate()" placeholder="Slim" [(ngModel)]="item.slim" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" (change)="priceUpdate()" placeholder="Round" [(ngModel)]="item.round" />
+            <input matInput required type="number" (click)="$event.target.select()" (change)="priceUpdate()" placeholder="Round" [(ngModel)]="item.round" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput [disabled]="isPriceLocked" required type="number" placeholder="Amount" [(ngModel)]="item.amount" />
+            <input matInput [disabled]="isPriceLocked" required (click)="$event.target.select()" type="number" placeholder="Amount" [(ngModel)]="item.amount" />
         </mat-form-field>
     </div>
     <div>
