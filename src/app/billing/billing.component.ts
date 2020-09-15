@@ -128,7 +128,9 @@ export class BillingComponent implements OnInit {
       item.status = this.service.order_status.Delivered;
       this.service.db.object('sales/others/items/' + item.key).update(item);
     });
+  }
 
-    this.message = "Thank You!";
+  print() {
+    window.print();
   }
 }

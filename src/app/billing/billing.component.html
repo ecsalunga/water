@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card class="data">
     <mat-card-header>
         <mat-card-title>Billing</mat-card-title>
     </mat-card-header>
@@ -53,7 +53,7 @@
                     </tr>
                 </table>
                 <div class="actions">
-                    <button mat-raised-button (click)="delivered()">Delivered</button>
+                    <button mat-raised-button style="margin-right: 5px;" (click)="print()">Print</button><button mat-raised-button (click)="delivered()">Delivered</button>
                 </div>
             </div>
             <div *ngIf="total < 1" class="message">
@@ -62,7 +62,42 @@
         </div>
     </mat-card-content>
 </mat-card>
-<mat-card style="margin-top: 20px;" *ngIf="itemPrevious.length > 0">
+<div class="print">
+    <div class="print-header ">Acqua Perfetta</div>
+    <table>
+        <tr *ngIf="slim > 0">
+            <td>Slim</td>
+            <td>{{ slim }}</td>
+            <td>{{ item.price * slim | number:'1.2-2' }}</td>
+        </tr>
+        <tr *ngIf="round > 0">
+            <td>Round</td>
+            <td>{{ round }}</td>
+            <td>{{ item.price * round | number:'1.2-2' }}</td>
+        </tr>
+        <tr *ngFor="let bill of billItems">
+            <td>{{ bill.name }}</td>
+            <td>{{ bill.quantity }}</td>
+            <td>{{ bill.amount | number:'1.2-2' }}</td>
+        </tr>
+        <tr *ngIf="promo > 0" class="promo">
+            <td>10 + 1 Promo</td>
+            <td>{{ promo }}</td>
+            <td>-{{ item.price * promo | number:'1.2-2' }}</td>
+        </tr>
+        <tr style="height: 20px;">
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr class="print-total">
+            <td>Total</td>
+            <td></td>
+            <td>{{ total | number:'1.2-2' }}</td>
+        </tr>
+    </table>
+</div>
+<mat-card style="margin-top: 20px;" *ngIf="itemPrevious.length > 0" class="history">
     <mat-card-header>
         <mat-card-title>Order History</mat-card-title>
     </mat-card-header>

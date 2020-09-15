@@ -25,3 +25,25 @@ table {
 .promo {
     color: rgb(53, 199, 96);
 }
+
+.print {
+    display: none;
+}
+
+.print-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.print-total td {
+    font-weight: bold;
+}
+
+@media print {
+    .data, .history {
+      display: none;
+    }
+    .print {
+        display: block;
+    }
+}

@@ -11,3 +11,9 @@
     margin-right: 5px;
     font-size: smaller;
 }
+
+@media print {
+    .toolbar, .cloud {
+      display: none;
+    }
+}
