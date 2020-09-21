@@ -128,4 +128,14 @@
             <button mat-raised-button [disabled]="isOtherItemDisabled()" (click)="addOtherSalesItem()">Add</button>
         </div>
     </mat-card-actions>
+    <mat-card-actions style="text-align: right;">
+        <div style="padding: 10px; overflow: auto; margin-bottom: 10px;">
+            <div class="long" style="float: left; width: 60%; text-align: left;">
+                <div>
+                  Reset clients on 10+1 counting.
+                </div>
+            </div>
+            <button mat-raised-button (click)="resetTesPlusOne()">Execute</button>
+        </div>
+    </mat-card-actions>
 </mat-card>

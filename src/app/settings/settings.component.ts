@@ -111,4 +111,13 @@ export class SettingsComponent implements OnInit {
 
     return isDisabled;
   }
+
+  resetTesPlusOne() {
+    this.service.clients.forEach(client => {
+      client.counter = 0;
+      this.service.db.object('clients/items/' + client.key).update(client);
+    });
+
+    this.service.Message("Reset submitted.");
+  }
 }

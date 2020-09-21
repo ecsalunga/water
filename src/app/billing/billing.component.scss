@@ -27,11 +27,17 @@ table {
 }
 
 .print {
+    margin-top: 20px;
     display: none;
+
+    td {
+        font-size: 9px;
+    }
 }
 
 .print-header {
     font-weight: bold;
+    font-size: 12px;
     margin-bottom: 10px;
 }
 
