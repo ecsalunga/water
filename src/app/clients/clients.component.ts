@@ -138,6 +138,10 @@ export class ClientsComponent implements OnInit {
     this.display = 'list';
   }
 
+  canDelete(): boolean {
+    return (this.service.current_user.role == this.service.user_roles.Admin && this.item.key != null && this.item.key != '');
+  }
+
   delete() {
     this.service.db.object('clients/items/' + this.item.key).remove();
     this.service.Message("Client " + this.item.name + " deleted.");
