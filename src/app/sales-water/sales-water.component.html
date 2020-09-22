@@ -22,13 +22,13 @@
             <mat-button-toggle (click)="add()">
                 <mat-icon class="add">add_box</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle value="all" (click)="show('all')">
+            <mat-button-toggle *ngIf="role != 'Delivery'" value="all" (click)="show('all')">
                 <mat-icon class="status-all">check_box</mat-icon>
             </mat-button-toggle>
             <mat-button-toggle (click)="show('pickup')">
                 <mat-icon class="status-pickup">connect_without_contact</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle (click)="show('preparing')">
+            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('preparing')">
                 <mat-icon class="status-preparing">wash</mat-icon>
             </mat-button-toggle>
             <mat-button-toggle (click)="show('delivery')">
@@ -37,10 +37,10 @@
             <mat-button-toggle (click)="show('delivered')">
                 <mat-icon class="status-delivered">house</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle (click)="show('paid')">
+            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('paid')">
                 <mat-icon class="status-paid">check</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle (click)="show('cancelled')">
+            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('cancelled')">
                 <mat-icon class="status-cancelled">cancel</mat-icon>
             </mat-button-toggle>
         </mat-button-toggle-group>
