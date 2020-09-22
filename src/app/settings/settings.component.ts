@@ -118,6 +118,17 @@ export class SettingsComponent implements OnInit {
       this.service.db.object('clients/items/' + client.key).update(client);
     });
 
-    this.service.Message("Reset submitted.");
+    this.service.Message("Reset 10+1 submitted.");
+  }
+
+  resetSlimRoundPrice() {
+    this.service.clients.forEach(client => {
+      client.slim = 0;
+      client.round = 0;
+      client.price = 0;
+      this.service.db.object('clients/items/' + client.key).update(client);
+    });
+
+    this.service.Message("Reset slim, round and price submitted.");
   }
 }

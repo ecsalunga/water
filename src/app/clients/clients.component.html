@@ -109,6 +109,7 @@
     <button mat-raised-button *ngIf="display=='list'" (click)="cardBuilder()" style="margin-right: 5px;">Card
         Builder</button>
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
+    <button mat-raised-button *ngIf="display=='form' && item.key != null && item.key != ''" (click)="delete()" style="margin-right: 5px;" color="warn">Delete</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()">Save</button>
 </div>

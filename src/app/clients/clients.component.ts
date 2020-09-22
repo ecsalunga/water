@@ -137,4 +137,10 @@ export class ClientsComponent implements OnInit {
 
     this.display = 'list';
   }
+
+  delete() {
+    this.service.db.object('clients/items/' + this.item.key).remove();
+    this.service.Message("Client " + this.item.name + " deleted.");
+    this.display = 'list';
+  }
 }
