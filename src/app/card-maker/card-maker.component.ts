@@ -32,12 +32,6 @@ export class CardMakerComponent implements OnInit {
   ngOnInit(): void {
     let path = window.location.href.split('card');
     this.currentURL = path[0];
-    this.dataSource = this.service.clients;
-
-    this.service.Changed.subscribe((cmd: Command) => {
-      if (cmd.type == this.service.command_types.Loader && cmd.data == 'clients')
-        this.dataSource = this.service.clients;
-    });
   }
 
   clearFilter() {
@@ -59,30 +53,26 @@ export class CardMakerComponent implements OnInit {
 
       this.dataSource = items;
     }
-    else
-      this.dataSource = this.service.clients;
   }
 
   sortData(sort: Sort) {
-    let data = new Array<clients>();
-    if(this.filter == '')
-      data = this.service.clients.slice();
-    else
-      data = this.dataSource.slice();
+    if(this.filter != '') {
+      let data = this.dataSource.slice();
     
-    if (!sort.active || sort.direction === '') {
-      this.dataSource = data;
-      return;
-    }
-
-    this.dataSource = data.sort((a, b) => {
-      const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'name': return this.service.compare(a.name, b.name, isAsc);
-        case 'address': return this.service.compare(a.address, b.address, isAsc);
-        default: return 0;
+      if (!sort.active || sort.direction === '') {
+        this.dataSource = data;
+        return;
       }
-    });
+  
+      this.dataSource = data.sort((a, b) => {
+        const isAsc = sort.direction === 'asc';
+        switch (sort.active) {
+          case 'name': return this.service.compare(a.name, b.name, isAsc);
+          case 'address': return this.service.compare(a.address, b.address, isAsc);
+          default: return 0;
+        }
+      });
+    }
   }
 
   select(item: clients) {

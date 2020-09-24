@@ -21,6 +21,7 @@ export class WaterService {
 
   defaultImagePath: string = 'https://firebasestorage.googleapis.com/v0/b/acqua-perfetta.appspot.com/o/images%2Fdefault_default_photo.png?alt=media&token=6a1124f4-58d9-45cd-b134-024c71c6e898';
   imagePath: string = '';
+  message: string = "Welcome to Acqua Perfetta!";
   imageSelector: ElementRef;
 
   expenses_categories: Array<ExpensesCategory>;
@@ -350,11 +351,13 @@ export class WaterService {
         return true;
     } 
 
+    /*
     if(this.current_user.role == this.user_roles.Delivery 
       && item.status == this.order_status.Delivery
       && status == this.order_status.Delivered)
       return true;
-
+    */
+   
     return false;
   }
 

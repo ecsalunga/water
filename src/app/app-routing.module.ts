@@ -15,6 +15,7 @@ import { DailyComponent } from './daily/daily.component';
 import { BillingComponent } from './billing/billing.component';
 import { ProfileComponent } from './profile/profile.component';
 import { CardMakerComponent } from './card-maker/card-maker.component';
+import { MessageComponent } from './message/message.component';
 
 const routes: Routes = [
   { path: 'menu', component: MenuComponent },
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'card', component: CardMakerComponent },
   { path: 'billing/:id', component: BillingComponent },
   { path: 'daily', component: DailyComponent },
+  { path: 'message', component: MessageComponent },
   { path: '**', component: MenuComponent }
 ];
 

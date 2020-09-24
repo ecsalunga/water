@@ -23,7 +23,8 @@ export class BillingComponent implements OnInit {
   round = 0;
   othersTotal = 0;
   total = 0;
-  message = "";
+  hasItem: boolean = true;
+  pickupSale = new sales();
 
   constructor(private service: WaterService) { }
 
@@ -40,6 +41,20 @@ export class BillingComponent implements OnInit {
       this.item = item.payload.val();
       this.item.key = item.key;
       this.counter = this.item.counter ?? 0;
+
+      this.pickupSale.client_key = this.item.key;
+      this.pickupSale.name = this.item.name;
+      this.pickupSale.block = this.item.block;
+      this.pickupSale.lot = this.item.lot;
+      this.pickupSale.address = this.item.address;
+      this.pickupSale.contact = this.item.contact;
+      this.pickupSale.slim = this.item.slim;
+      this.pickupSale.round = this.item.round;
+      this.pickupSale.price = this.item.price;
+      this.pickupSale.isSelected = false;
+      this.pickupSale.counted = false;
+      this.pickupSale.status = this.service.order_status.Pickup;
+      this.pickupSale.remarks = this.item.remarks;
     });
 
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('client_key').equalTo(this.clientId)).snapshotChanges().subscribe(records => {
@@ -106,11 +121,31 @@ export class BillingComponent implements OnInit {
     });
   }
 
+  pickup() {
+    this.pickupSale.slim = this.pickupSale.slim ?? 0;
+    this.pickupSale.round = this.pickupSale.round ?? 0;
+    let total = (this.pickupSale.slim + this.pickupSale.round);
+
+    if(total > 0 && this.pickupSale.slim >= 0 && this.pickupSale.round >= 0) {
+      this.pickupSale.action_date = this.service.actionDate();
+      this.pickupSale.action_day = this.service.action_day;
+      this.pickupSale.amount = ((this.pickupSale.slim * this.pickupSale.price) + (this.pickupSale.round * this.pickupSale.price));
+  
+      this.service.db.list('sales/water/items').push(this.pickupSale);
+  
+      this.service.message = "Water sales item created.";
+      this.service.router.navigateByUrl('/message');
+    }
+    else
+      this.service.Message("Invalid amount.");
+  }
+
   GetDate(action_day: number): Date {
     return this.service.actionDayToDate(action_day);
   }
 
   compute() {
+    this.hasItem = (this.itemSales.length > 0 || this.billItems.length > 0);
     this.total = (((this.slim + this.round) * this.item.price) + this.othersTotal) - (this.item.price * this.promo);
   }
 

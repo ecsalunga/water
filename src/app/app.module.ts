@@ -19,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -40,6 +41,7 @@ import { BillingComponent } from './billing/billing.component';
 import { ProfileComponent } from './profile/profile.component';
 import { CardMakerComponent } from './card-maker/card-maker.component';
 import { MatSortModule } from '@angular/material/sort';
+import { MessageComponent } from './message/message.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,8 @@ import { MatSortModule } from '@angular/material/sort';
     DailyComponent,
     BillingComponent,
     ProfileComponent,
-    CardMakerComponent
+    CardMakerComponent,
+    MessageComponent
   ],
   imports: [
     BrowserModule,
@@ -82,7 +85,8 @@ import { MatSortModule } from '@angular/material/sort';
     MatAutocompleteModule,
     MatProgressBarModule,
     MatSnackBarModule,
-    MatSortModule
+    MatSortModule,
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

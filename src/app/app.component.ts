@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     let url = window.location.href;
 
-    if(url.indexOf('billing') == -1) {
+    if(url.indexOf('billing') == -1 && url.indexOf('message') == -1) {
       if(!this.service.current_user.isLogin)
         this.service.getLogin();
 

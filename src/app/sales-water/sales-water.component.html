@@ -53,7 +53,7 @@
         <!-- address column -->
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"><span [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
+            <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"><span [matTooltip]="element.address" matTooltipPosition="after" [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
         </ng-container>
 
         <!-- round column -->
@@ -204,7 +204,7 @@
             <mat-label>Select Status</mat-label>
             <mat-select [(value)]="item.status" required>
                 <mat-option value="pickup">Pickup</mat-option>
-                <mat-option *ngIf="item.key != null" value="preparing">Preparing</mat-option>
+                <mat-option value="preparing">Preparing</mat-option>
                 <mat-option *ngIf="item.key != null" value="delivery">Delivery</mat-option>
                 <mat-option *ngIf="item.key != null" value="delivered">Delivered</mat-option>
                 <mat-option *ngIf="role != 'Delivery'" value="paid">Paid</mat-option>
