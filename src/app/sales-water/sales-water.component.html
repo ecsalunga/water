@@ -49,88 +49,93 @@
 
 <!-- Table list -->
 <div *ngIf="display=='list'">
-    <mat-table [dataSource]="items">
-        <!-- address column -->
-        <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"><span [matTooltip]="element.address" matTooltipPosition="after" [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
-        </ng-container>
-
-        <!-- round column -->
-        <ng-container matColumnDef="round">
-            <mat-header-cell *matHeaderCellDef> Round </mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)">
-                <ng-container *ngIf="!isAmount(element)">
-                    {{ element.round }} 
-                </ng-container>
-            </mat-cell>
-        </ng-container>
-
-        <!-- slim column -->
-        <ng-container matColumnDef="slim">
-            <mat-header-cell *matHeaderCellDef> Slim </mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"> 
-                <ng-container *ngIf="!isAmount(element)">
-                    {{ element.slim }} 
-                </ng-container>
-                <ng-container *ngIf="isAmount(element)">
-                    {{ element.slim | number:'1.2-2' }} 
-                </ng-container>
-            </mat-cell>
-        </ng-container>
-
-        <!-- status column -->
-        <ng-container matColumnDef="key">
-            <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
-            <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)">
-                <mat-menu #appMenu="matMenu">
-                    <ng-template matMenuContent>
-                        <button mat-menu-item (click)="edit(element)">
-                            <mat-icon class="status-all">edit</mat-icon>
-                            <span>Edit</span>
+    <div class="table-area">
+        <mat-table [dataSource]="items">
+            <!-- address column -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"><span [matTooltip]="element.address" matTooltipPosition="after" [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
+            </ng-container>
+    
+            <!-- round column -->
+            <ng-container matColumnDef="round">
+                <mat-header-cell *matHeaderCellDef> Round </mat-header-cell>
+                <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)">
+                    <ng-container *ngIf="!isAmount(element)">
+                        {{ element.round }} 
+                    </ng-container>
+                </mat-cell>
+            </ng-container>
+    
+            <!-- slim column -->
+            <ng-container matColumnDef="slim">
+                <mat-header-cell *matHeaderCellDef> Slim </mat-header-cell>
+                <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"> 
+                    <ng-container *ngIf="!isAmount(element)">
+                        {{ element.slim }} 
+                    </ng-container>
+                    <ng-container *ngIf="isAmount(element)">
+                        {{ element.slim | number:'1.2-2' }} 
+                    </ng-container>
+                </mat-cell>
+            </ng-container>
+    
+            <!-- status column -->
+            <ng-container matColumnDef="key">
+                <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)">
+                    <mat-menu #appMenu="matMenu">
+                        <ng-template matMenuContent>
+                            <button mat-menu-item (click)="edit(element)">
+                                <mat-icon class="status-all">edit</mat-icon>
+                                <span>Edit</span>
+                            </button>
+                            <button mat-menu-item *ngIf="canExecute('pickup', element)" (click)="setStatus('pickup', element)">
+                                <mat-icon class="status-pickup">connect_without_contact</mat-icon>
+                                <span>Pickup</span>
+                            </button>
+                            <button mat-menu-item *ngIf="canExecute('preparing', element)" (click)="setStatus('preparing', element)">
+                                <mat-icon class="status-preparing">wash</mat-icon>
+                                <span>Preparing</span>
+                            </button>
+                            <button mat-menu-item *ngIf="canExecute('delivery', element)" (click)="setStatus('delivery', element)">
+                                <mat-icon class="status-delivery">two_wheeler</mat-icon>
+                                <span>Delivery</span>
+                            </button>
+                            <button mat-menu-item *ngIf="canExecute('delivered', element)" (click)="setStatus('delivered', element)">
+                                <mat-icon class="status-delivered">house</mat-icon>
+                                <span>Delivered</span>
+                            </button>
+                            <button mat-menu-item *ngIf="canExecute('paid', element)" (click)="setStatus('paid', element)">
+                                <mat-icon class="status-paid">check</mat-icon>
+                                <span>Paid</span>
+                            </button>
+                            <button mat-menu-item *ngIf="canExecute('cancelled', element)" (click)="setStatus('cancelled', element)">
+                                <mat-icon class="status-cancelled">cancel</mat-icon>
+                                <span>Cancelled</span>
+                            </button>
+                        </ng-template>
+                    </mat-menu>
+                    <ng-container *ngIf="element.key != 'total'">
+                        <button mat-icon-button [matMenuTriggerFor]="appMenu">
+                            <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
                         </button>
-                        <button mat-menu-item *ngIf="canExecute('pickup', element)" (click)="setStatus('pickup', element)">
-                            <mat-icon class="status-pickup">connect_without_contact</mat-icon>
-                            <span>Pickup</span>
+                    </ng-container>
+                    <ng-container *ngIf="showNext(element)">
+                        <button mat-icon-button (click)="setNext()">
+                            <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
                         </button>
-                        <button mat-menu-item *ngIf="canExecute('preparing', element)" (click)="setStatus('preparing', element)">
-                            <mat-icon class="status-preparing">wash</mat-icon>
-                            <span>Preparing</span>
-                        </button>
-                        <button mat-menu-item *ngIf="canExecute('delivery', element)" (click)="setStatus('delivery', element)">
-                            <mat-icon class="status-delivery">two_wheeler</mat-icon>
-                            <span>Delivery</span>
-                        </button>
-                        <button mat-menu-item *ngIf="canExecute('delivered', element)" (click)="setStatus('delivered', element)">
-                            <mat-icon class="status-delivered">house</mat-icon>
-                            <span>Delivered</span>
-                        </button>
-                        <button mat-menu-item *ngIf="canExecute('paid', element)" (click)="setStatus('paid', element)">
-                            <mat-icon class="status-paid">check</mat-icon>
-                            <span>Paid</span>
-                        </button>
-                        <button mat-menu-item *ngIf="canExecute('cancelled', element)" (click)="setStatus('cancelled', element)">
-                            <mat-icon class="status-cancelled">cancel</mat-icon>
-                            <span>Cancelled</span>
-                        </button>
-                    </ng-template>
-                </mat-menu>
-                <ng-container *ngIf="element.key != 'total'">
-                    <button mat-icon-button [matMenuTriggerFor]="appMenu">
-                        <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
-                    </button>
-                </ng-container>
-                <ng-container *ngIf="showNext(element)">
-                    <button mat-icon-button (click)="setNext()">
-                        <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
-                    </button>
-                </ng-container>
-            </mat-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </mat-table>
+                    </ng-container>
+                </mat-cell>
+            </ng-container>
+    
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+    </div>
+    <div class="total-area" *ngIf="filter == 'paid'">
+        Total:  {{ total.slim | number:'1.2-2' }} 
+    </div>
 </div>
 
 <!-- Form -->
@@ -204,7 +209,7 @@
             <mat-label>Select Status</mat-label>
             <mat-select [(value)]="item.status" required>
                 <mat-option value="pickup">Pickup</mat-option>
-                <mat-option value="preparing">Preparing</mat-option>
+                <mat-option *ngIf="role != 'Delivery'" value="preparing">Preparing</mat-option>
                 <mat-option *ngIf="item.key != null" value="delivery">Delivery</mat-option>
                 <mat-option *ngIf="item.key != null" value="delivered">Delivered</mat-option>
                 <mat-option *ngIf="role != 'Delivery'" value="paid">Paid</mat-option>

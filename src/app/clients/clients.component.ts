@@ -121,6 +121,12 @@ export class ClientsComponent implements OnInit {
     item.action_date = this.service.actionDate();
     item.action_day = this.service.action_day;
 
+    // trim
+    item.name = item.name.trim();
+    item.block = item.block.trim();
+    item.lot = item.lot.trim();
+    item.address = item.address.trim();
+
     if (item.key == null || item.key == "") {
       item.last_order = item.action_date;
       this.service.db.list('clients/items').push(item);

@@ -5,7 +5,7 @@ import { Card } from '../models/card';
 import { Command } from '../models/command';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 import { Sort } from '@angular/material/sort';
-import { Document, Packer, Paragraph, Media, Table, TableRow, TableCell, AlignmentType, HeadingLevel, WidthType } from "docx";
+import { Document, Packer, Paragraph, Media, Table, TableRow, TableCell, AlignmentType, HeadingLevel, TextRun, WidthType } from "docx";
 import { saveAs } from "file-saver/FileSaver";
 
 @Component({
@@ -179,19 +179,44 @@ export class CardMakerComponent implements OnInit {
       let margin  =  new Paragraph({});
 
       let acqua =  new Paragraph({
-        text: "Acqua Perfetta",
         heading: HeadingLevel.HEADING_1,
-        alignment: AlignmentType.CENTER
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+              size: 32,
+              text: "Acqua Perfetta",
+              font: {
+                  name: "American Typewriter"
+              }
+          })
+        ]
       });
 
-      let address = new Paragraph({
-        text: "Blk 25 Lot 9 Fiesta Ave. Fiesta Pandan",
-        alignment: AlignmentType.CENTER
+      let address =  new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+              size: 20,
+              text: "Blk 25 Lot 9 Fiesta Ave. Fiesta Pandan",
+              font: {
+                  name: "Calibri Light"
+              }
+          })
+        ]
       });
 
-      let contact = new Paragraph({
-        text: "+63 927 968 1748",
-        alignment: AlignmentType.CENTER
+      let contact =  new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+              size: 36,
+              bold: true,
+              text: "+63 927 968 1748",
+              font: {
+                  name: "Calibri Light"
+              }
+          })
+        ]
       });
 
       let img = Media.addImage(doc, card.imageSrc, 200, 200);
@@ -201,9 +226,17 @@ export class CardMakerComponent implements OnInit {
 
       qr.addChildElement(img);
 
-      let client = new Paragraph({
-        text: card.address,
-        alignment: AlignmentType.CENTER
+      let client =  new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({
+              size: 20,
+              text: card.address,
+              font: {
+                  name: "Calibri Light"
+              }
+          })
+        ]
       });
 
       let tc = new TableCell({ 
@@ -237,7 +270,10 @@ export class CardMakerComponent implements OnInit {
     });
 
     doc.addSection({
-      properties: {},
+      margins: {
+        top: 0,
+        bottom: 0
+    },
       children: [table],
     });
     
