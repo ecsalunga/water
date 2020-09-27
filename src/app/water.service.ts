@@ -351,12 +351,10 @@ export class WaterService {
         return true;
     } 
 
-    /*
     if(this.current_user.role == this.user_roles.Delivery 
       && item.status == this.order_status.Delivery
       && status == this.order_status.Delivered)
       return true;
-    */
    
     return false;
   }

@@ -55,22 +55,22 @@
                     <tr *ngIf="slim > 0">
                         <td>Slim</td>
                         <td>{{ slim }}</td>
-                        <td>{{ item.price * slim | number:'1.2-2' }}</td>
+                        <td style="text-align: right;">{{ item.price * slim | number:'1.2-2' }}</td>
                     </tr>
                     <tr *ngIf="round > 0">
                         <td>Round</td>
                         <td>{{ round }}</td>
-                        <td>{{ item.price * round | number:'1.2-2' }}</td>
+                        <td style="text-align: right;">{{ item.price * round | number:'1.2-2' }}</td>
                     </tr>
                     <tr *ngFor="let bill of billItems">
                         <td>{{ bill.name }}</td>
                         <td>{{ bill.quantity }}</td>
-                        <td>{{ bill.amount | number:'1.2-2' }}</td>
+                        <td style="text-align: right;">{{ bill.amount | number:'1.2-2' }}</td>
                     </tr>
                     <tr *ngIf="promo > 0" class="promo">
                         <td>10 + 1 Promo</td>
                         <td>{{ promo }}</td>
-                        <td>-{{ item.price * promo | number:'1.2-2' }}</td>
+                        <td style="text-align: right;">-{{ item.price * promo | number:'1.2-2' }}</td>
                     </tr>
                     <tr style="height: 20px;">
                         <td></td>
@@ -80,7 +80,7 @@
                     <tr class="total">
                         <td>Total</td>
                         <td></td>
-                        <td>{{ total | number:'1.2-2' }}</td>
+                        <td style="text-align: right;">{{ total | number:'1.2-2' }}</td>
                     </tr>
                 </table>
                 <div class="actions" *ngIf="isLogin">

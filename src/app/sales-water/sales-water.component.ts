@@ -47,8 +47,12 @@ export class SalesWaterComponent implements OnInit {
 
   constructor(private service: WaterService) { }
   isPriceLocked: boolean = false;
+  currentURL: string;
 
   ngOnInit(): void {
+    let path = window.location.href.split('sales');
+    this.currentURL = path[0];
+
     this.total = new sales();
     this.total.key = "total";
     this.total.name = "Total";
@@ -292,32 +296,19 @@ export class SalesWaterComponent implements OnInit {
 
         if(isCount)
           client.counter += client.slim + client.round;
-        else 
+        else {
           client.counter -= client.slim + client.round;
+          item.promo = 0;
+        }
 
         this.service.db.object('clients/items/' + client.key).update(client);
         item.counted = isCount;
+        
       }
     });
   }
 
-  CanEdit(item: sales): boolean {
-    if (this.service.current_user.role == this.service.user_roles.Admin)
-      return true;
-    else if (this.IsAllowed
-      && item.status != this.service.order_status.Delivered
-      && item.status != this.service.order_status.Paid
-      && item.status != this.service.order_status.Cancelled)
-      return true;
-
-    return false;
-  }
-
   canSave(): boolean {
-    return this.canExecute(this.item.status, this.itemOrig);
-  }
-
-  canExecute(status: string, item: sales): boolean {
     if (this.service.current_user.role == this.service.user_roles.Admin)
       return true;
 
@@ -333,6 +324,16 @@ export class SalesWaterComponent implements OnInit {
       && this.itemOrig == null
       && this.item.status == this.service.order_status.Pickup)
       return true;
+
+    return this.service.CanExecute(status, this.itemOrig);
+  }
+
+  canExecute(status: string, item: sales): boolean {
+    if (this.service.current_user.role == this.service.user_roles.Admin)
+      return true;
+
+    if (this.IsLocked)
+      return false;
 
     return this.service.CanExecute(status, item);
   }
@@ -582,5 +583,10 @@ export class SalesWaterComponent implements OnInit {
   private _filterAddress(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.addressOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  qrCode(item: sales) {
+    let url = this.currentURL + "billing/" + item.client_key;
+    window.open(url, "_blank");
   }
 }
