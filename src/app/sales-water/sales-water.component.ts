@@ -275,8 +275,11 @@ export class SalesWaterComponent implements OnInit {
   setStatus(status: string, item: sales) {
     item.status = status;
     item.isSelected = false;
+    
     if (!item.counted && (item.status == this.service.order_status.Delivered || item.status == this.service.order_status.Paid))
       this.countOrder(item, true);
+    else if (item.counted && item.status == this.service.order_status.Cancelled)
+      this.countOrder(item, false);
 
     this.service.db.object('sales/water/items/' + item.key).update(item);
   }
