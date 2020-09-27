@@ -45,9 +45,18 @@ export class SalesWaterComponent implements OnInit {
   addressFilteredOptions: Observable<string[]>;
   addressOptions: string[] = [];
 
-  constructor(private service: WaterService) { }
   isPriceLocked: boolean = false;
   currentURL: string;
+
+  constructor(private service: WaterService) {
+    this.role = this.service.current_user.role;
+    if(this.role == this.service.user_roles.Delivery)
+      this.filter = this.service.order_status.Pickup;
+    if(this.service.select_tab != '') {
+      this.filter = this.service.select_tab;
+      this.service.select_tab = '';
+    }
+  }
 
   ngOnInit(): void {
     let path = window.location.href.split('sales');
@@ -56,11 +65,6 @@ export class SalesWaterComponent implements OnInit {
     this.total = new sales();
     this.total.key = "total";
     this.total.name = "Total";
-
-    this.role = this.service.current_user.role;
-
-    if(this.role == this.service.user_roles.Delivery)
-      this.filter = 'pickup';
 
     this.selected = this.service.action_day;
     this.loadData();

@@ -20,6 +20,7 @@ export class ClientsComponent implements OnInit {
   currentURL: string;
   clientPath: string;
   filter: string = '';
+  showDelete: boolean = false;
 
   constructor(public service: WaterService) { }
 
@@ -98,11 +99,16 @@ export class ClientsComponent implements OnInit {
   edit(item: clients) {
     this.display = 'form';
     this.item = Object.assign({}, item);
+    this.showDelete = false;
     this.clientPath = this.currentURL + "billing/" + item.key;
   }
 
   toDate(action_date: number): Date {
     return this.service.actionDayToDate(action_date);
+  }
+
+  displayDelete() {
+    this.showDelete = true;
   }
 
   save() {

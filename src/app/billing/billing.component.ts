@@ -158,8 +158,10 @@ export class BillingComponent implements OnInit {
       else
         this.service.db.object('sales/water/items/' + this.pickupSale.key).update(this.pickupSale);
       
-      if(this.service.current_user.isLogin)
+      if(this.service.current_user.isLogin) {
+        this.service.select_tab = this.service.order_status.Pickup;
         this.service.router.navigateByUrl('/sales');
+      }
     }
     else
       this.service.Message("Invalid amount.");
@@ -212,6 +214,7 @@ export class BillingComponent implements OnInit {
 
     this.itemSales.forEach(item => {
       item.status = this.service.order_status.Delivered;
+      item.isSelected = true;
       item.counted = true;
       this.service.db.object('sales/water/items/' + item.key).update(item);
     });
@@ -220,6 +223,9 @@ export class BillingComponent implements OnInit {
       item.status = this.service.order_status.Delivered;
       this.service.db.object('sales/others/items/' + item.key).update(item);
     });
+
+    this.service.select_tab = this.service.order_status.Delivered;
+    this.service.router.navigateByUrl('/sales');
   }
 
   print() {

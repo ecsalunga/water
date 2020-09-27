@@ -37,6 +37,7 @@ export class WaterService {
   current_user = { key: '', name: '', username: '', role: '', isLogin: false };
   setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item' };
   command_types = { ImageUploaded: 'image-uploaded', Progress: 'progress', Loader: 'loader' };
+  select_tab = '';
   
   constructor(public db: AngularFireDatabase, public store: AngularFireStorage, public router: Router, public snackBar: MatSnackBar) {
     this.action_day =  this.actionDay();

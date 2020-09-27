@@ -18,14 +18,14 @@
         </mat-form-field>
     </div>
     <div [hidden]="display=='form'" class="right">
-        <mat-button-toggle-group value='all'>
+        <mat-button-toggle-group [value]="filter">
             <mat-button-toggle (click)="add()">
                 <mat-icon class="add">add_box</mat-icon>
             </mat-button-toggle>
             <mat-button-toggle *ngIf="role != 'Delivery'" value="all" (click)="show('all')">
                 <mat-icon class="status-all">check_box</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle (click)="show('pickup')">
+            <mat-button-toggle (click)="show('pickup')" value="pickup">
                 <mat-icon class="status-pickup">connect_without_contact</mat-icon>
             </mat-button-toggle>
             <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('preparing')">
