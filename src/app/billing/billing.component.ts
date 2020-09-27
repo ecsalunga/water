@@ -24,7 +24,15 @@ export class BillingComponent implements OnInit {
   othersTotal = 0;
   total = 0;
   hasItem: boolean = true;
+  hasPrevious: boolean = false;
   pickupSale = new sales();
+  currentStatus = 'none';
+  image = 'assets/gifs/buy.gif';
+  message = "";
+  header = "";
+  isLogin = false;
+  showInput: boolean = false;
+  pickupLabel = 'Order';
 
   constructor(private service: WaterService) { }
 
@@ -51,7 +59,6 @@ export class BillingComponent implements OnInit {
       this.pickupSale.slim = this.item.slim;
       this.pickupSale.round = this.item.round;
       this.pickupSale.price = this.item.price;
-      this.pickupSale.isSelected = false;
       this.pickupSale.counted = false;
       this.pickupSale.status = this.service.order_status.Pickup;
       this.pickupSale.remarks = this.item.remarks;
@@ -63,6 +70,8 @@ export class BillingComponent implements OnInit {
       this.promo = 0;
       this.itemSales = new Array<sales>();
       this.itemPrevious = new Array<sales>();
+      this.currentStatus = this.service.order_status.None;
+      this.hasPrevious = false;
 
       records.forEach(item => {
         let i = item.payload.val();
@@ -87,13 +96,24 @@ export class BillingComponent implements OnInit {
             
           this.itemSales.push(i);
         }
+        else if(i.status != this.service.order_status.Delivery
+          && i.status != this.service.order_status.Paid
+          && i.status != this.service.order_status.Cancelled
+          && !i.counted && i.action_day == this.service.action_day) {
+          this.currentStatus = i.status;
+          this.pickupSale = i;
+        }
         else if(i.counted)
           this.itemPrevious.push(i);
       });
 
-      this.itemPrevious = this.itemPrevious.sort((a, b) => a.action_date > b.action_date ? -1 : 1);
-      if(this.itemPrevious.length > 10)
-        this.itemPrevious = this.itemPrevious.slice(0, 10);
+      if(this.itemPrevious.length > 0) {
+        this.itemPrevious = this.itemPrevious.sort((a, b) => a.action_date > b.action_date ? -1 : 1);
+        if(this.itemPrevious.length > 10)
+          this.itemPrevious = this.itemPrevious.slice(0, 10);
+
+        this.hasPrevious = true;
+      }
 
       this.compute();
     });
@@ -122,6 +142,7 @@ export class BillingComponent implements OnInit {
   }
 
   pickup() {
+    this.pickupSale.key = this.pickupSale.key ?? "";
     this.pickupSale.slim = this.pickupSale.slim ?? 0;
     this.pickupSale.round = this.pickupSale.round ?? 0;
     let total = (this.pickupSale.slim + this.pickupSale.round);
@@ -130,11 +151,15 @@ export class BillingComponent implements OnInit {
       this.pickupSale.action_date = this.service.actionDate();
       this.pickupSale.action_day = this.service.action_day;
       this.pickupSale.amount = ((this.pickupSale.slim * this.pickupSale.price) + (this.pickupSale.round * this.pickupSale.price));
-  
-      this.service.db.list('sales/water/items').push(this.pickupSale);
-  
-      this.service.message = "Water sales item created.";
-      this.service.router.navigateByUrl('/message');
+      this.pickupSale.isSelected = this.service.current_user.isLogin;
+
+      if (this.pickupSale.key == "")
+        this.service.db.list('sales/water/items').push(this.pickupSale);
+      else
+        this.service.db.object('sales/water/items/' + this.pickupSale.key).update(this.pickupSale);
+      
+      if(this.service.current_user.isLogin)
+        this.service.router.navigateByUrl('/sales');
     }
     else
       this.service.Message("Invalid amount.");
@@ -145,8 +170,40 @@ export class BillingComponent implements OnInit {
   }
 
   compute() {
+    this.showInput = false;
     this.hasItem = (this.itemSales.length > 0 || this.billItems.length > 0);
     this.total = (((this.slim + this.round) * this.item.price) + this.othersTotal) - (this.item.price * this.promo);
+    this.isLogin = (this.service.current_user.isLogin && this.service.current_user.role != this.service.user_roles.Monitor);
+
+    if(!this.hasItem && this.currentStatus == 'none') {
+      this.header = "Order";
+      this.message = "Enter your order(s) below";
+      this.image = 'assets/gifs/buy.gif';
+      this.showInput = true;
+      this.pickupLabel = 'Order';
+    }
+    else if(this.isLogin && this.currentStatus == this.service.order_status.Pickup) {
+      this.header = "Update order";
+      this.message = "Enter the client order(s) below";
+      this.image = 'assets/gifs/buy.gif';
+      this.showInput = true;
+      this.pickupLabel = 'Update pickup';
+    }
+    else if(this.currentStatus == this.service.order_status.Pickup) {
+      this.header = "On our way";
+      this.message = "Our staff are on their way to pickup your bottles";
+      this.image = 'assets/gifs/pickup.gif';
+    }
+    else if(this.currentStatus == this.service.order_status.Preparing) {
+      this.header = "Preparing your order";
+      this.message = "Our staff are currently preparing your order(s)";
+      this.image = 'assets/gifs/preparing.gif';
+    }
+    else if(this.hasItem) {
+      this.header = "Delivering your order";
+      this.message = "Our staff are on their way to deliver your order(s)";
+      this.image = 'assets/gifs/delivery.gif';
+    }
   }
 
   delivered() {

@@ -45,6 +45,20 @@ table {
     font-weight: bold;
 }
 
+.order {
+    margin-top: 20px;
+}
+
+.gif {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px silver solid;
+}
+
+.form {
+    margin-left: 10px;
+}
+
 @media print {
     .data, .history {
       display: none;

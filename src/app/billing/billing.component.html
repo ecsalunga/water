@@ -1,6 +1,6 @@
 <mat-card class="data">
     <mat-card-header>
-        <mat-card-title>Billing</mat-card-title>
+        <mat-card-title>{{ header }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
         <div style="margin-left: 25px; margin-top: 25px;">
@@ -15,30 +15,41 @@
                         <td>{{ item.contact }}</td>
                     </tr>
                 </table>
-                <table *ngIf="!hasItem">
-                    <tr>
-                        <td style="width: 100px;">Slim</td>
-                        <td>
-                            <mat-form-field>
-                                <input matInput type="number" placeholder="Slim" [(ngModel)]="pickupSale.slim" />
-                            </mat-form-field>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Round</td>
-                        <td>
-                            <mat-form-field>
-                                <input matInput type="number" placeholder="Round" [(ngModel)]="pickupSale.round" />
-                            </mat-form-field>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button mat-raised-button (click)="pickup()">Pickup</button></td>
-                    </tr>
-                </table>
+                <div class="order">
+                    <table>
+                        <tr>
+                            <td style="width: 30%;">
+                                <img class="gif" [src]="image" />
+                            </td>
+                            <td>
+                                <div class="form">
+                                    <div style="margin-bottom: 20px; font-size: 18px;">
+                                        {{ message }}
+                                    </div>
+                                    <ng-container *ngIf="showInput">
+                                        <div>
+                                            <mat-form-field>
+                                                <input matInput type="number" placeholder="Slim"
+                                                    [(ngModel)]="pickupSale.slim" />
+                                            </mat-form-field>
+                                        </div>
+                                        <div>
+                                            <mat-form-field>
+                                                <input matInput type="number" placeholder="Round"
+                                                    [(ngModel)]="pickupSale.round" />
+                                            </mat-form-field>
+                                        </div>
+                                        <div>
+                                            <button mat-raised-button (click)="pickup()">{{ pickupLabel }}</button>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
-            <div *ngIf="itemSales.length > 0 || billItems.length > 0">
+            <div *ngIf="hasItem">
                 <hr />
                 <table>
                     <tr *ngIf="slim > 0">
@@ -72,8 +83,9 @@
                         <td>{{ total | number:'1.2-2' }}</td>
                     </tr>
                 </table>
-                <div class="actions">
-                    <button mat-raised-button style="margin-right: 5px;" (click)="print()">Print</button><button mat-raised-button (click)="delivered()">Delivered</button>
+                <div class="actions" *ngIf="isLogin">
+                    <button mat-raised-button style="margin-right: 5px;" (click)="print()">Print</button><button
+                        mat-raised-button (click)="delivered()">Delivered</button>
                 </div>
             </div>
         </div>
@@ -114,7 +126,7 @@
         </tr>
     </table>
 </div>
-<mat-card style="margin-top: 20px;" *ngIf="itemPrevious.length > 0" class="history">
+<mat-card style="margin-top: 20px;" *ngIf="hasPrevious" class="history">
     <mat-card-header>
         <mat-card-title>Order History</mat-card-title>
     </mat-card-header>

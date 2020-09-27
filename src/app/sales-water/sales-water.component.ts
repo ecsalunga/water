@@ -54,6 +54,10 @@ export class SalesWaterComponent implements OnInit {
     this.total.name = "Total";
 
     this.role = this.service.current_user.role;
+
+    if(this.role == this.service.user_roles.Delivery)
+      this.filter = 'pickup';
+
     this.selected = this.service.action_day;
     this.loadData();
     this.loadClientData();
