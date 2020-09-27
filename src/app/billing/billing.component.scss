@@ -2,6 +2,11 @@
     width: 100%;     
 }
 
+.mat-form-field {
+    width: 30%;
+    font-size: 16px;
+}
+
 table {
     width: 90%;
 }
@@ -49,10 +54,14 @@ table {
     margin-top: 20px;
 }
 
+.order-image {
+    width: 40%;
+    min-width: 100px;
+}
+
 .gif {
     width: 100%;
-    border-radius: 5px;
-    border: 1px silver solid;
+    border-radius: 7px;
 }
 
 .form {

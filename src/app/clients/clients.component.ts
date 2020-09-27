@@ -146,4 +146,9 @@ export class ClientsComponent implements OnInit {
     this.service.Message("Client " + this.item.name + " deleted.");
     this.display = 'list';
   }
+
+  qrCode(item: clients) {
+    let url = this.currentURL + "billing/" + item.key;
+    window.open(url, "_blank");
+  }
 }
