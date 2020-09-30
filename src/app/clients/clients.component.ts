@@ -25,6 +25,8 @@ export class ClientsComponent implements OnInit {
   constructor(public service: WaterService) { }
 
   ngOnInit(): void {
+    this.service.ForAdminOnly();
+    
     let path = window.location.href.split('clients');
     this.currentURL = path[0];
     this.service.NotForDelivery();

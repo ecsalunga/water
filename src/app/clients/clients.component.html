@@ -109,8 +109,7 @@
 
 <!-- Actions -->
 <div class="actions">
-    <button mat-raised-button *ngIf="display=='list'" (click)="cardBuilder()" style="margin-right: 5px;">Card
-        Builder</button>
+    <button mat-raised-button *ngIf="display=='list'" (click)="cardBuilder()" style="margin-right: 5px;">Card Builder</button>
     <button mat-raised-button *ngIf="display=='list'" (click)="add()">Add</button>
     <button mat-raised-button *ngIf="display=='form' && !showDelete && canDelete()" (click)="displayDelete()" style="margin-right: 15px;" color="accent">Show Delete</button>
     <button mat-raised-button *ngIf="display=='form' && showDelete && canDelete() " (click)="delete()" style="margin-right: 15px;" color="warn">Delete</button>

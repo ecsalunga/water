@@ -39,7 +39,7 @@ export const Menu = {
             title: "Clients",
             imgSrc: "assets/images/clients.jpg",
             blurb: "List of clients for tracking and card printing",
-            roles: "Admin, Monitor",
+            roles: "Admin",
             path: "/clients",
         },
         {

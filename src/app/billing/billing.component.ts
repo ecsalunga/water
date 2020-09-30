@@ -182,7 +182,7 @@ export class BillingComponent implements OnInit {
       this.message = "Enter your order(s) below";
       this.image = 'assets/gifs/buy.gif';
       this.showInput = true;
-      this.pickupLabel = 'Order';
+      this.pickupLabel = (this.isLogin ? 'Pickup' : 'Order');
     }
     else if(this.isLogin && this.currentStatus == this.service.order_status.Pickup) {
       this.header = "Update order";
