@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { sales } from '../models/sales-water';
 import { clients } from '../models/clients';
+import { StatusBar } from '../models/status-bar';
 import { Command } from '../models/command';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -24,10 +25,10 @@ export class SalesWaterComponent implements OnInit {
   displayedColumns: string[] = ['name', 'round', 'slim', 'key'];
   itemOrig: sales;
   item: sales;
-  total: sales;
+  bar = new StatusBar();
   itemClients = new Array<clients>();
   items: Array<sales>;
-  filter: string = 'all';
+  filter: string;
 
   blockControl = new FormControl();
   blockFilteredOptions: Observable<string[]>;
@@ -50,9 +51,9 @@ export class SalesWaterComponent implements OnInit {
 
   constructor(private service: WaterService) {
     this.role = this.service.current_user.role;
-    if(this.role == this.service.user_roles.Delivery)
+    if (this.role == this.service.user_roles.Delivery)
       this.filter = this.service.order_status.Pickup;
-    if(this.service.select_tab != '') {
+    if (this.service.select_tab != '') {
       this.filter = this.service.select_tab;
       this.service.select_tab = '';
     }
@@ -62,10 +63,7 @@ export class SalesWaterComponent implements OnInit {
     let path = window.location.href.split('sales');
     this.currentURL = path[0];
 
-    this.total = new sales();
-    this.total.key = "total";
-    this.total.name = "Total";
-
+    this.filter = this.service.order_status.All;
     this.selected = this.service.action_day;
     this.loadData();
     this.loadClientData();
@@ -116,9 +114,6 @@ export class SalesWaterComponent implements OnInit {
   }
 
   select(item: sales) {
-    if (item.key == "total")
-      return;
-
     if (this.filter == this.service.order_status.Pickup && this.service.current_user.role != this.service.user_roles.Monitor) {
       item.isSelected = !item.isSelected;
       this.service.db.object('sales/water/items/' + item.key).update(item);
@@ -138,8 +133,6 @@ export class SalesWaterComponent implements OnInit {
   loadData() {
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.items = new Array<sales>();
-      this.total.slim = 0;
-      this.total.round = 0;
 
       records.forEach(item => {
         let i = item.payload.val();
@@ -148,71 +141,114 @@ export class SalesWaterComponent implements OnInit {
         if (i.client_key == null)
           this.mapClient(i)
 
-        if (this.filter == 'all' || i.status == this.filter)
+        if (this.filter == this.service.order_status.All || i.status == this.filter)
           this.items.push(i);
       });
 
-      if (this.filter == this.service.order_status.Pickup
-        || this.filter == this.service.order_status.Preparing
-        || this.filter == this.service.order_status.Delivery
-        || this.filter == this.service.order_status.Delivered
-        || this.filter == this.service.order_status.Paid) {
-
-        let status = this.service.order_status.Preparing;
-
-        if (this.filter == this.service.order_status.Preparing)
-          status = this.service.order_status.Delivery;
-        else if (this.filter == this.service.order_status.Delivered)
-          status = this.service.order_status.Paid;
-        else if (this.filter == this.service.order_status.Delivery || this.filter == this.service.order_status.Paid)
-          status = this.service.order_status.None;
-
-        this.total.status = status;
-
-        this.items.forEach(item => {
-          if (this.filter == this.service.order_status.Delivery && this.filter == item.status) {
-            this.total.slim += item.slim;
-            this.total.round += item.round;
-          }
-          else if (this.filter == this.service.order_status.Paid && this.filter == item.status)
-            this.total.slim += item.amount;
-          else if (item.isSelected) {
-            if (this.filter == this.service.order_status.Delivered)
-              this.total.slim += item.amount;
-            else {
-              this.total.slim += item.slim;
-              this.total.round += item.round;
-            }
-          }
-        });
-
-        if (this.filter != this.service.order_status.Paid && (this.total.round > 0 || this.total.slim > 0))
-          this.items.push(this.total);
-      }
+      this.setData();
     });
   }
 
-  isAmount(item: sales) {
-    let isAmount = false;
+  setData() {
+    this.bar = new StatusBar();
+    let status = this.service.order_status.None;
 
-    if (item.key == 'total' &&
-      (this.filter == this.service.order_status.Delivered
-        || this.filter == this.service.order_status.Paid))
-      isAmount = true;
+    if (this.filter == this.service.order_status.Pickup)
+      status = this.service.order_status.Preparing;
+    else if (this.filter == this.service.order_status.Preparing)
+      status = this.service.order_status.Delivery;
+    else if (this.filter == this.service.order_status.Delivered)
+      status = this.service.order_status.Paid;
 
-    return isAmount;
+    this.bar.status = status;
+
+    this.items.forEach(item => {
+      if (this.filter == this.service.order_status.All) {
+        if (item.status != this.service.order_status.Cancelled) {
+          this.bar.slim += item.slim;
+          this.bar.round += item.round;
+          this.bar.amount += item.amount;
+        }
+      }
+      else {
+        this.bar.slim += item.slim;
+        this.bar.round += item.round;
+        this.bar.amount += item.amount;
+      }
+
+      if (this.filter != this.service.order_status.All && item.isSelected) {
+        this.bar.selectedSlim += item.slim;
+        this.bar.selectedRound += item.round;
+        this.bar.selectedAmount += item.amount;
+      }
+    });
+
+    this.bar.show = (this.items.length > 0);
   }
 
-  showNext(item: sales): boolean {
+  isNoAction(): boolean {
+    return (this.isSelectAction() && !this.hasSelected());
+  }
+
+  isSelectAction(): boolean {
+    return (this.filter == this.service.order_status.Pickup 
+      || this.filter == this.service.order_status.Preparing
+      || this.filter == this.service.order_status.Delivered);
+  }
+
+  getFooterRound(): number {
+    if(this.isNoAction())
+      return 0;
+
+    return this.hasSelected() ? this.bar.selectedRound : this.bar.round;
+  }
+
+  getFooterSlim(): number {
+    if(this.isNoAction())
+      return 0;
+
+    return this.hasSelected() ? this.bar.selectedSlim : this.bar.slim;
+  }
+
+  getStatusValue(): number {
+    if(this.hasSelected())
+    {
+      if(this.filter == this.service.order_status.Delivered)
+        return this.bar.selectedAmount;
+      else
+        return (this.bar.selectedSlim ?? 0) + (this.bar.selectedRound ?? 0);
+    }
+
+    if(this.filter == this.service.order_status.Delivered)
+      return this.bar.amount;
+
+    if(this.filter == this.service.order_status.Paid)
+      return this.bar.amount;
+
+    return (this.bar.slim ?? 0) + (this.bar.round ?? 0);
+  }
+
+  isAmount() {
+    return (this.filter == this.service.order_status.Delivered || this.filter == this.service.order_status.Paid);
+  }
+
+  showSelectedDelivered() {
+    return (this.hasSelected() && this.filter == this.service.order_status.Delivered);
+  }
+
+  showFooterAction(): boolean {
     let show = false;
 
-    if (item.key == 'total'
+    if (this.hasSelected()
       && this.service.current_user.role != this.service.user_roles.Delivery
-      && this.filter != this.service.order_status.Delivery
-      && this.filter != this.service.order_status.Paid)
+      && this.bar.status != this.service.order_status.None)
       show = true;
 
     return show;
+  }
+
+  hasSelected(): boolean {
+    return (this.bar.selectedSlim > 0 || this.bar.selectedRound > 0 || this.bar.selectedAmount > 0);
   }
 
   setNext() {
@@ -283,7 +319,7 @@ export class SalesWaterComponent implements OnInit {
   setStatus(status: string, item: sales) {
     item.status = status;
     item.isSelected = false;
-    
+
     if (!item.counted && (item.status == this.service.order_status.Delivered || item.status == this.service.order_status.Paid))
       this.countOrder(item, true);
     else if (item.counted && item.status == this.service.order_status.Cancelled)
@@ -298,7 +334,7 @@ export class SalesWaterComponent implements OnInit {
         client.slim = item.slim ?? 0;
         client.round = item.round ?? 0;
 
-        if(isCount)
+        if (isCount)
           client.counter += client.slim + client.round;
         else {
           client.counter -= client.slim + client.round;
@@ -307,7 +343,7 @@ export class SalesWaterComponent implements OnInit {
 
         this.service.db.object('clients/items/' + client.key).update(client);
         item.counted = isCount;
-        
+
       }
     });
   }
@@ -318,12 +354,12 @@ export class SalesWaterComponent implements OnInit {
 
     if (this.IsLocked)
       return false;
-    
+
     if (this.service.current_user.role == this.service.user_roles.Monitor
       && (this.itemOrig == null
         || (this.item.status == this.itemOrig.status && this.itemOrig.status != this.service.order_status.Paid)))
       return true;
-    
+
     if (this.service.current_user.role == this.service.user_roles.Delivery
       && this.itemOrig == null
       && this.item.status == this.service.order_status.Pickup)

@@ -1,4 +1,5 @@
 <div class="header">Water Sales</div>
+
 <!-- controls -->
 <div class="controls">
     <mat-form-field *ngIf="IsOpenDaysShowed" style="width: 110px;">
@@ -28,19 +29,19 @@
             <mat-button-toggle (click)="show('pickup')" value="pickup">
                 <mat-icon class="status-pickup">connect_without_contact</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('preparing')">
+            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('preparing')" value="preparing">
                 <mat-icon class="status-preparing">wash</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle (click)="show('delivery')">
+            <mat-button-toggle (click)="show('delivery')" value="delivery">
                 <mat-icon class="status-delivery">two_wheeler</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle (click)="show('delivered')">
+            <mat-button-toggle (click)="show('delivered')" value="delivered">
                 <mat-icon class="status-delivered">house</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('paid')">
+            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('paid')" value="paid">
                 <mat-icon class="status-paid">check</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('cancelled')">
+            <mat-button-toggle *ngIf="role != 'Delivery'" (click)="show('cancelled')" value="cancelled">
                 <mat-icon class="status-cancelled">cancel</mat-icon>
             </mat-button-toggle>
         </mat-button-toggle-group>
@@ -54,32 +55,37 @@
             <!-- address column -->
             <ng-container matColumnDef="name">
                 <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
-                <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"><span [matTooltip]="element.address" matTooltipPosition="after" [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
+                <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)">
+                    <span [matTooltip]="element.address" matTooltipPosition="after"
+                        [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
+                <mat-footer-cell *matFooterCellDef>
+                    {{ bar.label }}
+                </mat-footer-cell>
             </ng-container>
-    
+
             <!-- round column -->
             <ng-container matColumnDef="round">
                 <mat-header-cell *matHeaderCellDef> Round </mat-header-cell>
-                <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)">
-                    <ng-container *ngIf="!isAmount(element)">
-                        {{ element.round }} 
-                    </ng-container>
+                <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)">
+                    {{ element.round }}
                 </mat-cell>
+                <mat-footer-cell *matFooterCellDef> {{ getFooterRound() }} </mat-footer-cell>
             </ng-container>
-    
+
             <!-- slim column -->
             <ng-container matColumnDef="slim">
                 <mat-header-cell *matHeaderCellDef> Slim </mat-header-cell>
-                <mat-cell *matCellDef="let element" [class.total]="element.key == 'total'" [class.selected]="isSelected(element)" (click)="select(element)"> 
-                    <ng-container *ngIf="!isAmount(element)">
-                        {{ element.slim }} 
-                    </ng-container>
-                    <ng-container *ngIf="isAmount(element)">
-                        {{ element.slim | number:'1.2-2' }} 
-                    </ng-container>
+                <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)">
+                    {{ element.slim }}
                 </mat-cell>
+                <mat-footer-cell *matFooterCellDef> 
+                    {{ getFooterSlim() }}
+                    <div style="width: 100%; text-align: right;" *ngIf="showSelectedDelivered()">
+                        {{ getStatusValue() | number:'1.2-2' }}
+                    </div>
+                </mat-footer-cell>
             </ng-container>
-    
+
             <!-- status column -->
             <ng-container matColumnDef="key">
                 <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
@@ -90,54 +96,70 @@
                                 <mat-icon class="status-all">edit</mat-icon>
                                 <span>Edit</span>
                             </button>
-                            <button mat-menu-item *ngIf="canExecute('pickup', element)" (click)="setStatus('pickup', element)">
+                            <button mat-menu-item *ngIf="canExecute('pickup', element)"
+                                (click)="setStatus('pickup', element)">
                                 <mat-icon class="status-pickup">connect_without_contact</mat-icon>
                                 <span>Pickup</span>
                             </button>
-                            <button mat-menu-item *ngIf="canExecute('preparing', element)" (click)="setStatus('preparing', element)">
+                            <button mat-menu-item *ngIf="canExecute('preparing', element)"
+                                (click)="setStatus('preparing', element)">
                                 <mat-icon class="status-preparing">wash</mat-icon>
                                 <span>Preparing</span>
                             </button>
-                            <button mat-menu-item *ngIf="canExecute('delivery', element)" (click)="setStatus('delivery', element)">
+                            <button mat-menu-item *ngIf="canExecute('delivery', element)"
+                                (click)="setStatus('delivery', element)">
                                 <mat-icon class="status-delivery">two_wheeler</mat-icon>
                                 <span>Delivery</span>
                             </button>
-                            <button mat-menu-item *ngIf="canExecute('delivered', element)" (click)="setStatus('delivered', element)">
+                            <button mat-menu-item *ngIf="canExecute('delivered', element)"
+                                (click)="setStatus('delivered', element)">
                                 <mat-icon class="status-delivered">house</mat-icon>
                                 <span>Delivered</span>
                             </button>
-                            <button mat-menu-item *ngIf="canExecute('paid', element)" (click)="setStatus('paid', element)">
+                            <button mat-menu-item *ngIf="canExecute('paid', element)"
+                                (click)="setStatus('paid', element)">
                                 <mat-icon class="status-paid">check</mat-icon>
                                 <span>Paid</span>
                             </button>
-                            <button mat-menu-item *ngIf="canExecute('cancelled', element)" (click)="setStatus('cancelled', element)">
+                            <button mat-menu-item *ngIf="canExecute('cancelled', element)"
+                                (click)="setStatus('cancelled', element)">
                                 <mat-icon class="status-cancelled">cancel</mat-icon>
                                 <span>Cancelled</span>
                             </button>
                         </ng-template>
                     </mat-menu>
-                    <ng-container *ngIf="element.key != 'total'">
-                        <button mat-icon-button [matMenuTriggerFor]="appMenu">
-                            <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
-                        </button>
-                        <button *ngIf="element.status == 'delivery'" mat-icon-button (click)="qrCode(element)" style="margin-right: 5px;">
-                            <mat-icon>qr_code</mat-icon>
-                        </button>
-                    </ng-container>
-                    <ng-container *ngIf="showNext(element)">
-                        <button mat-icon-button (click)="setNext()">
-                            <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
-                        </button>
-                    </ng-container>
+                    <button mat-icon-button [matMenuTriggerFor]="appMenu">
+                        <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
+                    </button>
+                    <button *ngIf="element.status == 'delivery'" mat-icon-button (click)="qrCode(element)"
+                        style="margin-right: 5px;">
+                        <mat-icon>qr_code</mat-icon>
+                    </button>
                 </mat-cell>
+                <mat-footer-cell *matFooterCellDef>
+                    <ng-container *ngIf="showFooterAction()">
+                        <button mat-icon-button (click)="setNext()">
+                            <mat-icon class='status-{{bar.status}}'>{{ getIcon(bar.status) }}</mat-icon>
+                        </button>
+                    </ng-container>
+                    <ng-container *ngIf="!showFooterAction()">
+                        <ng-container *ngIf="!isNoAction()">
+                            <ng-container *ngIf="!isAmount()">
+                                {{ getStatusValue() }}
+                            </ng-container>
+                            <ng-container *ngIf="isAmount()">
+                                {{ getStatusValue() | number:'1.2-2' }}
+                            </ng-container>
+                        </ng-container>
+                    </ng-container>
+                </mat-footer-cell>
             </ng-container>
-    
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            <mat-footer-row [class.hidden-footer]="!bar.show" *matFooterRowDef="displayedColumns; sticky: true">
+            </mat-footer-row>
         </mat-table>
-    </div>
-    <div class="total-area" *ngIf="filter == 'paid'">
-        Total:  {{ total.slim | number:'1.2-2' }} 
     </div>
 </div>
 
@@ -194,17 +216,20 @@
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" (click)="$event.target.select()" (change)="priceUpdate()" placeholder="Slim" [(ngModel)]="item.slim" />
+            <input matInput required type="number" (click)="$event.target.select()" (change)="priceUpdate()"
+                placeholder="Slim" [(ngModel)]="item.slim" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput required type="number" (click)="$event.target.select()" (change)="priceUpdate()" placeholder="Round" [(ngModel)]="item.round" />
+            <input matInput required type="number" (click)="$event.target.select()" (change)="priceUpdate()"
+                placeholder="Round" [(ngModel)]="item.round" />
         </mat-form-field>
     </div>
     <div>
         <mat-form-field>
-            <input matInput [disabled]="isPriceLocked" required (click)="$event.target.select()" type="number" placeholder="Amount" [(ngModel)]="item.amount" />
+            <input matInput [disabled]="isPriceLocked" required (click)="$event.target.select()" type="number"
+                placeholder="Amount" [(ngModel)]="item.amount" />
         </mat-form-field>
     </div>
     <div>

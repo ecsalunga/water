@@ -65,14 +65,26 @@ table {
 }
 
 .table-area {
-    height: calc(100vh - 400px);
-    min-height: 200px;
+    height: calc(100vh - 240px);
+    min-height: 155px;
     overflow: auto;
     overflow-x: hidden;
 }
 
-.total-area {
-    margin-top: 5px;
-    font-size: 18px;
+@media only screen and (hover: none) and (pointer: coarse) {
+    .table-area {
+        height: calc(100vh - 400px);
+    }
+}
+
+.mat-header-row, .mat-footer-row {
     font-weight: bold;
+}
+
+.hidden-footer {
+    display: none;
+}
+
+.mat-table-sticky {
+    border-top: 1px solid #e0e0e0;
 }
