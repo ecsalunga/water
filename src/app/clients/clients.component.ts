@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
-import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 import { WaterService } from '../water.service';
 import { clients } from '../models/clients';
-import { Command } from '../models/command';
 
 @Component({
   selector: 'app-clients',
@@ -11,14 +9,11 @@ import { Command } from '../models/command';
   styleUrls: ['./clients.component.scss']
 })
 export class ClientsComponent implements OnInit {
-  elementType = NgxQrcodeElementTypes.URL;
-  correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
   display: string = 'none';
   displayedColumns: string[] = ['name', 'address', 'contact', 'key'];
   dataSource = new Array<clients>();
   item: clients;
   currentURL: string;
-  clientPath: string;
   filter: string = '';
   showDelete: boolean = false;
 
@@ -87,7 +82,6 @@ export class ClientsComponent implements OnInit {
   add() {
     this.display = 'form';
     this.item = new clients();
-    this.clientPath = "";
   }
 
   cancel() {
@@ -102,7 +96,6 @@ export class ClientsComponent implements OnInit {
     this.display = 'form';
     this.item = Object.assign({}, item);
     this.showDelete = false;
-    this.clientPath = this.currentURL + "billing/" + item.key;
   }
 
   toDate(action_date: number): Date {

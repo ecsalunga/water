@@ -13,6 +13,7 @@ export class UsersComponent implements OnInit {
   displayedColumns: string[] = ['name', 'username', 'role', 'key'];
   item: users;
   items: Array<users>;
+  showDelete: boolean = false;
 
   constructor(private service: WaterService) {}
 
@@ -45,7 +46,16 @@ export class UsersComponent implements OnInit {
 
   edit(item: users) {
     this.display = 'form';
+    this.showDelete = false;
     this.item = Object.assign({}, item);
+  }
+
+  displayDelete() {
+    this.showDelete = true;
+  }
+
+  canDelete(): boolean {
+    return (this.service.current_user.role == this.service.user_roles.Admin && this.item.key != null && this.item.key != '');
   }
 
   save() {
@@ -63,6 +73,12 @@ export class UsersComponent implements OnInit {
     else
       this.service.db.object('users/items/' + item.key).update(item);
 
+    this.display = 'list';
+  }
+
+  delete() {
+    this.service.db.object('users/items/' + this.item.key).remove();
+    this.service.Message("User " + this.item.name + " deleted.");
     this.display = 'list';
   }
 }

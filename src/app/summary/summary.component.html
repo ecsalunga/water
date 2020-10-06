@@ -20,29 +20,79 @@
     </button>
 </div>
 <!-- Form -->
-<table>
-    <tr class="tb-header">
-        <td>Item</td>
-        <td class="amount">Amount</td>
-    </tr>
-    <tr>
-        <td>Water Sales</td>
-        <td class="amount">{{ summary.water | number:'1.2-2' }}</td>
-    </tr>
-    <tr>
-        <td>Other Sales</td>
-        <td class="amount">{{ summary.others | number:'1.2-2' }}</td>
-    </tr>
-    <tr>
-        <td>Expenses</td>
-        <td class="amount">{{ summary.expenses | number:'1.2-2' }}</td>
-    </tr>
-    <tr style="height: 20px;">
-        <td></td>
-        <td></td>
-    </tr>
-    <tr class="diff">
-        <td>Total</td>
-        <td class="amount">{{ summary.diff | number:'1.2-2' }}</td>
-    </tr>
-</table>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Item Status</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <table>
+                <tr class="tb-header">
+                    <td>Item</td>
+                    <td>Round</td>
+                    <td>Slim</td>
+                    <td>Total</td>
+                </tr>
+                <tr>
+                    <td>{{ status.Pending.label }}</td>
+                    <td>{{ status.Pending.round }}</td>
+                    <td>{{ status.Pending.slim }}</td>
+                    <td>{{ status.Pending.round + status.Pending.slim }}</td>
+                </tr>
+                <tr>
+                    <td>{{ status.Delivered.label }}</td>
+                    <td>{{ status.Delivered.round }}</td>
+                    <td>{{ status.Delivered.slim }}</td>
+                    <td>{{ status.Delivered.round + status.Delivered.slim }}</td>
+                </tr>
+                <tr class="promo">
+                    <td>{{ status.Free.label }}</td>
+                    <td>{{ status.Free.round }}</td>
+                    <td>{{ status.Free.slim }}</td>
+                    <td>{{ status.Free.round + status.Free.slim }}</td>
+                </tr>
+                <tr>
+                    <td>{{ status.Paid.label }}</td>
+                    <td>{{ status.Paid.round }}</td>
+                    <td>{{ status.Paid.slim }}</td>
+                    <td>{{ status.Paid.round + status.Paid.slim }}</td>
+                </tr>
+            </table>
+        </div>
+    </mat-card-content>
+</mat-card>
+<mat-card style="margin-top: 20px;">
+    <mat-card-header>
+        <mat-card-title>Cashflow</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <table>
+                <tr class="tb-header">
+                    <td>Item</td>
+                    <td class="amount">Amount</td>
+                </tr>
+                <tr>
+                    <td>Water Sales</td>
+                    <td class="amount">{{ summary.water | number:'1.2-2' }}</td>
+                </tr>
+                <tr>
+                    <td>Other Sales</td>
+                    <td class="amount">{{ summary.others | number:'1.2-2' }}</td>
+                </tr>
+                <tr>
+                    <td>Expenses</td>
+                    <td class="amount">{{ summary.expenses | number:'1.2-2' }}</td>
+                </tr>
+                <tr style="height: 20px;">
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="diff">
+                    <td>Total</td>
+                    <td class="amount">{{ summary.diff | number:'1.2-2' }}</td>
+                </tr>
+            </table>
+        </div>
+    </mat-card-content>
+</mat-card>

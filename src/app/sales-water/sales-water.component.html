@@ -51,10 +51,10 @@
 <!-- Table list -->
 <div *ngIf="display=='list'">
     <div class="table-area">
-        <mat-table [dataSource]="items">
+        <mat-table [dataSource]="items" matSort (matSortChange)="sortData($event)" matSortDisableClear>
             <!-- address column -->
             <ng-container matColumnDef="name">
-                <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header="name">Name</mat-header-cell>
                 <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)">
                     <span [matTooltip]="element.address" matTooltipPosition="after"
                         [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>

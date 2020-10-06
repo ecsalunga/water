@@ -44,6 +44,8 @@ div {
     height: 250px;
     transition: 0.5s;
     width: 100%;
+    border-top: 1px #e0e0e0 solid;
+    border-bottom: 1px #e0e0e0 solid;
 }
 
 .blurb {
@@ -66,16 +68,16 @@ div {
 
 @media (min-width: 550px) {
     .item-selection { margin-left: 4%; width: 44%; }
-    .menu-img { height: 180px; }
+    .menu-img { height: 200px; }
     .contents { padding: 20px; }
 }
 
 @media (min-width: 720px) {
     .item-selection { margin-left: 4%; width: 28%; }
-    .menu-img { height: 150px; }
+    .menu-img { height: 175px; }
 }
 
 @media (min-width: 1200px) {
     .item-selection { margin-left: 2%; width: 22%; }
-    .menu-img { height: 130px; }
+    .menu-img { height: 150px; }
 }

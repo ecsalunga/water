@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Sort } from '@angular/material/sort';
 import { WaterService } from '../water.service';
 import { sales } from '../models/sales-water';
 import { clients } from '../models/clients';
@@ -77,6 +78,27 @@ export class SalesWaterComponent implements OnInit {
   private loadCommonSettingsData() {
     this.setLocked();
     this.loadOpenDays();
+  }
+
+  sortData(sort: Sort) {
+    if(this.filter != '') {
+      let data = this.items.slice();
+    
+      if (!sort.active || sort.direction === '') {
+        this.items = data;
+        return;
+      }
+  
+      this.items = data.sort((a, b) => {
+        const isAsc = sort.direction === 'asc';
+        switch (sort.active) {
+          case 'name': return this.service.compare(a.name, b.name, isAsc);
+          case 'address': return this.service.compare(a.address, b.address, isAsc);
+          case 'contacts': return this.service.compare(a.contact, b.contact, isAsc);
+          default: return 0;
+        }
+      });
+    }
   }
 
   GetDate(action_day: number): Date {

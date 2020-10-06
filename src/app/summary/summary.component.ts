@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
+import { WaterSalesStatus } from '../models/sales-water-status';
 
 import { others } from '../models/sales-others';
 import { sales } from '../models/sales-water';
@@ -21,12 +22,20 @@ export class SummaryComponent implements OnInit {
   selected: number;
   selectedDate = new Date();
   summary = { expenses: 0, water: 0, others: 0, diff: 0 };
+  status: { 'Pending': WaterSalesStatus, 'Delivered': WaterSalesStatus, 'Free': WaterSalesStatus, 'Paid': WaterSalesStatus };
 
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
+    // status
+    this.status = { 
+      Pending: new WaterSalesStatus('Pending', this.service.order_status.All),
+      Delivered: new WaterSalesStatus('Delivered', this.service.order_status.Delivered),
+      Free: new WaterSalesStatus('Free', this.service.order_status.All),
+      Paid: new WaterSalesStatus('Paid', this.service.order_status.Paid)
+    };
     this.loadData();
     this.loadCommonSettingsData();
     this.service.Changed.subscribe((cmd: Command) => {
@@ -86,14 +95,49 @@ export class SummaryComponent implements OnInit {
     this.LockColor = (isLocked ? 'warn' : 'primary');
   }
 
+  countPromo(item: sales) {
+    if(item.promo > 0) {
+      if(item.slim > 0)
+        this.status.Free.slim += item.promo;
+      else
+        this.status.Free.round += item.promo;
+    }
+  }
+
   loadData() {
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.summary.water = 0;
       
+      // status
+      this.status = { 
+        Pending: new WaterSalesStatus('Pending', this.service.order_status.All),
+        Delivered: new WaterSalesStatus('Delivered', this.service.order_status.Delivered),
+        Free: new WaterSalesStatus('Free', this.service.order_status.All),
+        Paid: new WaterSalesStatus('Paid', this.service.order_status.Paid)
+      };
+
       records.forEach(item => {
         let i = item.payload.val();
-        if(i.status == this.service.order_status.Paid)
+        if(i.status == this.service.order_status.Paid) {
           this.summary.water += i.amount;
+
+          this.status.Paid.slim += i.slim;
+          this.status.Paid.round += i.round;
+
+          this.countPromo(i);
+        }
+        else if(i.status == this.service.order_status.Delivered) {
+          this.status.Delivered.slim += i.slim;
+          this.status.Delivered.round += i.round;
+
+          this.countPromo(i);
+        }
+        else if(i.status != this.service.order_status.Cancelled) {
+          this.status.Pending.slim += i.slim;
+          this.status.Pending.round += i.round;
+
+          this.countPromo(i);
+        }
       });
 
       this.computeDiff();
