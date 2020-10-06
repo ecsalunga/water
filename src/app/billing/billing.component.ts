@@ -91,6 +91,12 @@ export class BillingComponent implements OnInit {
             }
           }
 
+          // remove promo
+          if(this.item.noPromo) {
+            this.promo = 0;
+            i.promo = 0;
+          }
+
           if(i.promo > 0)
             i.amount = i.amount - (i.promo * i.price);
             

@@ -119,6 +119,7 @@ export class ClientsComponent implements OnInit {
     item.round = this.item.round ?? 0;
     item.price = this.item.price ?? 0;
     item.counter = this.item.counter ?? 0;
+    item.noPromo = this.item.noPromo ?? false;
     item.action_date = this.service.actionDate();
     item.action_day = this.service.action_day;
 
@@ -134,7 +135,9 @@ export class ClientsComponent implements OnInit {
     }
     else
       this.service.db.object('clients/items/' + item.key).update(item);
-
+    
+    this.filter = '';
+    this.dataSource = new Array<clients>();
     this.display = 'list';
   }
 

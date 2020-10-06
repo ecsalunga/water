@@ -140,6 +140,9 @@ export class SummaryComponent implements OnInit {
         }
       });
 
+      this.status.Paid.slim -= this.status.Free.slim;
+      this.status.Paid.round -= this.status.Free.round;
+
       this.computeDiff();
     });
 

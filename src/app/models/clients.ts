@@ -11,6 +11,7 @@ export class clients {
     last_order: number;
     remarks: string;
     counter: number;
+    noPromo: boolean;
     action_day: number;
     action_date: number;
 }

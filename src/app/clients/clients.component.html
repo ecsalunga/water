@@ -95,6 +95,12 @@
             <input matInput type="number" placeholder="10 + 1 counter" [(ngModel)]="item.counter" />
         </mat-form-field>
     </div>
+    <div>
+        <mat-slide-toggle [(ngModel)]="item.noPromo" [checked]="item.noPromo">
+          Exclude from promo
+        </mat-slide-toggle>
+    </div>
+    
     <div class="long">
         <mat-form-field>
             <input matInput placeholder="Remarks" [(ngModel)]="item.remarks" />
