@@ -23,6 +23,8 @@ export class SettingsComponent implements OnInit {
   otherSalesItem: SalesOthersItem = new SalesOthersItem();
   itemsOtherSalesItems: Array<SalesOthersItem>
 
+  showSensitive = false;
+
   constructor(private service: WaterService) {}
 
   ngOnInit(): void {
@@ -130,5 +132,9 @@ export class SettingsComponent implements OnInit {
     });
 
     this.service.Message("Reset slim, round and price submitted.");
+  }
+
+  displayResets() {
+    this.showSensitive = true;
   }
 }

@@ -12,6 +12,7 @@ export class clients {
     remarks: string;
     counter: number;
     noPromo: boolean;
+    noQR: boolean;
     action_day: number;
     action_date: number;
 }

@@ -120,6 +120,7 @@ export class ClientsComponent implements OnInit {
     item.price = this.item.price ?? 0;
     item.counter = this.item.counter ?? 0;
     item.noPromo = this.item.noPromo ?? false;
+    item.noQR = this.item.noQR ?? false;
     item.action_date = this.service.actionDate();
     item.action_day = this.service.action_day;
 

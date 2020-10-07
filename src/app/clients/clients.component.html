@@ -96,11 +96,15 @@
         </mat-form-field>
     </div>
     <div>
-        <mat-slide-toggle [(ngModel)]="item.noPromo" [checked]="item.noPromo">
+        <mat-slide-toggle [(ngModel)]="item.noPromo">
           Exclude from promo
         </mat-slide-toggle>
     </div>
-    
+    <div>
+        <mat-slide-toggle [(ngModel)]="item.noQR">
+          Remove QR code in delivery quick action
+        </mat-slide-toggle>
+    </div>
     <div class="long">
         <mat-form-field>
             <input matInput placeholder="Remarks" [(ngModel)]="item.remarks" />

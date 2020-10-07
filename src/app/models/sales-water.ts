@@ -13,6 +13,7 @@ export class sales {
     remarks: string;
     status: string;
     promo: number;
+    noQR: boolean;
     isSelected: boolean;
     counted: boolean;
     action_day: number;

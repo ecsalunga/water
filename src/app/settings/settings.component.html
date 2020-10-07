@@ -128,24 +128,31 @@
             <button mat-raised-button [disabled]="isOtherItemDisabled()" (click)="addOtherSalesItem()">Add</button>
         </div>
     </mat-card-actions>
-    <mat-card-actions style="text-align: right;">
-        <div style="padding: 10px; overflow: auto; margin-bottom: 10px;">
-            <div class="long" style="float: left; width: 60%; text-align: left;">
-                <div>
-                  Reset client 10+1 counting.
+</mat-card>
+
+<mat-card style="width: 80%; margin-top: 20px;">
+    <mat-card-header>
+        <mat-card-title>Resets</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <button mat-raised-button *ngIf="!showSensitive" (click)="displayResets()" style="margin-right: 15px;" color="accent">Show Resets</button>
+        <div *ngIf="showSensitive">
+            <div style="padding: 10px; overflow: auto; margin-bottom: 10px;">
+                <div class="long" style="float: left; width: 60%; text-align: left;">
+                    <div>
+                      Reset client 10+1 counting.
+                    </div>
                 </div>
+                <button mat-raised-button (click)="resetTesPlusOne()">Execute</button>
             </div>
-            <button mat-raised-button (click)="resetTesPlusOne()">Execute</button>
-        </div>
-    </mat-card-actions>
-    <mat-card-actions style="text-align: right;">
-        <div style="padding: 10px; overflow: auto; margin-bottom: 10px;">
-            <div class="long" style="float: left; width: 60%; text-align: left;">
-                <div>
-                  Reset client slim, round and price
+            <div style="padding: 10px; overflow: auto; margin-bottom: 10px;">
+                <div class="long" style="float: left; width: 60%; text-align: left;">
+                    <div>
+                      Reset client slim, round and price
+                    </div>
                 </div>
+                <button mat-raised-button (click)="resetSlimRoundPrice()">Execute</button>
             </div>
-            <button mat-raised-button (click)="resetSlimRoundPrice()">Execute</button>
         </div>
-    </mat-card-actions>
+    </mat-card-content>
 </mat-card>

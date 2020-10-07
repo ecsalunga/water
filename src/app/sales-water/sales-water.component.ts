@@ -447,6 +447,7 @@ export class SalesWaterComponent implements OnInit {
     item.action_day = this.selected;
 
     this.saveClient();
+    item.noQR = this.item.noQR;
     item.counted = this.item.counted ?? false;
 
     if (item.counted && item.status == this.service.order_status.Cancelled)
@@ -488,6 +489,8 @@ export class SalesWaterComponent implements OnInit {
         if (hasUpdate) {
           this.service.db.object('clients/items/' + item.key).update(item);
         }
+
+        this.item.noQR = item.noQR ?? false;
       }
     });
 

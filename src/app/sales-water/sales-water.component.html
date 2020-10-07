@@ -131,7 +131,7 @@
                     <button mat-icon-button [matMenuTriggerFor]="appMenu">
                         <mat-icon class='status-{{element.status}}'>{{ getIcon(element.status) }}</mat-icon>
                     </button>
-                    <button *ngIf="element.status == 'delivery'" mat-icon-button (click)="qrCode(element)"
+                    <button *ngIf="element.status == 'delivery' && !element.noQR" mat-icon-button (click)="qrCode(element)"
                         style="margin-right: 5px;">
                         <mat-icon>qr_code</mat-icon>
                     </button>
