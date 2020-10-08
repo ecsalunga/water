@@ -10,6 +10,15 @@
                         <td style="width: 100px;">Address</td>
                         <td>{{ item.address }}</td>
                     </tr>
+                    <tr>
+                        <td>10+1</td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-text">{{ item.counter }} / 10</div>
+                                <div class="progress-complete" [ngStyle]="{'width.%': percent}"></div>
+                            </div>
+                        </td>
+                    </tr>
                 </table>
                 <div class="order">
                     <table>

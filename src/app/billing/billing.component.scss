@@ -76,3 +76,27 @@ table {
         display: block;
     }
 }
+
+.progress-container {
+    width: 100%; 
+    background-color: grey; 
+    height: 30px;
+    border-radius: 3px;
+    position: relative;
+}
+
+.progress-complete {
+    background-color: rgb(53, 199, 96);
+    height: 30px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.progress-text {
+    position: absolute; 
+    width: 100%;
+    text-align: center;
+    top: 4px;
+    font-weight: bold;
+    color: white;
+}

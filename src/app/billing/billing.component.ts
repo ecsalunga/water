@@ -33,6 +33,7 @@ export class BillingComponent implements OnInit {
   isLogin = false;
   showInput: boolean = false;
   pickupLabel = 'Order';
+  percent = 1;
 
   constructor(private service: WaterService) { }
 
@@ -62,6 +63,8 @@ export class BillingComponent implements OnInit {
       this.pickupSale.counted = false;
       this.pickupSale.status = this.service.order_status.Pickup;
       this.pickupSale.remarks = this.item.remarks;
+      let per = ((this.counter/10) * 100);
+      this.percent =  (per > 100) ? 100 : per ;
     });
 
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('client_key').equalTo(this.clientId)).snapshotChanges().subscribe(records => {
