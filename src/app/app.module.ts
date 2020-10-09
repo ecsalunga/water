@@ -68,7 +68,7 @@ import { MessageComponent } from './message/message.component';
     FormsModule,
     ReactiveFormsModule,
     NgxQRCodeModule,
-    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireModule.initializeApp(environment.config(environment.project)),
     AppRoutingModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     BrowserAnimationsModule,

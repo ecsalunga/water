@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef , Renderer2 } from '@angular/core';
 import { WaterService } from './water.service';
 import { Command } from './models/command';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,7 @@ import { Command } from './models/command';
 export class AppComponent implements OnInit {
   @ViewChild('imageSelector', {static: false}) imageSelector: ElementRef;
 
+  name: string = "Acqua Perfetta";
   loginAs = "";
   progress: number = 0;
   showProgress: boolean = false;
@@ -23,6 +25,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.name = environment.name(environment.project);
     let url = window.location.href;
     if(!this.service.current_user.isLogin)
       this.service.getLogin();
