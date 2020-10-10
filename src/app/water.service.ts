@@ -211,22 +211,25 @@ export class WaterService {
   }
 
   public validateAccess() {
-    if (this.app_users.length > 0) {
-      let isValid = false;
+    let url = window.location.href;
+    if (url.indexOf('billing') == -1 && url.indexOf('message') == -1) {
+      if (this.app_users.length > 0) {
+        let isValid = false;
 
-      if(this.action_day == this.current_user.day) {
-        this.app_users.forEach(item => {
-          if(item.key == this.current_user.key && item.role != this.user_roles.Disabled) {
-            isValid = true;
-            this.current_user.username = item.username;
-            this.current_user.name = item.name;
-            this.current_user.role = item.role;
-          }
-        });
+        if (this.action_day == this.current_user.day) {
+          this.app_users.forEach(item => {
+            if (item.key == this.current_user.key && item.role != this.user_roles.Disabled) {
+              isValid = true;
+              this.current_user.username = item.username;
+              this.current_user.name = item.name;
+              this.current_user.role = item.role;
+            }
+          });
+        }
+
+        if (!isValid)
+          this.logOut();
       }
-
-      if(!isValid)
-        this.logOut();
     }
   }
 
