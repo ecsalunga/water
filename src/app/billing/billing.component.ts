@@ -63,6 +63,7 @@ export class BillingComponent implements OnInit {
       this.pickupSale.counted = false;
       this.pickupSale.status = this.service.order_status.Pickup;
       this.pickupSale.remarks = this.item.remarks;
+      this.pickupSale.isSelected = false;
       let per = ((this.counter/10) * 100);
       this.percent =  (per > 100) ? 100 : per ;
     });
@@ -193,12 +194,17 @@ export class BillingComponent implements OnInit {
       this.showInput = true;
       this.pickupLabel = (this.isLogin ? 'Pickup' : 'Order');
     }
-    else if(this.isLogin && this.currentStatus == this.service.order_status.Pickup) {
+    else if(this.isLogin && this.currentStatus == this.service.order_status.Pickup && !this.pickupSale.isSelected) {
       this.header = "Update order";
       this.message = "Enter the client order(s) below";
       this.image = 'assets/gifs/buy.gif';
       this.showInput = true;
       this.pickupLabel = 'Update pickup';
+    }
+    else if(this.currentStatus == this.service.order_status.Pickup && this.pickupSale.isSelected) {
+      this.header = "Processing";
+      this.message = "Your order is being processed";
+      this.image = 'assets/gifs/processing.gif';
     }
     else if(this.currentStatus == this.service.order_status.Pickup) {
       this.header = "On our way";

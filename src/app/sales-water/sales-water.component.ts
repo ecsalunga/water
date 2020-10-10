@@ -35,11 +35,11 @@ export class SalesWaterComponent implements OnInit {
 
   blockControl = new FormControl();
   blockFilteredOptions: Observable<string[]>;
-  blockOptions: string[] = ['Block'];
+  blockOptions: string[] = ['0'];
 
   lotControl = new FormControl();
   lotFilteredOptions: Observable<string[]>;
-  lotOptions: string[] = ['Lot'];
+  lotOptions: string[] = ['0'];
 
   nameControl = new FormControl();
   nameFilteredOptions: Observable<string[]>;
@@ -527,8 +527,9 @@ export class SalesWaterComponent implements OnInit {
   private setBlockOptions() {
     this.blockOptions = [];
     this.itemClients.forEach(item => {
-      if (this.blockOptions.indexOf(item.block) == -1)
-        this.blockOptions.push(item.block);
+      let block = item.block.trim();
+      if (block != '' && this.blockOptions.indexOf(block) == -1)
+        this.blockOptions.push(block);
     });
 
     this.blockOptions = this.blockOptions.sort((a, b) => a > b ? 1 : -1);
@@ -597,11 +598,11 @@ export class SalesWaterComponent implements OnInit {
   }
 
   private setLotOptions() {
-    this.lotOptions = ['Lot'];
+    this.lotOptions = [];
     this.itemClients.forEach(item => {
       if (item.block == this.item.block) {
-        if (this.lotOptions.indexOf(item.lot) == -1)
-          this.lotOptions.push(item.lot);
+        if (this.lotOptions.indexOf(item.lot.trim()) == -1)
+          this.lotOptions.push(item.lot.trim());
       }
     });
 
@@ -620,7 +621,7 @@ export class SalesWaterComponent implements OnInit {
   private setNameOptions() {
     this.nameOptions = [];
     this.itemClients.forEach(item => {
-      this.nameOptions.push(item.name);
+      this.nameOptions.push(item.name.trim());
     });
 
     this.nameOptions = this.nameOptions.sort((a, b) => a > b ? 1 : -1);
@@ -638,7 +639,7 @@ export class SalesWaterComponent implements OnInit {
   private setAddressOptions() {
     this.addressOptions = [];
     this.itemClients.forEach(item => {
-      this.addressOptions.push(item.address);
+      this.addressOptions.push(item.address.trim());
     });
 
     this.addressOptions = this.addressOptions.sort((a, b) => a > b ? 1 : -1);

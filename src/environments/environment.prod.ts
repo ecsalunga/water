@@ -3,8 +3,8 @@ export const environment = {
   project: 'main',
   name: function(project: string) {
     let names = {
-      "main": "Acqua Perfetta",
-      "pandan": "Acqua Perfetta Pandan",
+      "main": "Acqua Perfetta Pandan",
+      "pandan": "Acqua Perfetta",
       "anunas": "Acqua Perfetta Anunas"
     };
 
