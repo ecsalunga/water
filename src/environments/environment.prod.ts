@@ -1,9 +1,9 @@
 export const environment = {
   production: true,
-  project: 'anunas',
+  project: 'main',
   name: function(project: string) {
     let names = {
-      "main": "Acqua Perfetta Main",
+      "main": "Acqua Perfetta",
       "pandan": "Acqua Perfetta Pandan",
       "anunas": "Acqua Perfetta Anunas"
     };

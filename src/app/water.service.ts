@@ -6,7 +6,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ExpensesCategory } from './models/expenses-category';
 import { ExpensesItem } from './models/expenses-item';
 import { users } from './models/users';
-import { Access } from './models/access';
 import { Command } from './models/command';
 import { sales } from './models/sales-water';
 import { clients } from './models/clients';
@@ -28,19 +27,18 @@ export class WaterService {
   expenses_items: Array<ExpensesItem>;
   other_sales_items: Array<SalesOthersItem>;
   settings_common: SettingsCommon;
-  app_users: Array<users>;
+  app_users = new Array<users>();
   clients = new Array<clients>();
   action_day: number;
   order_status = { All: 'all', None: 'none', Pickup: "pickup", Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Paid: "paid", Cancelled: "cancelled" };
-  user_roles = { Admin: 'Admin', Monitor: 'Monitor', Delivery: "Delivery" };
-  user_access: Access;
-  current_user = { key: '', name: '', username: '', role: '', isLogin: false };
+  user_roles = { Admin: 'Admin', Monitor: 'Monitor', Delivery: "Delivery", Disabled: "Disabled" };
+  current_user = { key: '', name: '', username: '', role: '', isLogin: false, day: 0 };
   setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item' };
   command_types = { ImageUploaded: 'image-uploaded', Progress: 'progress', Loader: 'loader' };
   select_tab = '';
-  
+
   constructor(public db: AngularFireDatabase, public store: AngularFireStorage, public router: Router, public snackBar: MatSnackBar) {
-    this.action_day =  this.actionDay();
+    this.action_day = this.actionDay();
     this.loadSettingsCommon();
     this.loadUsers();
     this.loadClients();
@@ -132,6 +130,8 @@ export class WaterService {
         i.key = item.key;
         this.app_users.push(i);
       });
+
+      this.validateAccess();
     });
   }
 
@@ -155,9 +155,9 @@ export class WaterService {
     let days = new Array<number>();
     days.push(this.action_day);
 
-    if(this.settings_common != null && this.settings_common.Unlocked != null) {
+    if (this.settings_common != null && this.settings_common.Unlocked != null) {
       this.settings_common.Unlocked.forEach(day => {
-        if(days.indexOf(day) == -1)
+        if (days.indexOf(day) == -1)
           days.push(day);
       });
     }
@@ -169,9 +169,9 @@ export class WaterService {
 
   public IsShowOpenDays(): boolean {
     let isShow = false;
-    if(this.current_user.role == this.user_roles.Monitor) {
+    if (this.current_user.role == this.user_roles.Monitor) {
       let openDays = this.GetOpenDays();
-      if(openDays.length > 1 || (openDays.length == 1 && openDays[0] != this.action_day))
+      if (openDays.length > 1 || (openDays.length == 1 && openDays[0] != this.action_day))
         isShow = true;
     }
 
@@ -197,6 +197,7 @@ export class WaterService {
     localStorage.setItem('name', this.current_user.name);
     localStorage.setItem('username', this.current_user.username);
     localStorage.setItem('role', this.current_user.role);
+    localStorage.setItem('day', this.action_day.toString());
   }
 
   public saveRequestPath(requestPath: string) {
@@ -209,12 +210,23 @@ export class WaterService {
     return requestPath;
   }
 
-  public loadAccess() {
-    this.user_access =  new Access();
-    this.user_access.WaterSalesEdit = true;
-    // temp
-    if(this.current_user.role == this.user_roles.Delivery) {
-      this.user_access.WaterSalesEdit = false;
+  public validateAccess() {
+    if (this.app_users.length > 0) {
+      let isValid = false;
+
+      if(this.action_day == this.current_user.day) {
+        this.app_users.forEach(item => {
+          if(item.key == this.current_user.key && item.role != this.user_roles.Disabled) {
+            isValid = true;
+            this.current_user.username = item.username;
+            this.current_user.name = item.name;
+            this.current_user.role = item.role;
+          }
+        });
+      }
+
+      if(!isValid)
+        this.logOut();
     }
   }
 
@@ -223,14 +235,16 @@ export class WaterService {
     let name = localStorage.getItem('name');
     let username = localStorage.getItem('username');
     let role = localStorage.getItem('role');
+    let day = localStorage.getItem('day');
 
-    if(username != null && username != '') {
+    if (username != null && username != '') {
       this.current_user.key = key;
       this.current_user.name = name;
       this.current_user.username = username;
       this.current_user.role = role;
+      this.current_user.day = (day == null ? 0 : Number(day));
       this.current_user.isLogin = true;
-      this.loadAccess();
+      this.validateAccess();
     }
   }
 
@@ -239,7 +253,7 @@ export class WaterService {
     localStorage.setItem('name', '');
     localStorage.setItem('username', '');
     localStorage.setItem('role', '');
-    this.current_user = { key: '', name: '', username: '', role: '', isLogin: false };
+    this.current_user = { key: '', name: '', username: '', role: '', isLogin: false, day: 0 };
     this.router.navigateByUrl('/login');
   }
 
@@ -248,22 +262,22 @@ export class WaterService {
   }
 
   ForAdminOnly() {
-    if(this.current_user.role != this.user_roles.Admin)
+    if (this.current_user.role != this.user_roles.Admin)
       this.router.navigateByUrl('/menu');
   }
 
   NotForDelivery() {
-    if(this.current_user.role == this.user_roles.Delivery)
+    if (this.current_user.role == this.user_roles.Delivery)
       this.router.navigateByUrl('/menu');
   }
 
   upload() {
-    if(this.imagePath == '')
+    if (this.imagePath == '')
       return;
 
     let nativeElement = (<HTMLInputElement>this.imageSelector.nativeElement);
     let selectedFile = nativeElement.files[0];
-    if(selectedFile.type.indexOf("image") > -1) {
+    if (selectedFile.type.indexOf("image") > -1) {
       let cmd = new Command();
       cmd.type = this.command_types.Progress;
       cmd.data = 1;
@@ -272,7 +286,7 @@ export class WaterService {
       let task = this.store.upload(this.imagePath, selectedFile);
 
       task.snapshotChanges().subscribe(item => {
-        if(item.bytesTransferred == item.totalBytes) {
+        if (item.bytesTransferred == item.totalBytes) {
           item.ref.getDownloadURL().then(path => {
             cmd = new Command();
             cmd.type = this.command_types.Progress;
@@ -291,7 +305,7 @@ export class WaterService {
         else {
           let cmd = new Command();
           cmd.type = this.command_types.Progress;
-          cmd.data = (item.bytesTransferred/item.totalBytes) * 100;
+          cmd.data = (item.bytesTransferred / item.totalBytes) * 100;
           this.Changed.emit(cmd);
         }
       });
@@ -303,87 +317,86 @@ export class WaterService {
   }
 
   public IsAllowed(actionDay: number): boolean {
-    if(this.current_user.role == this.user_roles.Admin)
+    if (this.current_user.role == this.user_roles.Admin)
       return true;
-    else if(this.current_user.role == this.user_roles.Delivery)
+    else if (this.current_user.role == this.user_roles.Delivery)
       return false;
     else
       return !this.IsLocked(actionDay);
   }
 
   public IsLocked(actionDay: number): boolean {
-    if(this.settings_common == null)
+    if (this.settings_common == null)
       return true;
 
     let isLocked = true;
-    if(this.settings_common.Unlocked != null) {
+    if (this.settings_common.Unlocked != null) {
       this.settings_common.Unlocked.forEach(item => {
-        if(item == actionDay)
+        if (item == actionDay)
           isLocked = false;
       });
     }
 
-    if(isLocked && this.action_day == actionDay && this.settings_common.Locked != actionDay)
+    if (isLocked && this.action_day == actionDay && this.settings_common.Locked != actionDay)
       isLocked = false;
 
     return isLocked;
   }
 
   public CanExecute(status: string, item: sales): boolean {
-    if(this.current_user.role == this.user_roles.Monitor)
-    {
-      if(item.status == this.order_status.Pickup &&
+    if (this.current_user.role == this.user_roles.Monitor) {
+      if (item.status == this.order_status.Pickup &&
         (status == this.order_status.Preparing
           || status == this.order_status.Paid
           || status == this.order_status.Cancelled))
         return true;
 
-      if(item.status == this.order_status.Preparing &&
+      if (item.status == this.order_status.Preparing &&
         (status == this.order_status.Pickup
           || status == this.order_status.Delivery
           || status == this.order_status.Paid
           || status == this.order_status.Cancelled))
         return true;
-        
-      if(item.status == this.order_status.Delivery && status == this.order_status.Preparing)
+
+      if (item.status == this.order_status.Delivery && status == this.order_status.Preparing)
         return true;
 
-      if(item.status == this.order_status.Delivered && status == this.order_status.Paid)
+      if (item.status == this.order_status.Delivered && status == this.order_status.Paid)
         return true;
-    } 
+    }
 
-    if(this.current_user.role == this.user_roles.Delivery 
+    if (this.current_user.role == this.user_roles.Delivery
       && item.status == this.order_status.Delivery
       && status == this.order_status.Delivered)
       return true;
-   
+
     return false;
   }
 
   public ToggleLock(actionDay: number): boolean {
     let isLocked = this.IsLocked(actionDay);
 
-    if(isLocked) {
-      if(this.settings_common.Unlocked == null)
+    if (isLocked) {
+      if (this.settings_common.Unlocked == null)
         this.settings_common.Unlocked = new Array<number>();
 
       this.settings_common.Unlocked.push(actionDay);
-      if(this.action_day == actionDay)
+      if (this.action_day == actionDay)
         this.settings_common.Locked = 0;
 
       this.SaveSettingsCommon();
     }
     else {
       let items = new Array<number>();
-      if(this.settings_common.Unlocked != null) {
+      if (this.settings_common.Unlocked != null) {
         this.settings_common.Unlocked.forEach(item => {
-          if(item != actionDay)
+          if (item != actionDay)
             items.push(item);
         });
       }
 
       this.settings_common.Unlocked = items;
-      if(this.action_day == actionDay)
+      if (this.action_day == actionDay)
         this.settings_common.Locked = actionDay;
 
       this.SaveSettingsCommon();

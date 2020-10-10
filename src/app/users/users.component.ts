@@ -20,7 +20,7 @@ export class UsersComponent implements OnInit {
   ngOnInit(): void {
     this.service.ForAdminOnly();
       
-    this.roles = [this.service.user_roles.Admin, this.service.user_roles.Monitor, this.service.user_roles.Delivery];
+    this.roles = [this.service.user_roles.Admin, this.service.user_roles.Monitor, this.service.user_roles.Delivery, this.service.user_roles.Disabled];
     this.service.db.list<users>('users/items').snapshotChanges().subscribe(records => {
       this.items = new Array<users>();
       records.forEach(item => {
