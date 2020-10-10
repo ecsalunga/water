@@ -164,10 +164,10 @@
 </div>
 
 <!-- Form -->
-<div class="form" *ngIf="display=='form'">
+<div class="form" [hidden]="display!='form'">
     <div>
         <mat-form-field>
-            <input matInput required placeholder="Name" (change)="updateName()" [(ngModel)]="item.name"
+            <input #clientName matInput required placeholder="Name" (change)="updateName()" [(ngModel)]="item.name"
                 [formControl]="nameControl" [matAutocomplete]="autoName" />
             <mat-autocomplete (optionSelected)="updateName()" autoActiveFirstOption #autoName="matAutocomplete">
                 <mat-option *ngFor="let option of nameFilteredOptions | async" [value]="option">

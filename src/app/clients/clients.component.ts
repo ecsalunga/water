@@ -21,7 +21,7 @@ export class ClientsComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.ForAdminOnly();
-    
+
     let path = window.location.href.split('clients');
     this.currentURL = path[0];
     this.service.NotForDelivery();
@@ -34,15 +34,15 @@ export class ClientsComponent implements OnInit {
   }
 
   updateFilter() {
-    if(this.filter.toLowerCase() == "all") {
+    if (this.filter.toLowerCase() == "all") {
       this.dataSource = this.service.clients;
     }
-    else if(this.filter != '') {
+    else if (this.filter != '') {
       let items = new Array<clients>();
       let toFilter = this.filter.toLowerCase();
-  
+
       this.service.clients.forEach(item => {
-        if(item.name.toLowerCase().indexOf(toFilter) > -1
+        if (item.name.toLowerCase().indexOf(toFilter) > -1
           || item.address.toLowerCase().indexOf(toFilter) > -1
           || item.contact.toLowerCase().indexOf(toFilter) > -1)
           items.push(item);
@@ -52,14 +52,14 @@ export class ClientsComponent implements OnInit {
   }
 
   sortData(sort: Sort) {
-    if(this.filter != '') {
+    if (this.filter != '') {
       let data = this.dataSource.slice();
-    
+
       if (!sort.active || sort.direction === '') {
         this.dataSource = data;
         return;
       }
-  
+
       this.dataSource = data.sort((a, b) => {
         const isAsc = sort.direction === 'asc';
         switch (sort.active) {
@@ -73,9 +73,20 @@ export class ClientsComponent implements OnInit {
   }
 
   updateAddress() {
-    let block = this.item.block ?? "";
-    let lot = this.item.lot ?? "";
-    let address = (block != "") ? block + ", " + lot : lot;
+    let block = this.item.block ?? "0";
+    let lot = this.item.lot ?? "0";
+
+    if (isNaN(Number(block))) {
+      this.item.block = "0";
+      block = "0";
+    }
+
+    if (isNaN(Number(lot))) {
+      this.item.lot = "0";
+      lot = "0";
+    }
+
+    let address = "Blk " + block + " Lot " + lot;
     this.item.address = address;
   }
 
@@ -136,7 +147,7 @@ export class ClientsComponent implements OnInit {
     }
     else
       this.service.db.object('clients/items/' + item.key).update(item);
-    
+
     this.filter = '';
     this.dataSource = new Array<clients>();
     this.display = 'list';

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { WaterService } from '../water.service';
 import { sales } from '../models/sales-water';
@@ -15,6 +15,8 @@ import { map, startWith } from 'rxjs/operators';
   styleUrls: ['./sales-water.component.scss']
 })
 export class SalesWaterComponent implements OnInit {
+  @ViewChild('clientName', {static: false}) nameField: ElementRef;
+
   IsAllowed: boolean = false;
   IsLocked: boolean = false;
   IsOpenDaysShowed: boolean = false;
@@ -25,7 +27,7 @@ export class SalesWaterComponent implements OnInit {
   display: string = 'list';
   displayedColumns: string[] = ['name', 'round', 'slim', 'key'];
   itemOrig: sales;
-  item: sales;
+  item = new sales();
   bar = new StatusBar();
   itemClients = new Array<clients>();
   items: Array<sales>;
@@ -406,6 +408,7 @@ export class SalesWaterComponent implements OnInit {
     this.item = new sales();
     this.item.status = this.service.order_status.Pickup;
     this.item.counted = false;
+    setTimeout(() => { this.nameField.nativeElement.focus(); }, 300);
   }
 
   edit(item: sales) {
