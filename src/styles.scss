@@ -32,7 +32,8 @@ body {
   }
 
   .toolbar {
-    position: absolute;
+    position: fixed;
+    z-index: 501;
     top: 0;
     left: 0;
     right: 0;

@@ -5,11 +5,23 @@
     font-size: 24px;
 }
 
+.branch {
+    font-size: 12px;
+    color: rgb(21, 245, 88);
+    margin-left: -65px;
+    margin-top: 35px;
+}
+
 .user {
     color: white;
     text-decoration: none;
     margin-right: 5px;
     font-size: smaller;
+}
+
+.body {
+    width: 100%;
+    min-height: 88vh;
 }
 
 @media print {

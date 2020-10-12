@@ -13,6 +13,8 @@ export class MenuComponent implements OnInit {
   constructor(private service: WaterService) {}
 
   ngOnInit(): void {
+    window.scroll(0, 0);
+    
     if(!this.service.current_user.isLogin)
       this.service.router.navigateByUrl('/login');
     else

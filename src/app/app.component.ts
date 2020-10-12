@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
   @ViewChild('imageSelector', {static: false}) imageSelector: ElementRef;
 
   name: string = "Acqua Perfetta";
+  branch: string = "";
   loginAs = "";
   progress: number = 0;
   showProgress: boolean = false;
@@ -26,7 +27,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.name = environment.name(environment.project);
+    this.branch = environment.branch(environment.project);
     let url = window.location.href;
+    
     if(!this.service.current_user.isLogin)
       this.service.getLogin();
 

@@ -4,15 +4,24 @@
 
 export const environment = {
   production: false,
-  project: 'main',
+  project: 'pandan',
   name: function(project: string) {
     let names = {
       "main": "Acqua Perfetta",
-      "pandan": "Acqua Perfetta Pandan",
-      "anunas": "Acqua Perfetta Anunas"
+      "pandan": "Acqua Perfetta",
+      "anunas": "Acqua Perfetta"
     };
 
     return names[project];
+  },
+  branch: function(project: string) {
+    let branches = {
+      "main": "Pandan",
+      "pandan": "Development",
+      "anunas": "Anunas"
+    };
+
+    return branches[project];
   },
   config: function(project: string) {
     let configs = {
