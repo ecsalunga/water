@@ -1,8 +1,14 @@
+@font-face {
+    font-family: 'Alex Brush';
+    src: url('/assets/fonts/AlexBrush-Regular.ttf');
+}
+
 .brand {
+    font-family: 'Alex Brush';
     margin-left: 10px;
     text-decoration: none;
     color: white;
-    font-size: 24px;
+    font-size: 28px;
 }
 
 .branch {
