@@ -65,6 +65,10 @@ table {
     font-weight: bold;
 }
 
+.tr-header td {
+    font-weight: bold;
+}
+
 .table-area {
     height: calc(100vh - 240px);
     min-height: 155px;
@@ -88,4 +92,22 @@ table {
 
 .mat-table-sticky {
     border-top: 1px solid #e0e0e0;
+}
+
+.others {
+    margin-top: 20px;
+    td {
+        text-align: left;
+    }
+}
+
+.other-action {
+    margin-top: 50px;
+    width: 100%;
+    max-width: 400px;
+
+    .mat-form-field {
+        width: 100%;
+        font-size: 16px;
+    }
 }

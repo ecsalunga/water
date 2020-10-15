@@ -5,6 +5,8 @@ import { sales } from '../models/sales-water';
 import { clients } from '../models/clients';
 import { StatusBar } from '../models/status-bar';
 import { Command } from '../models/command';
+import { SalesOther } from '../models/sales-other';
+import { SalesOthersItem } from '../models/sales-others-item';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -52,6 +54,10 @@ export class SalesWaterComponent implements OnInit {
   isPriceLocked: boolean = false;
   currentURL: string;
 
+  otherSalesItems = new Array<SalesOthersItem>();
+  otherQty: number = 1;
+  otherItem = new SalesOthersItem();
+
   constructor(private service: WaterService) {
     this.role = this.service.current_user.role;
     if (this.role == this.service.user_roles.Delivery)
@@ -71,6 +77,7 @@ export class SalesWaterComponent implements OnInit {
     this.loadData();
     this.loadClientData();
     this.loadCommonSettingsData();
+    this.loadOtherSales();
     this.service.Changed.subscribe((cmd: Command) => {
       if (cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
         this.loadCommonSettingsData();
@@ -110,6 +117,17 @@ export class SalesWaterComponent implements OnInit {
   SetDate() {
     this.loadData();
     this.loadCommonSettingsData();
+  }
+
+  private loadOtherSales() {
+    this.service.db.list<SalesOthersItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.service.setting_types.OtherSalesItems)).snapshotChanges().subscribe(records => {
+      this.otherSalesItems = new Array<SalesOthersItem>();
+      records.forEach(item => {
+        let i = item.payload.val();
+        i.key = item.key;
+        this.otherSalesItems.push(i);
+      });
+    });
   }
 
   private loadOpenDays() {
@@ -198,12 +216,24 @@ export class SalesWaterComponent implements OnInit {
         this.bar.slim += item.slim;
         this.bar.round += item.round;
         this.bar.amount += item.amount;
+
+        if (item.others != null) {
+          item.others.forEach(other => {
+            this.bar.amount += (other.price * other.quantity);
+          });
+        }
       }
 
       if (this.filter != this.service.order_status.All && item.isSelected) {
         this.bar.selectedSlim += item.slim;
         this.bar.selectedRound += item.round;
         this.bar.selectedAmount += item.amount;
+
+        if (item.others != null) {
+          item.others.forEach(other => {
+            this.bar.selectedAmount += (other.price * other.quantity);
+          });
+        }
       }
     });
 
@@ -408,7 +438,40 @@ export class SalesWaterComponent implements OnInit {
     this.item = new sales();
     this.item.status = this.service.order_status.Pickup;
     this.item.counted = false;
+
+    if(this.otherSalesItems.length > 0)
+      this.otherItem = this.otherSalesItems[0];
+
+    this.otherQty = 1;
+
     setTimeout(() => { this.nameField.nativeElement.focus(); }, 300);
+  }
+
+  addOther() {
+    if(this.otherQty > 0) {
+      let exists = false; 
+
+      this.item.others.forEach(other => {
+        if(other.name == this.otherItem.name) {
+          exists = true;
+          other.quantity += this.otherQty;
+        }
+      });
+
+      if(!exists) {
+        let i = new SalesOther();
+        i.name = this.otherItem.name;
+        i.price = this.otherItem.price;
+        i.quantity = this.otherQty;
+        this.item.others.push(i);
+      }
+      
+      this.otherQty = 1;
+    }
+  }
+
+  removeOther(index: number) {
+    this.item.others.splice(index, 1);
   }
 
   edit(item: sales) {
@@ -416,6 +479,9 @@ export class SalesWaterComponent implements OnInit {
     this.itemOrig = item;
     this.isPriceLocked = true;
     this.item = Object.assign({}, item);
+    this.item.others = item.others ?? new Array<SalesOther>();
+    this.otherItem = this.otherSalesItems[0];
+    this.otherQty = 1;
   }
 
   cancel() {
@@ -444,6 +510,7 @@ export class SalesWaterComponent implements OnInit {
     item.amount = this.item.amount;
     item.status = this.item.status;
     item.price = (item.amount / (item.slim + item.round));
+    item.others = this.item.others;
     item.remarks = this.item.remarks ?? "";
     item.isSelected = (this.role == this.service.user_roles.Delivery && item.status == this.service.order_status.Pickup);
     item.action_date = this.service.actionDate();

@@ -57,7 +57,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header="name">Name</mat-header-cell>
                 <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)" (click)="select(element)">
                     <span [matTooltip]="element.address" matTooltipPosition="after"
-                        [class.promo]="element.promo > 0">{{element.name}}</span></mat-cell>
+                        [class.promo]="element.promo > 0">{{ element.name }}</span><span *ngIf="element.others != null && element.others.length > 0" style="color: red;">*</span></mat-cell>
                 <mat-footer-cell *matFooterCellDef>
                     {{ bar.label }}
                 </mat-footer-cell>
@@ -250,10 +250,69 @@
             <input matInput placeholder="Remarks" [(ngModel)]="item.remarks" />
         </mat-form-field>
     </div>
+    <div class="others">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Other Items</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div style="margin-left: 25px; margin-top: 25px;">
+                    <table>
+                        <tr class="tr-header">
+                            <td>Item</td>
+                            <td style="width: 75px;">Amount</td>
+                            <td>Quantity</td>
+                            <td style="width: 75px;">Action</td>
+                        </tr>
+                        <tr *ngFor="let other of item.others; let i = index;">
+                          <td>{{ other.name }}</td>
+                          <td>{{ (other.price * other.quantity) | number:'1.2-2' }}</td>
+                          <td>{{ other.quantity }}</td>
+                          <td>
+                            <button mat-icon-button color="warn" (click)="removeOther(i)">
+                                <mat-icon>clear</mat-icon>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="item.others != null && item.others.length == 0">
+                            <td colspan="4" style="text-align: center;">
+                                -- no item --
+                            </td>
+                          </tr>
+                    </table>
+                    <hr />
+                    <div class="other-action">
+                        <div>
+                            <mat-form-field>
+                                <mat-label>Select Item</mat-label>
+                                <mat-select [(value)]="otherItem">
+                                    <mat-option *ngFor="let option of otherSalesItems" [value]="option">{{ option.name }}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div>
+                            <mat-form-field>
+                                <input matInput disabled type="text" placeholder="Amount" value="{{ (otherItem.price * otherQty) | number:'1.2-2' }}" />
+                            </mat-form-field>
+                            
+                        </div>
+                        <div>
+                            <mat-form-field>
+                                <input matInput required type="number" placeholder="Quantity" [(ngModel)]="otherQty" />
+                            </mat-form-field>
+                        </div>
+                        <div style="text-align: right;" >
+                            <button mat-raised-button (click)="addOther()">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
 </div>
 
 <!-- Actions -->
-<div class="actions">
+<div class="actions" style="margin-bottom: 20px;">
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!canSave()">Save</button>
 </div>

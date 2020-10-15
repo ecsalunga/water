@@ -8,13 +8,6 @@ export const Menu = {
             path: "/sales",
         },
         {
-            title: "Other Sales",
-            imgSrc: "assets/gifs/buy.gif",
-            blurb: "Other sales, includes bottle, caps and others",
-            roles: "Admin, Monitor",
-            path: "/others",
-        },
-        {
             title: "Expenses",
             imgSrc: "assets/gifs/expenses.gif",
             blurb: "Input of daily expenses and receipt",

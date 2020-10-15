@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { WaterSalesStatus } from '../models/sales-water-status';
 
-import { others } from '../models/sales-others';
 import { sales } from '../models/sales-water';
 import { expenses } from '../models/expenses';
 import { Command } from '../models/command';
@@ -107,7 +106,8 @@ export class SummaryComponent implements OnInit {
   loadData() {
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.summary.water = 0;
-      
+      this.summary.others = 0;
+
       // status
       this.status = { 
         Pending: new WaterSalesStatus('Pending', this.service.order_status.All),
@@ -119,10 +119,15 @@ export class SummaryComponent implements OnInit {
       records.forEach(item => {
         let i = item.payload.val();
         if(i.status == this.service.order_status.Paid) {
-          this.summary.water += i.amount;
-
           this.status.Paid.slim += i.slim;
           this.status.Paid.round += i.round;
+
+          this.summary.water += i.amount;
+          if(i.others != null) {
+            i.others.forEach(other => {
+              this.summary.others += (other.price * other.quantity);
+            });
+          }
 
           this.countPromo(i);
         }
@@ -142,17 +147,6 @@ export class SummaryComponent implements OnInit {
 
       this.status.Paid.slim -= this.status.Free.slim;
       this.status.Paid.round -= this.status.Free.round;
-
-      this.computeDiff();
-    });
-
-    this.service.db.list<others>('sales/others/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
-      this.summary.others = 0;
-
-      records.forEach(item => {
-        let i = item.payload.val();
-        this.summary.others += i.amount;
-      });
 
       this.computeDiff();
     });

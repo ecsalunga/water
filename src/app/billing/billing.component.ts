@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { clients } from '../models/clients';
 import { sales } from '../models/sales-water';
-import { others } from '../models/sales-others';
 import { BillItem } from '../models/bill-item';
 import { Command } from '../models/command';
 
@@ -15,7 +14,6 @@ export class BillingComponent implements OnInit {
   item: clients = new clients();
   itemSales: Array<sales>;
   itemPrevious: Array<sales>
-  itemOthers: Array<others>;
   billItems = Array<BillItem>();
   clientId: string;
   counter: number;
@@ -83,10 +81,13 @@ export class BillingComponent implements OnInit {
       this.slim = 0;
       this.round = 0;
       this.promo = 0;
+      this.othersTotal = 0;
       this.counter = this.currentCount;
 
       this.itemSales = new Array<sales>();
       this.itemPrevious = new Array<sales>();
+      this.billItems = new Array<BillItem>();
+
       this.currentStatus = this.service.order_status.None;
       this.hasPrevious = false;
 
@@ -117,6 +118,17 @@ export class BillingComponent implements OnInit {
           if (i.promo > 0)
             i.amount = i.amount - (i.promo * i.price);
 
+          if (i.others != null) {
+            i.others.forEach(other => {
+              let bill = new BillItem();
+              bill.name = other.name;
+              bill.quantity = other.quantity
+              bill.amount = (other.price * other.quantity);
+              this.othersTotal += bill.amount;
+              this.billItems.push(bill);
+            });
+          }
+
           this.itemSales.push(i);
         }
         else if (i.status != this.service.order_status.Delivery
@@ -137,28 +149,6 @@ export class BillingComponent implements OnInit {
 
         this.hasPrevious = true;
       }
-
-      this.compute();
-    });
-
-    this.service.db.list<others>('sales/others/items', ref => ref.orderByChild('client_key').equalTo(this.clientId)).snapshotChanges().subscribe(records => {
-      this.othersTotal = 0;
-      this.itemOthers = new Array<others>();
-      this.billItems = new Array<BillItem>();
-
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        if (i.status != this.service.order_status.Delivered && i.action_day == this.service.action_day) {
-          let bill = new BillItem();
-          bill.name = i.item;
-          bill.quantity = i.quantity;
-          bill.amount = i.amount;
-          this.billItems.push(bill);
-          this.itemOthers.push(i);
-          this.othersTotal += i.amount;
-        }
-      });
 
       this.compute();
     });
@@ -245,11 +235,6 @@ export class BillingComponent implements OnInit {
       item.isSelected = true;
       item.counted = true;
       this.service.db.object('sales/water/items/' + item.key).update(item);
-    });
-
-    this.itemOthers.forEach(item => {
-      item.status = this.service.order_status.Delivered;
-      this.service.db.object('sales/others/items/' + item.key).update(item);
     });
 
     this.service.select_tab = this.service.order_status.Delivered;

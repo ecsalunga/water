@@ -28,7 +28,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SalesWaterComponent } from './sales-water/sales-water.component';
-import { SalesOthersComponent } from './sales-others/sales-others.component';
 import { ProductsComponent } from './products/products.component';
 import { SummaryComponent } from './summary/summary.component';
 import { MenuComponent } from './menu/menu.component';
@@ -48,7 +47,6 @@ import { MessageComponent } from './message/message.component';
   declarations: [
     AppComponent,
     SalesWaterComponent,
-    SalesOthersComponent,
     ProductsComponent,
     SummaryComponent,
     MenuComponent,
