@@ -34,6 +34,7 @@ export class SalesWaterComponent implements OnInit {
   itemClients = new Array<clients>();
   items: Array<sales>;
   filter: string;
+  otherPanel: boolean = false;
 
   blockControl = new FormControl();
   blockFilteredOptions: Observable<string[]>;
@@ -438,7 +439,7 @@ export class SalesWaterComponent implements OnInit {
     this.item = new sales();
     this.item.status = this.service.order_status.Pickup;
     this.item.counted = false;
-
+    this.otherPanel = false;
     if(this.otherSalesItems.length > 0)
       this.otherItem = this.otherSalesItems[0];
 
@@ -482,10 +483,12 @@ export class SalesWaterComponent implements OnInit {
     this.item.others = item.others ?? new Array<SalesOther>();
     this.otherItem = this.otherSalesItems[0];
     this.otherQty = 1;
+    this.otherPanel = false;
   }
 
   cancel() {
     this.display = 'list';
+    this.otherPanel = true;
   }
 
   toDate(action_date: number): Date {
@@ -529,6 +532,17 @@ export class SalesWaterComponent implements OnInit {
       this.service.db.object('sales/water/items/' + item.key).update(item);
 
     this.display = 'list';
+    this.otherPanel = true;
+  }
+
+  getOthersTotal(): number {
+    let amount = 0;
+
+    this.item.others.forEach(other =>  {
+      amount += (other.price * other.quantity);
+    });
+
+    return amount;
   }
 
   private saveClient() {

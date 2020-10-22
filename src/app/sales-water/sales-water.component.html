@@ -251,63 +251,68 @@
         </mat-form-field>
     </div>
     <div class="others">
-        <mat-card>
-            <mat-card-header>
-                <mat-card-title>Other Items</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <div style="margin-left: 25px; margin-top: 25px;">
-                    <table>
-                        <tr class="tr-header">
-                            <td>Item</td>
-                            <td style="width: 75px;">Amount</td>
-                            <td>Quantity</td>
-                            <td style="width: 75px;">Action</td>
-                        </tr>
-                        <tr *ngFor="let other of item.others; let i = index;">
-                          <td>{{ other.name }}</td>
-                          <td>{{ (other.price * other.quantity) | number:'1.2-2' }}</td>
-                          <td>{{ other.quantity }}</td>
-                          <td>
-                            <button mat-icon-button color="warn" (click)="removeOther(i)">
-                                <mat-icon>clear</mat-icon>
-                            </button>
-                          </td>
-                        </tr>
-                        <tr *ngIf="item.others != null && item.others.length == 0">
-                            <td colspan="4" style="text-align: center;">
-                                -- no item --
-                            </td>
-                          </tr>
-                    </table>
-                    <hr />
-                    <div class="other-action">
-                        <div>
-                            <mat-form-field>
-                                <mat-label>Select Item</mat-label>
-                                <mat-select [(value)]="otherItem">
-                                    <mat-option *ngFor="let option of otherSalesItems" [value]="option">{{ option.name }}</mat-option>
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                        <div>
-                            <mat-form-field>
-                                <input matInput disabled type="text" placeholder="Amount" value="{{ (otherItem.price * otherQty) | number:'1.2-2' }}" />
-                            </mat-form-field>
-                            
-                        </div>
-                        <div>
-                            <mat-form-field>
-                                <input matInput required type="number" placeholder="Quantity" [(ngModel)]="otherQty" />
-                            </mat-form-field>
-                        </div>
-                        <div style="text-align: right;" >
-                            <button mat-raised-button (click)="addOther()">Add</button>
-                        </div>
+        <mat-accordion>
+            <mat-expansion-panel [expanded]="otherPanel == true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Other Items
+                </mat-panel-title>
+                <mat-panel-description>
+                    Total: {{ getOthersTotal() | number:'1.2-2' }}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div style="margin-left: 25px; margin-top: 25px;">
+                <table>
+                    <tr class="tr-header">
+                        <td>Item</td>
+                        <td style="width: 75px;">Amount</td>
+                        <td>Quantity</td>
+                        <td style="width: 75px;">Action</td>
+                    </tr>
+                    <tr *ngFor="let other of item.others; let i = index;">
+                      <td>{{ other.name }}</td>
+                      <td>{{ (other.price * other.quantity) | number:'1.2-2' }}</td>
+                      <td>{{ other.quantity }}</td>
+                      <td>
+                        <button mat-icon-button color="warn" (click)="removeOther(i)">
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr *ngIf="item.others != null && item.others.length == 0">
+                        <td colspan="4" style="text-align: center;">
+                            -- no item --
+                        </td>
+                      </tr>
+                </table>
+                <hr />
+                <div class="other-action">
+                    <div>
+                        <mat-form-field>
+                            <mat-label>Select Item</mat-label>
+                            <mat-select [(value)]="otherItem">
+                                <mat-option *ngFor="let option of otherSalesItems" [value]="option">{{ option.name }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field>
+                            <input matInput required type="number" placeholder="Quantity" [(ngModel)]="otherQty" />
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field>
+                            <input matInput disabled type="text" placeholder="Amount" value="{{ (otherItem.price * otherQty) | number:'1.2-2' }}" />
+                        </mat-form-field>
+                        
+                    </div>
+                    <div style="text-align: right;" >
+                        <button mat-raised-button (click)="addOther()">Add</button>
                     </div>
                 </div>
-            </mat-card-content>
-        </mat-card>
+            </div>
+            </mat-expansion-panel>
+          </mat-accordion>
     </div>
 </div>
 

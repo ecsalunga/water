@@ -11,11 +11,11 @@ import { SalesOthersItem } from '../models/sales-others-item';
 })
 export class SettingsComponent implements OnInit {
   displayedExpensesCategoryColumns: string[] = ['name', 'key'];
-  displayedExpensesItemColumns: string[] = ['name', 'key'];
+  displayedExpensesItemColumns: string[] = ['name', 'category', 'key'];
   displayedOtherSalesItemsColumns: string[] = ['name', 'price', 'key'];
 
   categoryName: string = "";
-  itemsExpensesCategory: Array<ExpensesCategory>;
+  itemsExpensesCategory = new Array<ExpensesCategory>();
 
   expensesItem: ExpensesItem = new ExpensesItem();
   itemsExpensesItems: Array<ExpensesItem>;
@@ -24,6 +24,7 @@ export class SettingsComponent implements OnInit {
   itemsOtherSalesItems: Array<SalesOthersItem>
 
   showSensitive = false;
+  selectedCategory: string = "Others";
 
   constructor(private service: WaterService) {}
 
@@ -74,6 +75,7 @@ export class SettingsComponent implements OnInit {
   addExpenseItem() {
     let item = new ExpensesItem();
     item.name = this.expensesItem.name;
+    item.category = this.selectedCategory;
     item.group = this.service.setting_types.ExpensesItem;
     item.action_date = this.service.actionDate();
     item.action_day =  this.service.action_day;

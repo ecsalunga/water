@@ -50,6 +50,17 @@
 
 <!-- Form -->
 <div class="form" *ngIf="display=='form'">
+    <div>
+        <mat-form-field>
+            <mat-label>Select Category</mat-label>
+            <mat-select [(value)]="item.category" (selectionChange)="updateAuto()">
+                <mat-option *ngFor="let category of categories" [value]="category.name">
+                    {{ category.name }}
+                </mat-option>
+                <mat-option value="Others">Others</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
     <div class="long">
         <mat-form-field>
             <input matInput placeholder="Name" [(ngModel)]="item.name"
@@ -59,17 +70,6 @@
                     {{ option }}
                 </mat-option>
             </mat-autocomplete>
-        </mat-form-field>
-    </div>
-    <div>
-        <mat-form-field>
-            <mat-label>Select Category</mat-label>
-            <mat-select [(value)]="item.category" required>
-                <mat-option *ngFor="let category of categories" [value]="category.name">
-                    {{ category.name }}
-                </mat-option>
-                <mat-option value="Others">Others</mat-option>
-            </mat-select>
         </mat-form-field>
     </div>
     <div>
@@ -90,6 +90,8 @@
 <!-- Actions -->
 <div class="actions">
     <button mat-raised-button *ngIf="display=='list'" (click)="add()" [disabled]="!IsAllowed">Add</button>
+    <button mat-raised-button *ngIf="display=='form' && !showDelete && canDelete()" [disabled]="!IsAllowed" (click)="displayDelete()" style="margin-right: 15px;" color="accent">Show Delete</button>
+    <button mat-raised-button *ngIf="display=='form' && showDelete && canDelete() " [disabled]="!IsAllowed" (click)="delete()" style="margin-right: 15px;" color="warn">Delete</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="cancel()" style="margin-right: 5px;">Cancel</button>
     <button mat-raised-button *ngIf="display=='form'" (click)="save()" [disabled]="!IsAllowed">Save</button>
 </div>

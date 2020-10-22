@@ -21,10 +21,11 @@ export class ExpensesComponent implements OnInit {
   selectedDate = new Date();
   display: string = 'list';
   displayedColumns: string[] = ['name', 'amount', 'key'];
-  item: expenses;
+  item = new expenses();
   items: Array<expenses>;
   categories: Array<ExpensesCategory>;
   openDays: Array<number>;
+  showDelete: boolean = false;
 
   nameControl = new FormControl();
   nameFilteredOptions: Observable<string[]>;
@@ -33,6 +34,7 @@ export class ExpensesComponent implements OnInit {
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
+    this.item.category = "Others";
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
     this.loadData();
@@ -99,6 +101,21 @@ export class ExpensesComponent implements OnInit {
   edit(item: expenses) {
     this.setCommon();
     this.item = Object.assign({}, item);
+    this.showDelete = false;
+  }
+
+  displayDelete() {
+    this.showDelete = true;
+  }
+
+  canDelete(): boolean {
+    return (this.item.key != null && this.item.key != '');
+  }
+
+  delete() {
+    this.service.db.object('expenses/items/' + this.item.key).remove();
+    this.service.Message(this.item.name + " deleted.");
+    this.display = 'list';
   }
 
   private setCommon() {
@@ -134,13 +151,14 @@ export class ExpensesComponent implements OnInit {
   private saveItem() {
     let isExists = false;
     this.service.expenses_items.forEach(item => {
-      if (item.name.toLowerCase() == this.item.name.toLowerCase())
+      if (item.name.toLowerCase() == this.item.name.toLowerCase() && item.category.toLowerCase() == this.item.category.toLowerCase())
         isExists = true;
     });
 
     if(!isExists) {
       let item = new ExpensesItem();
       item.name = this.item.name;
+      item.category = this.item.category;
       item.group = this.service.setting_types.ExpensesItem;
       item.action_date = this.service.actionDate();
       item.action_day =  this.service.action_day;
@@ -155,10 +173,20 @@ export class ExpensesComponent implements OnInit {
     }
   }
 
+  updateAuto() {
+    this.setNameOptions();
+  }
+
   private setNameOptions() {
     this.nameOptions = [];
     this.service.expenses_items.forEach(item => {
-      this.nameOptions.push(item.name);
+      if(this.item.category != null)
+      {
+        if(item.category == this.item.category)
+          this.nameOptions.push(item.name);
+      }
+      else
+        this.nameOptions.push(item.name);
     });
 
     this.nameOptions = this.nameOptions.sort((a, b) => a > b ? 1 : -1);

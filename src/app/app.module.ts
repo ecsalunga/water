@@ -21,11 +21,14 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSortModule } from '@angular/material/sort';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SalesWaterComponent } from './sales-water/sales-water.component';
 import { ProductsComponent } from './products/products.component';
@@ -40,7 +43,6 @@ import { DailyComponent } from './daily/daily.component';
 import { BillingComponent } from './billing/billing.component';
 import { ProfileComponent } from './profile/profile.component';
 import { CardMakerComponent } from './card-maker/card-maker.component';
-import { MatSortModule } from '@angular/material/sort';
 import { MessageComponent } from './message/message.component';
 
 @NgModule({
@@ -86,7 +88,8 @@ import { MessageComponent } from './message/message.component';
     MatSnackBarModule,
     MatSortModule,
     MatTooltipModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatExpansionModule
   ],
   providers: [],
   bootstrap: [AppComponent]
