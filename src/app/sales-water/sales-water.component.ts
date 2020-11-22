@@ -581,6 +581,7 @@ export class SalesWaterComponent implements OnInit {
     if (!isExists) {
       let item = new clients();
       item.key = "";
+      item.qrCode = "";
       item.name = this.item.name;
       item.block = this.item.block ?? "";
       item.lot = this.item.lot ?? "";
@@ -622,7 +623,7 @@ export class SalesWaterComponent implements OnInit {
 
   private _filterBlock(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.blockOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+    return this.blockOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
   }
 
   updateLotOptions() {
@@ -696,7 +697,7 @@ export class SalesWaterComponent implements OnInit {
 
   private _filterLot(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.lotOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+    return this.lotOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
   }
 
   private setNameOptions() {
@@ -714,7 +715,7 @@ export class SalesWaterComponent implements OnInit {
 
   private _filterName(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.nameOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+    return this.nameOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
   }
 
   private setAddressOptions() {
@@ -732,7 +733,7 @@ export class SalesWaterComponent implements OnInit {
 
   private _filterAddress(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.addressOptions.filter(option => option.toLowerCase().indexOf(filterValue) === 0);
+    return this.addressOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
   }
 
   qrCode(item: sales) {

@@ -50,6 +50,16 @@ export class WaterService {
     return this.getActionDate(date);
   }
 
+  public getRandomString(): string {
+    let text = "";
+    let possible = "abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890";
+
+    for (let i = 0; i < 25; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+  }
+  
   public actionDay(): number {
     let date: Date = new Date();
     return this.getActionDay(date);

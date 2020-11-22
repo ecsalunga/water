@@ -1,4 +1,4 @@
-<mat-card class="data">
+<mat-card class="data" *ngIf="!isMapping">
     <mat-card-header>
         <mat-card-title>{{ header }}</mat-card-title>
     </mat-card-header>
@@ -131,7 +131,7 @@
         </tr>
     </table>
 </div>
-<mat-card style="margin-top: 20px;" *ngIf="hasPrevious" class="history">
+<mat-card style="margin-top: 20px;" *ngIf="hasPrevious && !isMapping" class="history">
     <mat-card-header>
         <mat-card-title>Order History</mat-card-title>
     </mat-card-header>
@@ -159,6 +159,29 @@
             </table>
 
             <div class="promo" style="font-style: italic; margin-top: 25px; font-size: smaller;">* 10 + 1</div>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<mat-card class="data" *ngIf="isMapping">
+    <mat-card-header>
+        <mat-card-title>Link QR to Client</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <div class="long">
+                <mat-form-field>
+                    <input matInput required placeholder="Select Address" [(ngModel)]="mapping" [formControl]="addressControl" [matAutocomplete]="autoAddress" />
+                    <mat-autocomplete (optionSelected)="updateAddress()" autoActiveFirstOption #autoAddress="matAutocomplete">
+                        <mat-option *ngFor="let option of addressFilteredOptions | async" [value]="option">
+                            {{ option }}
+                        </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+            </div>
+            <div class="actions">
+                <button mat-raised-button [disabled]="address == ''" style="margin-right: 5px;" (click)="link()">Link</button>
+            </div>
         </div>
     </mat-card-content>
 </mat-card>

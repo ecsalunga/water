@@ -4,6 +4,9 @@ import { clients } from '../models/clients';
 import { sales } from '../models/sales-water';
 import { BillItem } from '../models/bill-item';
 import { Command } from '../models/command';
+import { FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-billing',
@@ -34,6 +37,14 @@ export class BillingComponent implements OnInit {
   showInput: boolean = false;
   pickupLabel = 'Order';
   percent = 1;
+  isMapping: boolean = false;
+  items = new Array<string>();
+  mapping: string = "";
+  address: string = "";
+
+  addressControl = new FormControl();
+  addressFilteredOptions: Observable<string[]>;
+  addressOptions: string[] = [];
 
   constructor(private service: WaterService) { }
 
@@ -48,9 +59,55 @@ export class BillingComponent implements OnInit {
     });
   }
 
-  loadClient() {
+  updateAddress() {
     this.service.clients.forEach(item => {
-      if (item.key == this.clientId) {
+      if(this.mapping == item.address)
+       this.address = item.address;
+    });
+  }
+
+  link() {
+    if(this.mapping != "") {
+      this.service.clients.forEach(item => {
+        if(this.address == item.address) {
+          item.qrCode = this.clientId;
+          this.service.db.object('clients/items/' + item.key).update(item);
+          this.service.Message("Client linked.");
+          this.address = "";
+          this.loadClient();
+        }
+      });
+    }
+  }
+
+  private setAddressOptions() {
+    this.addressOptions = [];
+    this.service.clients.forEach(item => {
+      if(item.address.trim() != "")
+        this.addressOptions.push(item.address.trim());
+    });
+
+    this.addressOptions = this.addressOptions.sort((a, b) => a > b ? 1 : -1);
+    this.addressFilteredOptions = this.addressControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterAddress(value))
+    );
+  }
+
+  private _filterAddress(value: string): string[] {
+    let filterValue = value.toLowerCase();
+    return this.addressOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+  }
+
+  loadClient() {
+    let found = false;
+    this.isMapping = false;
+    
+    this.service.clients.forEach(item => {
+      this.items.push(item.address);
+
+      if (item.key == this.clientId || item.qrCode == this.clientId) {
+        found = true;
         this.item = item;
         this.currentCount = this.item.counter ?? 0;
 
@@ -74,6 +131,11 @@ export class BillingComponent implements OnInit {
         this.loadData();
       }
     });
+
+    if(!found && this.service.current_user.isLogin) {
+      this.isMapping = true;
+      this.setAddressOptions();
+    }
   }
 
   loadData() {
@@ -142,7 +204,7 @@ export class BillingComponent implements OnInit {
           this.itemPrevious.push(i);
       });
 
-      if (this.itemPrevious.length > 0) {
+      if (this.itemPrevious.length > 0 && this.service.current_user.role == this.service.user_roles.Admin) {
         this.itemPrevious = this.itemPrevious.sort((a, b) => a.action_date > b.action_date ? -1 : 1);
         if (this.itemPrevious.length > 10)
           this.itemPrevious = this.itemPrevious.slice(0, 10);

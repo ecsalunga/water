@@ -39,6 +39,9 @@
                         <mat-icon>close</mat-icon>
                     </button>
                 </mat-form-field>
+                <div class="actions" style="float: right;">
+                    <button mat-raised-button (click)="generateRandom()" sty>Generate Random</button>
+                </div>
             </div>
             <div class="table-area">
                 <mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" matSortDisableClear>
@@ -63,3 +66,16 @@
         </div>
     </mat-card-content>
 </mat-card>
+
+<div #dataRandomContainer style="visibility: hidden;">
+    <div *ngFor="let str of randomItems" id="{{ str }}">
+        <ngx-qrcode
+            style="display: none;"
+            [elementType]="elementType"
+            [innerHTML]
+            [errorCorrectionLevel]="correctionLevel"
+            [value]="getPath(str)"
+            cssClass="bshadow">
+            </ngx-qrcode>
+    </div>
+</div>

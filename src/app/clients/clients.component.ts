@@ -120,6 +120,7 @@ export class ClientsComponent implements OnInit {
   save() {
     let item = new clients();
     item.key = this.item.key ?? "";
+    item.qrCode = this.item.qrCode ?? "";
     item.name = this.item.name ?? "";
     item.block = this.item.block;
     item.lot = this.item.lot;

@@ -1,5 +1,6 @@
 export class clients {
     key: string;
+    qrCode: string;
     name: string;
     address: string;
     block: string;

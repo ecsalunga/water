@@ -2,7 +2,6 @@ import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { WaterService } from '../water.service';
 import { clients } from '../models/clients';
 import { Card } from '../models/card';
-import { Command } from '../models/command';
 import { NgxQrcodeElementTypes, NgxQrcodeErrorCorrectionLevels } from '@techiediaries/ngx-qrcode';
 import { Sort } from '@angular/material/sort';
 import { Document, Packer, Paragraph, Media, Table, TableRow, TableCell, AlignmentType, HeadingLevel, TextRun, WidthType } from "docx";
@@ -15,6 +14,7 @@ import { saveAs } from "file-saver/FileSaver";
 })
 export class CardMakerComponent implements OnInit {
   @ViewChild('dataContainer') dataContainer: ElementRef;
+  @ViewChild('dataRandomContainer') dataRandomContainer: ElementRef;
 
   elementType = NgxQrcodeElementTypes.URL;
   correctionLevel = NgxQrcodeErrorCorrectionLevels.HIGH;
@@ -23,6 +23,7 @@ export class CardMakerComponent implements OnInit {
   currentURL: string;
   itemSelected = new Array<clients>();
   itemCards = new Array<any>();
+  randomItems = new Array<string>();
   cards: Array<Card>;
   dataSource = new Array<clients>();
   filter: string = '';
@@ -133,6 +134,42 @@ export class CardMakerComponent implements OnInit {
 
   getClientPath(item: clients) {
     return this.currentURL + "billing/" + item.key;
+  }
+
+  getPath(key: string) {
+    return this.currentURL + "billing/" + key;
+  }
+
+  generateRandom() {
+    this.randomItems = new Array<string>();
+    for(let x = 0; x < 6; x++)
+      this.randomItems.push(this.service.getRandomString());
+
+    setTimeout(() => { this.downloadRandom() }, 1000 );
+  }
+
+  downloadRandom() {
+    let items = this.dataRandomContainer.nativeElement.childNodes;
+    this.cards = new Array<Card>();
+    items.forEach(div => {
+      if(div.id != null) {
+        let card = new Card();
+        card.key = div.id;
+        card.name = "";
+        card.address = "";
+
+        div.childNodes.forEach(element => {
+          if(element.tagName == "NGX-QRCODE") {
+            let img = element.firstChild.firstChild;
+            card.imageSrc = img.src;
+          }
+        });
+
+        this.cards.push(card);
+      }
+    });
+
+    this.download();
   }
 
   generate() {
