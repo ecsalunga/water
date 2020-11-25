@@ -19,6 +19,14 @@
                         <ngx-qrcode style="display: none;" [elementType]="elementType" [innerHTML] [errorCorrectionLevel]="correctionLevel"
                             [value]="getClientPath(card.item2)" cssClass="bshadow"></ngx-qrcode>
                     </td>
+                    <td (click)="select(card.item3)" class="selection" *ngIf="card.item3 != null"
+                        id="{{ card.item3.key }}">
+                        <div>
+                            {{ card.item3.address }}
+                        </div>
+                        <ngx-qrcode style="display: none;" [elementType]="elementType" [innerHTML] [errorCorrectionLevel]="correctionLevel"
+                            [value]="getClientPath(card.item3)" cssClass="bshadow"></ngx-qrcode>
+                    </td>
                 </tr>
             </table>
         </div>

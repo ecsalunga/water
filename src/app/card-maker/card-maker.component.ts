@@ -92,7 +92,7 @@ export class CardMakerComponent implements OnInit {
       }
     });
     
-    if(!reSelected && this.itemSelected.length < 6) {
+    if(!reSelected && this.itemSelected.length < 9) {
         this.itemSelected.push(item);
         this.loadSelected();
     }
@@ -113,17 +113,19 @@ export class CardMakerComponent implements OnInit {
   loadSelected() {
     this.itemCards = new Array<any>();
 
-    let cardItem = { item1: null, item2: null };
+    let cardItem = { item1: null, item2: null, item3: null};
     let ctr = 0;
     this.itemSelected.forEach(item => {
       ctr++;
 
       if(ctr == 1)
         cardItem.item1 = item;
-      else if(ctr == 2) {
+      else if(ctr == 2)
         cardItem.item2 = item;
+      else if(ctr == 3) {
+        cardItem.item3 = item;
         this.itemCards.push(cardItem);
-        cardItem = { item1: null, item2: null };
+        cardItem = { item1: null, item2: null, item3: null};
         ctr = 0;
       }
     });
@@ -142,7 +144,7 @@ export class CardMakerComponent implements OnInit {
 
   generateRandom() {
     this.randomItems = new Array<string>();
-    for(let x = 0; x < 6; x++)
+    for(let x = 0; x < 9; x++)
       this.randomItems.push(this.service.getRandomString());
 
     setTimeout(() => { this.downloadRandom() }, 1000 );
@@ -246,7 +248,7 @@ export class CardMakerComponent implements OnInit {
         alignment: AlignmentType.CENTER,
         children: [
           new TextRun({
-              size: 36,
+              size: 32,
               bold: true,
               text: "+63 927 968 1748",
               font: {
@@ -256,7 +258,7 @@ export class CardMakerComponent implements OnInit {
         ]
       });
 
-      let img = Media.addImage(doc, card.imageSrc, 200, 200);
+      let img = Media.addImage(doc, card.imageSrc, 190, 190);
       let qr = new Paragraph({
         alignment: AlignmentType.CENTER
       });
@@ -267,7 +269,7 @@ export class CardMakerComponent implements OnInit {
         alignment: AlignmentType.CENTER,
         children: [
           new TextRun({
-              size: 20,
+              size: 12,
               text: card.address,
               font: {
                   name: "Calibri Light"
@@ -277,15 +279,15 @@ export class CardMakerComponent implements OnInit {
       });
 
       let tc = new TableCell({ 
-        children: [margin, acqua, address, contact, margin, client, qr],
+        children: [margin, margin, acqua, address, contact, client, qr],
         width: {
-          size: 50,
+          size: 32,
           type: WidthType.PERCENTAGE,
         }
       });
       tcs.push(tc);
 
-      if(ctr == 2) {
+      if(ctr == 3) {
         ctr = 0;
         let tr = new TableRow({
           children: tcs
