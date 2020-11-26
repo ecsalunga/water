@@ -171,7 +171,7 @@
         <div style="margin-left: 25px; margin-top: 25px;">
             <div class="long">
                 <mat-form-field>
-                    <input matInput required placeholder="Select Address" [(ngModel)]="mapping" [formControl]="addressControl" [matAutocomplete]="autoAddress" />
+                    <input matInput required placeholder="Select Address" (change)="updateAddress()" [(ngModel)]="mapping" [formControl]="addressControl" [matAutocomplete]="autoAddress" />
                     <mat-autocomplete (optionSelected)="updateAddress()" autoActiveFirstOption #autoAddress="matAutocomplete">
                         <mat-option *ngFor="let option of addressFilteredOptions | async" [value]="option">
                             {{ option }}

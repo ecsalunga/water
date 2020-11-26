@@ -60,6 +60,7 @@ export class BillingComponent implements OnInit {
   }
 
   updateAddress() {
+    this.address = '';
     this.service.clients.forEach(item => {
       if(this.mapping == item.address)
        this.address = item.address;
@@ -67,14 +68,13 @@ export class BillingComponent implements OnInit {
   }
 
   link() {
-    if(this.mapping != "") {
+    if(this.address != "") {
       this.service.clients.forEach(item => {
         if(this.address == item.address) {
           item.qrCode = this.clientId;
           this.service.db.object('clients/items/' + item.key).update(item);
           this.service.Message("Client linked.");
           this.address = "";
-          this.loadClient();
         }
       });
     }
@@ -102,7 +102,8 @@ export class BillingComponent implements OnInit {
   loadClient() {
     let found = false;
     this.isMapping = false;
-    
+    this.items = new Array<string>();
+
     this.service.clients.forEach(item => {
       this.items.push(item.address);
 
