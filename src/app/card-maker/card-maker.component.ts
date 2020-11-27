@@ -27,6 +27,8 @@ export class CardMakerComponent implements OnInit {
   cards: Array<Card>;
   dataSource = new Array<clients>();
   filter: string = '';
+  pages: number = 1;
+  pageCount: number = 1;
 
   constructor(public service: WaterService) { }
 
@@ -143,8 +145,11 @@ export class CardMakerComponent implements OnInit {
   }
 
   generateRandom() {
+    this.pageCount = this.pages;
     this.randomItems = new Array<string>();
-    for(let x = 0; x < 9; x++)
+    let total = (this.pageCount * 9);
+
+    for(let x = 0; x < total; x++)
       this.randomItems.push(this.service.getRandomString());
 
     setTimeout(() => { this.downloadRandom() }, 1000 );
@@ -285,6 +290,7 @@ export class CardMakerComponent implements OnInit {
           type: WidthType.PERCENTAGE,
         }
       });
+
       tcs.push(tc);
 
       if(ctr == 3) {
@@ -301,20 +307,46 @@ export class CardMakerComponent implements OnInit {
       let tr = new TableRow({
         children: tcs
       });
+      
       trs.push(tr);
     }
 
-    let table = new Table({
-      rows: trs
+    let trGroup = new Array<TableRow>();
+    ctr = 0;
+    trs.forEach(tr => {
+      ctr++;
+      trGroup.push(tr);
+
+      if(ctr >= 3) {
+        let table = new Table({
+          rows: trGroup
+        });
+
+        doc.addSection({
+          margins: {
+            top: 0,
+            bottom: 0
+          },
+          children: [table],
+        });
+        trGroup = new Array<TableRow>();
+        ctr = 0;
+      }
     });
 
-    doc.addSection({
-      margins: {
-        top: 0,
-        bottom: 0
-    },
-      children: [table],
-    });
+    if(ctr > 0) {
+      let table = new Table({
+        rows: trGroup
+      });
+
+      doc.addSection({
+        margins: {
+          top: 0,
+          bottom: 0
+        },
+        children: [table],
+      });
+    }
     
     Packer.toBlob(doc).then(blob => {
       saveAs(blob, "card.docx");

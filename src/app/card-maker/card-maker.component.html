@@ -1,8 +1,19 @@
 <div class="header">Card Builder</div>
+<mat-card style="margin-top: 20px;">
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <mat-form-field>
+                <input matInput type="number" placeholder="Number of pages" [(ngModel)]="pages" />
+            </mat-form-field>
+            <button mat-raised-button style="margin-left: 10px;" (click)="generateRandom()" [disabled]="pages < 1">Generate</button>
+        </div>
+    </mat-card-content>
+</mat-card>
+
 <mat-card style="margin-top: 20px;" *ngIf="itemCards.length > 0">
     <mat-card-content>
         <div style="margin-left: 25px; margin-top: 25px;">
-            <table #dataContainer>
+            <table #dataContainer border="1">
                 <tr *ngFor="let card of itemCards">
                     <td (click)="select(card.item1)" class="selection" id="{{ card.item1.key }}">
                         <div>
@@ -47,9 +58,6 @@
                         <mat-icon>close</mat-icon>
                     </button>
                 </mat-form-field>
-                <div class="actions" style="float: right;">
-                    <button mat-raised-button (click)="generateRandom()" sty>Generate Random</button>
-                </div>
             </div>
             <div class="table-area">
                 <mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" matSortDisableClear>

@@ -109,6 +109,7 @@ export class BillingComponent implements OnInit {
 
       if (item.key == this.clientId || item.qrCode == this.clientId) {
         found = true;
+        this.clientId = item.key;
         this.item = item;
         this.currentCount = this.item.counter ?? 0;
 
