@@ -7,6 +7,7 @@ export class sales {
 
     key: string;
     client_key: string;
+    user_key: string;
     name: string;
     block: string;
     lot: string;

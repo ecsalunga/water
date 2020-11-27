@@ -5,6 +5,7 @@ import { WaterSalesStatus } from '../models/sales-water-status';
 import { sales } from '../models/sales-water';
 import { expenses } from '../models/expenses';
 import { Command } from '../models/command';
+import { Daily } from '../models/daily';
 
 @Component({
   selector: 'app-summary',
@@ -20,21 +21,21 @@ export class SummaryComponent implements OnInit {
   role: string = "";
   selected: number;
   selectedDate = new Date();
+  item: Daily;
+  isLocked: boolean = true;
+  imageUrl: string;
+  showImage: boolean = false;
   summary = { expenses: 0, water: 0, others: 0, diff: 0 };
-  status: { 'Pending': WaterSalesStatus, 'Delivered': WaterSalesStatus, 'Free': WaterSalesStatus, 'Paid': WaterSalesStatus };
+  status: { 'Pending': WaterSalesStatus, 'Estimated': WaterSalesStatus, 'Delivered': WaterSalesStatus, 'Free': WaterSalesStatus, 'Paid': WaterSalesStatus };
 
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
     this.role = this.service.current_user.role;
     this.selected = this.service.action_day;
-    // status
-    this.status = { 
-      Pending: new WaterSalesStatus('Pending', this.service.order_status.All),
-      Delivered: new WaterSalesStatus('Delivered', this.service.order_status.Delivered),
-      Free: new WaterSalesStatus('Free', this.service.order_status.All),
-      Paid: new WaterSalesStatus('Paid', this.service.order_status.Paid)
-    };
+    this.imageUrl = this.service.defaultImagePath;
+
+    this.resetStatus();
     this.loadData();
     this.loadCommonSettingsData();
     this.service.Changed.subscribe((cmd: Command) => {
@@ -43,10 +44,37 @@ export class SummaryComponent implements OnInit {
     });
   }
 
+  private resetStatus() {
+    this.status = { 
+      Pending: new WaterSalesStatus('Pending', this.service.order_status.All),
+      Estimated: new WaterSalesStatus('Estimated', this.service.order_status.All),
+      Delivered: new WaterSalesStatus('Delivered', this.service.order_status.Delivered),
+      Free: new WaterSalesStatus('Free', this.service.order_status.All),
+      Paid: new WaterSalesStatus('Paid', this.service.order_status.Paid)
+    };
+  }
+
   private loadCommonSettingsData() {
     this.setLock();
     this.loadOpenDays();
     this.setIsLockDisplayed();
+  }
+
+  hideImage() {
+    this.showImage = false;
+  }
+
+  displayImage(imageType: string) {
+    if(imageType == 'TDS') {
+      this.imageUrl = this.item.tdsPath;
+      this.showImage = true;
+    }
+    else {
+      this.imageUrl = this.item.meterPath;
+      this.showImage = true;
+    }
+
+    window.scroll(0,0);
   }
 
   GetDate(action_day: number): Date {
@@ -70,8 +98,8 @@ export class SummaryComponent implements OnInit {
   }
 
   toggleLock() {
-    let isLocked = this.service.ToggleLock(this.selected);
-    this.date_locked = (isLocked ? 'lock' : 'lock_open');
+    this.isLocked = this.service.ToggleLock(this.selected);
+    this.date_locked = (this.isLocked ? 'lock' : 'lock_open');
     
     if(this.role == this.service.user_roles.Monitor) {
       this.IsLockDisplayed = !this.service.IsLocked(this.selected);
@@ -89,9 +117,9 @@ export class SummaryComponent implements OnInit {
   }
 
   setLock() {
-    let isLocked = this.service.IsLocked(this.selected);
-    this.date_locked = (isLocked ? 'lock' : 'lock_open');
-    this.LockColor = (isLocked ? 'warn' : 'primary');
+    this.isLocked = this.service.IsLocked(this.selected);
+    this.date_locked = (this.isLocked ? 'lock' : 'lock_open');
+    this.LockColor = (this.isLocked ? 'warn' : 'primary');
   }
 
   countPromo(item: sales) {
@@ -103,18 +131,23 @@ export class SummaryComponent implements OnInit {
     }
   }
 
+  countEstimated(item: sales) {
+    this.service.clients.forEach(client => {
+      if(client.key == item.client_key) {
+        let total = client.counter + item.slim + item.round;
+        if(total > 10)
+          this.status.Estimated.slim += (total / 11);
+      }
+    });
+  }
+
   loadData() {
+    this.loadDaily();
+    
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.summary.water = 0;
       this.summary.others = 0;
-
-      // status
-      this.status = { 
-        Pending: new WaterSalesStatus('Pending', this.service.order_status.All),
-        Delivered: new WaterSalesStatus('Delivered', this.service.order_status.Delivered),
-        Free: new WaterSalesStatus('Free', this.service.order_status.All),
-        Paid: new WaterSalesStatus('Paid', this.service.order_status.Paid)
-      };
+      this.resetStatus();
 
       records.forEach(item => {
         let i = item.payload.val();
@@ -141,7 +174,7 @@ export class SummaryComponent implements OnInit {
           this.status.Pending.slim += i.slim;
           this.status.Pending.round += i.round;
 
-          this.countPromo(i);
+          this.countEstimated(i);
         }
       });
 
@@ -160,6 +193,15 @@ export class SummaryComponent implements OnInit {
       });
 
       this.computeDiff();
+    });
+  }
+
+  loadDaily() {
+    this.service.db.list<Daily>('daily/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
+      records.forEach(item => {
+        this.item = item.payload.val();
+        this.item.key = item.key;
+      });
     });
   }
 

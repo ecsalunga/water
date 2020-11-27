@@ -28,6 +28,7 @@ export class WaterService {
   other_sales_items: Array<SalesOthersItem>;
   settings_common: SettingsCommon;
   app_users = new Array<users>();
+  delivery_users = new Array<users>();
   clients = new Array<clients>();
   action_day: number;
   order_status = { All: 'all', None: 'none', Pickup: "pickup", Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Paid: "paid", Cancelled: "cancelled" };
@@ -135,13 +136,23 @@ export class WaterService {
   private loadUsers() {
     this.db.list<users>('users/items').snapshotChanges().subscribe(records => {
       this.app_users = new Array<users>();
+      this.delivery_users = new Array<users>();
+
       records.forEach(item => {
         let i = item.payload.val();
         i.key = item.key;
         this.app_users.push(i);
+
+        if(i.role == this.user_roles.Delivery)
+          this.delivery_users.push(i);
       });
 
       this.validateAccess();
+
+      let cmd = new Command();
+      cmd.type = this.command_types.Loader;
+      cmd.data = 'users';
+      this.Changed.emit(cmd);
     });
   }
 

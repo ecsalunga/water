@@ -1,6 +1,9 @@
 export class Daily {
     key: string;
     coh: number;
+    consumption: number;
+    slim_full: number;
+    round_full: number;
     discrepancy: number;
     tds: number;
     tdsPath: string;

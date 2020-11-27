@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { WaterService } from '../water.service';
 import { sales } from '../models/sales-water';
+import { users } from '../models/users';
 import { clients } from '../models/clients';
 import { StatusBar } from '../models/status-bar';
 import { Command } from '../models/command';
@@ -59,6 +60,9 @@ export class SalesWaterComponent implements OnInit {
   otherQty: number = 1;
   otherItem = new SalesOthersItem();
 
+  deliveries = new Array<users>();
+  deliveryFilter = 'all';
+
   constructor(private service: WaterService) {
     this.role = this.service.current_user.role;
     if (this.role == this.service.user_roles.Delivery)
@@ -74,6 +78,7 @@ export class SalesWaterComponent implements OnInit {
     this.currentURL = path[0];
 
     this.filter = this.service.order_status.All;
+    this.deliveryFilter = this.service.order_status.All;
     this.selected = this.service.action_day;
     this.loadData();
     this.loadClientData();
@@ -82,6 +87,8 @@ export class SalesWaterComponent implements OnInit {
     this.service.Changed.subscribe((cmd: Command) => {
       if (cmd.type == this.service.command_types.Loader && cmd.data == 'settings-common')
         this.loadCommonSettingsData();
+      else if (cmd.type == this.service.command_types.Loader && cmd.data == 'users')
+        this.deliveries = this.service.delivery_users;
     });
   }
 
@@ -173,6 +180,15 @@ export class SalesWaterComponent implements OnInit {
     }
   }
 
+  filterDelivery(user_key: string) {
+    if(user_key == null || user_key == '')
+      this.deliveryFilter = this.service.order_status.All;
+    else
+      this.deliveryFilter = user_key;
+
+    this.loadData();
+  }
+
   loadData() {
     this.service.db.list<sales>('sales/water/items', ref => ref.orderByChild('action_day').equalTo(this.selected)).snapshotChanges().subscribe(records => {
       this.items = new Array<sales>();
@@ -181,11 +197,26 @@ export class SalesWaterComponent implements OnInit {
         let i = item.payload.val();
         i.key = item.key;
 
-        if (i.client_key == null)
+        if (i.client_key == null || i.client_key == '')
           this.mapClient(i)
 
         if (this.filter == this.service.order_status.All || i.status == this.filter)
-          this.items.push(i);
+        {
+          if(this.filter == this.service.order_status.Delivery || this.filter == this.service.order_status.Delivered)
+          {
+            if(this.service.current_user.role == this.service.user_roles.Delivery)
+            {
+              if(i.user_key == null || i.user_key == '' || i.user_key == this.service.current_user.key)
+                this.items.push(i);
+            }
+            else {
+              if(this.deliveryFilter == this.service.order_status.All || i.user_key == this.deliveryFilter)
+                this.items.push(i);
+            }
+          }
+          else
+            this.items.push(i);
+        }
       });
 
       this.setData();
@@ -306,7 +337,7 @@ export class SalesWaterComponent implements OnInit {
     return (this.bar.selectedSlim > 0 || this.bar.selectedRound > 0 || this.bar.selectedAmount > 0);
   }
 
-  setNext() {
+  setNext(user_key: string) {
     this.items.forEach(item => {
       if (item.isSelected) {
         let status = this.service.order_status.Preparing;
@@ -316,6 +347,9 @@ export class SalesWaterComponent implements OnInit {
         else if (this.filter == this.service.order_status.Delivered) {
           status = this.service.order_status.Paid;
         }
+
+        if(user_key != null && user_key != '')
+          item.user_key = user_key;
 
         this.setStatus(status, item)
       }
@@ -376,14 +410,14 @@ export class SalesWaterComponent implements OnInit {
     item.isSelected = false;
 
     if (!item.counted && (item.status == this.service.order_status.Delivered || item.status == this.service.order_status.Paid))
-      this.countOrder(item, true);
+      this.setCounter(item, true);
     else if (item.counted && item.status == this.service.order_status.Cancelled)
-      this.countOrder(item, false);
+      this.setCounter(item, false);
 
     this.service.db.object('sales/water/items/' + item.key).update(item);
   }
 
-  countOrder(item: sales, isCount: boolean) {
+  setCounter(item: sales, isCount: boolean) {
     this.itemClients.forEach(client => {
       if (client.key == item.client_key) {
         client.slim = item.slim ?? 0;
@@ -497,12 +531,15 @@ export class SalesWaterComponent implements OnInit {
 
   show(status: string) {
     this.filter = status;
+    this.deliveryFilter = this.service.order_status.All;
     this.loadData();
   }
 
   save() {
     let item = new sales();
     item.key = this.item.key ?? "";
+    item.client_key = this.item.client_key ?? "";
+    item.user_key = this.item.user_key ?? "";
     item.name = this.item.name ?? "";
     item.block = this.item.block ?? "";
     item.lot = this.item.lot ?? "";
@@ -524,7 +561,7 @@ export class SalesWaterComponent implements OnInit {
     item.counted = this.item.counted ?? false;
 
     if (item.counted && item.status == this.service.order_status.Cancelled)
-      this.countOrder(item, false);
+      this.setCounter(item, false);
 
     if (item.key == null || item.key == "")
       this.service.db.list('sales/water/items').push(item);

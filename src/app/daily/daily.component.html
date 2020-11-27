@@ -1,30 +1,53 @@
 <div class="header">Daily</div>
-<!-- Form -->
-<div class="form">
-    <div>
-        <mat-form-field>
-            <input matInput type="number" required placeholder="COH" [(ngModel)]="item.coh" />
-        </mat-form-field>
-    </div>
-    <div>
-        <mat-form-field>
-            <input matInput type="number" placeholder="TDS" [(ngModel)]="item.tds" />
-        </mat-form-field>
-    </div>
-    <div>
-        <img class="upload-image" [src]="item.tdsPath" (click)="uploadTds()" />
-    </div>
-    <div>
-        <mat-form-field>
-            <input matInput type="number" placeholder="Meter" [(ngModel)]="item.meter" />
-        </mat-form-field>
-    </div>
-    <div>
-        <img class="upload-image" [src]="item.meterPath" (click)="uploadMeter()" />
-    </div>
-</div>
 
-<!-- Actions -->
-<div class="actions">
-    <button mat-raised-button (click)="submit()">Submit</button>
+<mat-card style="margin-top: 20px;">
+    <mat-card-content>
+        <div class="form">
+            <div>
+                <mat-form-field>
+                    <input matInput type="number" required placeholder="COH" [(ngModel)]="item.coh" />
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input matInput type="number" placeholder="Consumption" [(ngModel)]="item.consumption" />
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input matInput type="number" placeholder="Slim Full" [(ngModel)]="item.slim_full" />
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input matInput type="number" placeholder="Round Full" [(ngModel)]="item.round_full" />
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input matInput type="number" placeholder="TDS" [(ngModel)]="item.tds" />
+                </mat-form-field>
+                <button style="margin-left: 10px;" mat-mini-fab color="primary" (click)="uploadTds()">
+                    <mat-icon>{{ getIcon('TDS') }}</mat-icon>
+                </button>
+            </div>
+            <div>
+                <mat-form-field>
+                    <input matInput type="number" placeholder="Meter" [(ngModel)]="item.meter" />
+                </mat-form-field>
+                <button style="margin-left: 10px;" mat-mini-fab color="primary" (click)="uploadMeter()">
+                    <mat-icon>{{ getIcon('METER') }}</mat-icon>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="actions">
+            <button [disabled]="isLocked" mat-raised-button (click)="submit()">Submit</button>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<div class="overlay" *ngIf="showImage" (click)="hideImage()">
+    <img class="image-css" [src]="imageUrl" />
 </div>

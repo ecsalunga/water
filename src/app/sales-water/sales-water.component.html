@@ -88,7 +88,22 @@
 
             <!-- status column -->
             <ng-container matColumnDef="key">
-                <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                <mat-header-cell *matHeaderCellDef>
+                    <div *ngIf="role == 'Delivery' || (filter != 'delivery' && filter != 'delivered')">Status</div>
+                    <mat-menu #deliveryMenu="matMenu">
+                        <ng-template matMenuContent>
+                            <button mat-menu-item (click)="filterDelivery('')">
+                                All
+                            </button>
+                            <button mat-menu-item *ngFor="let user of deliveries" (click)="filterDelivery(user.key)">
+                                {{ user.name }}
+                            </button>
+                        </ng-template>
+                    </mat-menu>
+                    <div *ngIf="role != 'Delivery' && (filter == 'delivery' || filter == 'delivered')" style="cursor: pointer;" [matMenuTriggerFor]="deliveryMenu">
+                        Status
+                    </div>
+                </mat-header-cell>
                 <mat-cell *matCellDef="let element" [class.selected]="isSelected(element)">
                     <mat-menu #appMenu="matMenu">
                         <ng-template matMenuContent>
@@ -105,11 +120,6 @@
                                 (click)="setStatus('preparing', element)">
                                 <mat-icon class="status-preparing">wash</mat-icon>
                                 <span>Preparing</span>
-                            </button>
-                            <button mat-menu-item *ngIf="canExecute('delivery', element)"
-                                (click)="setStatus('delivery', element)">
-                                <mat-icon class="status-delivery">two_wheeler</mat-icon>
-                                <span>Delivery</span>
                             </button>
                             <button mat-menu-item *ngIf="canExecute('delivered', element)"
                                 (click)="setStatus('delivered', element)">
@@ -137,8 +147,20 @@
                     </button>
                 </mat-cell>
                 <mat-footer-cell *matFooterCellDef>
-                    <ng-container *ngIf="showFooterAction()">
-                        <button mat-icon-button (click)="setNext()">
+                    <ng-container *ngIf="showFooterAction() && bar.status != 'delivery'">
+                        <button mat-icon-button (click)="setNext('')">
+                            <mat-icon class='status-{{bar.status}}'>{{ getIcon(bar.status) }}</mat-icon>
+                        </button>
+                    </ng-container>
+                    <ng-container *ngIf="showFooterAction() && bar.status == 'delivery'">
+                        <mat-menu #deliveryMenu="matMenu">
+                            <ng-template matMenuContent>
+                                <button mat-menu-item *ngFor="let user of deliveries"  (click)="setNext(user.key)">
+                                    {{ user.name }}
+                                </button>
+                            </ng-template>
+                        </mat-menu>
+                        <button mat-icon-button [matMenuTriggerFor]="deliveryMenu">
                             <mat-icon class='status-{{bar.status}}'>{{ getIcon(bar.status) }}</mat-icon>
                         </button>
                     </ng-container>

@@ -37,7 +37,7 @@
                     <td>{{ status.Pending.label }}</td>
                     <td>{{ status.Pending.round }}</td>
                     <td>{{ status.Pending.slim }}</td>
-                    <td>{{ status.Pending.round + status.Pending.slim }}</td>
+                    <td>{{ status.Pending.round + status.Pending.slim }} <span *ngIf="status.Estimated.slim > 0" style="color: rgb(53, 199, 96); font-weight: bold;">*</span></td>
                 </tr>
                 <tr>
                     <td>{{ status.Delivered.label }}</td>
@@ -56,6 +56,18 @@
                     <td>{{ status.Paid.round }}</td>
                     <td>{{ status.Paid.slim }}</td>
                     <td>{{ status.Paid.round + status.Paid.slim }}</td>
+                </tr>
+                <tr style="height: 15px;">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="diff">
+                    <td>{{ status.Estimated.label }}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ ((status.Pending.round + status.Pending.slim) + (status.Delivered.round + status.Delivered.slim) + (status.Paid.round + status.Paid.slim)) - status.Estimated.slim }}</td>
                 </tr>
             </table>
         </div>
@@ -96,3 +108,46 @@
         </div>
     </mat-card-content>
 </mat-card>
+<mat-card *ngIf="isLocked && item != null" style="margin-top: 20px;">
+    <mat-card-header>
+        <mat-card-title>Daily Report</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div style="margin-left: 25px; margin-top: 25px;">
+            <table>
+                <tr class="tb-header">
+                    <td>Item</td>
+                    <td class="amount">Declared</td>
+                </tr>
+                <tr>
+                    <td>COH</td>
+                    <td class="amount">{{ item.coh | number:'1.2-2' }}</td>
+                </tr>
+                <tr>
+                    <td>Consumption</td>
+                    <td class="amount">{{ item.consumption }}</td>
+                </tr>
+                <tr>
+                    <td>Slim Full</td>
+                    <td class="amount">{{ item.slim_full }}</td>
+                </tr>
+                <tr>
+                    <td>Round Full</td>
+                    <td class="amount">{{ item.round_full }}</td>
+                </tr>
+                <tr>
+                    <td><span style="cursor: pointer;" (click)="displayImage('TDS')">TDS</span></td>
+                    <td class="amount">{{ item.tds }}</td>
+                </tr>
+                <tr>
+                    <td><span style="cursor: pointer;" (click)="displayImage('METER')">Meter</span></td>
+                    <td class="amount">{{ item.meter }}</td>
+                </tr>
+            </table>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+<div class="overlay" *ngIf="showImage" (click)="hideImage()">
+    <img class="image-css" [src]="imageUrl" />
+</div>
