@@ -307,6 +307,7 @@ export class WaterService {
       cmd.data = 1;
       this.Changed.emit(cmd);
 
+      this.Message("Uploading, please wait...");
       let task = this.store.upload(this.imagePath, selectedFile);
 
       task.snapshotChanges().subscribe(item => {

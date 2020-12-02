@@ -117,13 +117,24 @@ export class ClientsComponent implements OnInit {
     this.showDelete = true;
   }
 
-  save() {
+  private getClient(): clients {
     let item = new clients();
+    
+    if(this.item.name == null || this.item.name == '') {
+      this.service.Message("Name is required");
+      return item;
+    }
+
+    if(this.item.address == null || this.item.address == '') {
+      this.service.Message("Address is required");
+      return item;
+    }
+
     item.key = this.item.key ?? "";
     item.qrCode = this.item.qrCode ?? "";
     item.name = this.item.name ?? "";
-    item.block = this.item.block;
-    item.lot = this.item.lot;
+    item.block = this.item.block ?? "";
+    item.lot = this.item.lot ?? "";
     item.address = this.item.address ?? "";
     item.contact = this.item.contact ?? "";
     item.remarks = this.item.remarks ?? "";
@@ -142,16 +153,24 @@ export class ClientsComponent implements OnInit {
     item.lot = item.lot.trim();
     item.address = item.address.trim();
 
-    if (item.key == null || item.key == "") {
-      item.last_order = item.action_date;
-      this.service.db.list('clients/items').push(item);
-    }
-    else
-      this.service.db.object('clients/items/' + item.key).update(item);
+    return item;
+  }
 
-    this.filter = '';
-    this.dataSource = new Array<clients>();
-    this.display = 'list';
+  save() {
+    let item = this.getClient();
+
+    if(item.action_day > 0) {
+      if (item.key == null || item.key == "") {
+        item.last_order = item.action_date;
+        this.service.db.list('clients/items').push(item);
+      }
+      else
+        this.service.db.object('clients/items/' + item.key).update(item);
+  
+      this.filter = '';
+      this.dataSource = new Array<clients>();
+      this.display = 'list';
+    }
   }
 
   canDelete(): boolean {

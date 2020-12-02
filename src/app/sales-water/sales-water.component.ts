@@ -80,6 +80,7 @@ export class SalesWaterComponent implements OnInit {
     this.filter = this.service.order_status.All;
     this.deliveryFilter = this.service.order_status.All;
     this.selected = this.service.action_day;
+    this.deliveries = this.service.delivery_users;
     this.loadData();
     this.loadClientData();
     this.loadCommonSettingsData();
@@ -535,8 +536,24 @@ export class SalesWaterComponent implements OnInit {
     this.loadData();
   }
 
-  save() {
+  private getSales() : sales {
     let item = new sales();
+
+    if(this.item.name == null || this.item.name == '') {
+      this.service.Message("Name is required");
+      return item;
+    }
+
+    if(this.item.address == null || this.item.address == '') {
+      this.service.Message("Address is required");
+      return item;
+    }
+
+    if(this.item.amount == null || this.item.amount < 1) {
+      this.service.Message("Invalid amount");
+      return item;
+    }
+
     item.key = this.item.key ?? "";
     item.client_key = this.item.client_key ?? "";
     item.user_key = this.item.user_key ?? "";
@@ -550,26 +567,38 @@ export class SalesWaterComponent implements OnInit {
     item.amount = this.item.amount;
     item.status = this.item.status;
     item.price = (item.amount / (item.slim + item.round));
+
+    if(item.price == null || item.price == Infinity || item.price == NaN)
+      item.price = 0;
+
     item.others = this.item.others;
     item.remarks = this.item.remarks ?? "";
     item.isSelected = (this.role == this.service.user_roles.Delivery && item.status == this.service.order_status.Pickup);
     item.action_date = this.service.actionDate();
     item.action_day = this.selected;
 
-    this.saveClient();
-    item.noQR = this.item.noQR;
-    item.counted = this.item.counted ?? false;
+    return item;
+  }
 
-    if (item.counted && item.status == this.service.order_status.Cancelled)
-      this.setCounter(item, false);
+  save() {
+    let item = this.getSales();
 
-    if (item.key == null || item.key == "")
-      this.service.db.list('sales/water/items').push(item);
-    else
-      this.service.db.object('sales/water/items/' + item.key).update(item);
-
-    this.display = 'list';
-    this.otherPanel = true;
+    if(item.action_day > 0) {
+      this.saveClient();
+      item.noQR = this.item.noQR ?? false;
+      item.counted = this.item.counted ?? false;
+  
+      if (item.counted && item.status == this.service.order_status.Cancelled)
+        this.setCounter(item, false);
+  
+      if (item.key == null || item.key == "")
+        this.service.db.list('sales/water/items').push(item);
+      else
+        this.service.db.object('sales/water/items/' + item.key).update(item);
+  
+      this.display = 'list';
+      this.otherPanel = true;
+    }
   }
 
   getOthersTotal(): number {
@@ -593,7 +622,11 @@ export class SalesWaterComponent implements OnInit {
         if (item.price < 1) {
           item.slim = this.item.slim ?? 0;
           item.round = this.item.round ?? 0;
+          
           item.price = (this.item.amount / (item.slim + item.round));
+          if(item.price == null || item.price == Infinity || item.price == NaN)
+            item.price = 0;
+
           hasUpdate = true;
         }
 
@@ -635,6 +668,9 @@ export class SalesWaterComponent implements OnInit {
         item.counter = 0;
 
       item.price = (this.item.amount / (item.slim + item.round));
+      if(item.price == null || item.price == Infinity || item.price == NaN)
+        item.price = 0;
+
       item.remarks = this.item.remarks ?? "";
       item.action_date = this.service.actionDate();
       item.action_day = this.service.action_day;

@@ -13,17 +13,21 @@ export class DailyComponent implements OnInit {
   uploadType: string;
   imageUrl: string;
   showImage: boolean = false;
-  isLocked: boolean = false;
+  isLocked: boolean = true;
 
   constructor(private service: WaterService) { }
 
   ngOnInit(): void {
     this.item = new Daily();
-    this.item.action_day = this.service.action_day;
     this.item.tdsPath = this.service.defaultImagePath;
     this.item.meterPath = this.service.defaultImagePath;
     this.imageUrl = this.service.defaultImagePath;
     this.loadData();
+
+    if(this.service.current_user.role != this.service.user_roles.Admin)
+      this.isLocked = this.service.IsLocked(this.service.action_day);
+    else
+      this.isLocked = false;
 
     this.service.Changed.subscribe((cmd: Command) => {
       if(cmd.type == this.service.command_types.ImageUploaded) {
@@ -49,7 +53,7 @@ export class DailyComponent implements OnInit {
       this.showImage = true;
     }
     else {
-      this.service.imagePath = "/images/tds/" + this.item.action_date + ".png";
+      this.service.imagePath = "/images/tds/" + this.service.action_day + ".png";
       this.uploadType = 'TDS';
       this.service.selectImage();
     }
@@ -61,7 +65,7 @@ export class DailyComponent implements OnInit {
       this.showImage = true;
     }
     else {
-      this.service.imagePath = "/images/meter/" + this.item.action_date + ".png";
+      this.service.imagePath = "/images/meter/" + this.service.action_day + ".png";
       this.uploadType = 'METER';
       this.service.selectImage();
     }
@@ -84,8 +88,6 @@ export class DailyComponent implements OnInit {
         this.item = item.payload.val();
         this.item.key = item.key;
       });
-
-      this.isLocked = this.service.IsLocked(this.service.action_day);
     });
   }
 
