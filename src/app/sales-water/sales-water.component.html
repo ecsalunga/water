@@ -164,16 +164,6 @@
                             <mat-icon class='status-{{bar.status}}'>{{ getIcon(bar.status) }}</mat-icon>
                         </button>
                     </ng-container>
-                    <ng-container *ngIf="!showFooterAction()">
-                        <ng-container *ngIf="!isNoAction()">
-                            <ng-container *ngIf="!isAmount()">
-                                {{ getStatusValue() }}
-                            </ng-container>
-                            <ng-container *ngIf="isAmount()">
-                                {{ getStatusValue() | number:'1.2-2' }}
-                            </ng-container>
-                        </ng-container>
-                    </ng-container>
                 </mat-footer-cell>
             </ng-container>
 

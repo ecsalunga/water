@@ -90,6 +90,8 @@ export class SalesWaterComponent implements OnInit {
         this.loadCommonSettingsData();
       else if (cmd.type == this.service.command_types.Loader && cmd.data == 'users')
         this.deliveries = this.service.delivery_users;
+      else if (cmd.type == this.service.command_types.Loader && cmd.data == 'clients')
+        this.loadClientData();
     });
   }
 
@@ -358,18 +360,10 @@ export class SalesWaterComponent implements OnInit {
   }
 
   loadClientData() {
-    this.service.db.list<clients>('clients/items').snapshotChanges().subscribe(records => {
-      this.itemClients = new Array<clients>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.itemClients.push(i);
-      });
-
-      this.setNameOptions();
-      this.setBlockOptions();
-      this.setAddressOptions();
-    });
+    this.itemClients = this.service.clients;
+    this.setNameOptions();
+    this.setBlockOptions();
+    this.setAddressOptions();
   }
 
   dateSelected() {
@@ -695,8 +689,12 @@ export class SalesWaterComponent implements OnInit {
   }
 
   private _filterBlock(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.blockOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+    if(value != null && value != '') {
+      const filterValue = value.toLowerCase();
+      return this.blockOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+    }
+
+    return new Array<string>();
   }
 
   updateLotOptions() {
@@ -769,8 +767,12 @@ export class SalesWaterComponent implements OnInit {
   }
 
   private _filterLot(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.lotOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+    if(value != null && value != '') {
+      const filterValue = value.toLowerCase();
+      return this.lotOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+    }
+
+    return new Array<string>();
   }
 
   private setNameOptions() {
@@ -787,8 +789,12 @@ export class SalesWaterComponent implements OnInit {
   }
 
   private _filterName(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.nameOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+    if(value != null && value != '') {
+      const filterValue = value.toLowerCase();
+      return this.nameOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+    }
+    
+    return new Array<string>();
   }
 
   private setAddressOptions() {
@@ -805,8 +811,12 @@ export class SalesWaterComponent implements OnInit {
   }
 
   private _filterAddress(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.addressOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+    if(value != null && value != '') {
+      const filterValue = value.toLowerCase();
+      return this.addressOptions.filter(option => option.toLowerCase().indexOf(filterValue) !== -1);
+    }
+
+    return new Array<string>();
   }
 
   qrCode(item: sales) {
