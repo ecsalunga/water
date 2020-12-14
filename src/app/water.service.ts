@@ -21,6 +21,7 @@ export class WaterService {
   defaultImagePath: string = 'https://firebasestorage.googleapis.com/v0/b/acqua-perfetta.appspot.com/o/images%2Fdefault_default_photo.png?alt=media&token=6a1124f4-58d9-45cd-b134-024c71c6e898';
   imagePath: string = '';
   message: string = "Welcome to Acqua Perfetta!";
+  address: string = "Blk 25 Lot 9 Fiesta Ave. Fiesta Pandan";
   imageSelector: ElementRef;
 
   expenses_categories: Array<ExpensesCategory>;

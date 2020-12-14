@@ -241,7 +241,7 @@ export class CardMakerComponent implements OnInit {
         children: [
           new TextRun({
               size: 20,
-              text: "Blk 25 Lot 9 Fiesta Ave. Fiesta Pandan",
+              text: this.service.address,
               font: {
                   name: "Calibri Light"
               }

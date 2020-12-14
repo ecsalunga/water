@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
 
   name: string = "Acqua Perfetta";
   branch: string = "";
+  version: string = "0.0.0";
   loginAs = "";
   progress: number = 0;
   showProgress: boolean = false;
@@ -28,6 +29,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.name = environment.name(environment.project);
     this.branch = environment.branch(environment.project);
+    this.service.address = environment.address(environment.project);
+    this.version = environment.version;
     let url = window.location.href;
     
     if(!this.service.current_user.isLogin)

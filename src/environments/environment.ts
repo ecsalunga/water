@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   project: 'pandan',
+  version: '0.8.1',
   name: function(project: string) {
     let names = {
       "main": "Acqua Perfetta",
@@ -13,6 +14,15 @@ export const environment = {
     };
 
     return names[project];
+  },
+  address: function(project: string) {
+    let address = {
+      "main": "Blk 25 Lot 9 Fiesta Ave. Fiesta Pandan",
+      "pandan": "Blk 25 Lot 9 Fiesta Ave. Fiesta Pandan",
+      "anunas": "Purok 2 Anunas, Angeles City. Pampanga"
+    };
+
+    return address[project];
   },
   branch: function(project: string) {
     let branches = {
