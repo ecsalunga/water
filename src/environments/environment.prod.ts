@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  project: 'anunas',
-  version: '0.8.1',
+  project: 'pandan',
+  version: '0.8.2',
   name: function(project: string) {
     let names = {
       "main": "Acqua Perfetta",

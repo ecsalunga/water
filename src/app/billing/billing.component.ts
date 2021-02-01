@@ -75,6 +75,9 @@ export class BillingComponent implements OnInit {
           this.service.db.object('clients/items/' + item.key).update(item);
           this.service.Message("Client linked.");
           this.address = "";
+
+          this.service.cache.clients = this.service.actionDate();
+          this.service.saveCacheReferrence();
         }
       });
     }

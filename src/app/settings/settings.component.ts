@@ -3,6 +3,7 @@ import { WaterService } from '../water.service';
 import { ExpensesCategory } from '../models/expenses-category';
 import { ExpensesItem } from '../models/expenses-item';
 import { SalesOthersItem } from '../models/sales-others-item';
+import { Command } from '../models/command';
 
 @Component({
   selector: 'app-settings',
@@ -30,31 +31,17 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.ForAdminOnly();
-    this.service.db.list<ExpensesCategory>('settings/items', ref => ref.orderByChild('group').equalTo(this.service.setting_types.ExpensesCategory)).snapshotChanges().subscribe(records => {
-      this.itemsExpensesCategory = new Array<ExpensesCategory>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.itemsExpensesCategory.push(i);
-      });
-    });
+    this.itemsExpensesCategory = this.service.expenses_categories;
+    this.itemsExpensesItems = this.service.expenses_items;
+    this.itemsOtherSalesItems = this.service.other_sales_items;
 
-    this.service.db.list<ExpensesItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.service.setting_types.ExpensesItem)).snapshotChanges().subscribe(records => {
-      this.itemsExpensesItems = new Array<ExpensesItem>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.itemsExpensesItems.push(i);
-      });
-    });
-
-    this.service.db.list<SalesOthersItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.service.setting_types.OtherSalesItems)).snapshotChanges().subscribe(records => {
-      this.itemsOtherSalesItems = new Array<SalesOthersItem>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.itemsOtherSalesItems.push(i);
-      });
+    this.service.Changed.subscribe((cmd: Command) => {
+      if (cmd.type == this.service.command_types.Loader && cmd.data == 'expenses_categories')
+        this.itemsExpensesCategory = this.service.expenses_categories;
+      else if (cmd.type == this.service.command_types.Loader && cmd.data == 'expenses_items')
+        this.itemsExpensesItems = this.service.expenses_items;
+      else if (cmd.type == this.service.command_types.Loader && cmd.data == 'other_sales_items')
+        this.itemsOtherSalesItems = this.service.other_sales_items;
     });
   }
 
@@ -70,6 +57,9 @@ export class SettingsComponent implements OnInit {
     item.action_day =  this.service.action_day;
     this.service.db.list('settings/items').push(item);
     this.categoryName = "";
+
+    this.service.cache.expenses_categories = this.service.actionDate();
+    this.service.saveCacheReferrence();
   }
 
   addExpenseItem() {
@@ -81,6 +71,9 @@ export class SettingsComponent implements OnInit {
     item.action_day =  this.service.action_day;
     this.service.db.list('settings/items').push(item);
     this.expensesItem = new ExpensesItem();
+
+    this.service.cache.expenses_items = this.service.actionDate();
+    this.service.saveCacheReferrence();
   }
 
   addOtherSalesItem() {
@@ -92,18 +85,30 @@ export class SettingsComponent implements OnInit {
     item.action_day =  this.service.action_day;
     this.service.db.list('settings/items').push(item);
     this.otherSalesItem = new SalesOthersItem();
+
+    this.service.cache.other_sales_items = this.service.actionDate();
+    this.service.saveCacheReferrence();
   }
 
   deleteCategory(item: ExpensesCategory) {
     this.service.db.object('settings/items/' + item.key).remove();
+
+    this.service.cache.expenses_categories = this.service.actionDate();
+    this.service.saveCacheReferrence();
   }
 
   deleteItem(item: ExpensesItem) {
     this.service.db.object('settings/items/' + item.key).remove();
+
+    this.service.cache.expenses_items = this.service.actionDate();
+    this.service.saveCacheReferrence();
   }
 
   deleteOtherSalesItem(item: SalesOthersItem) {
     this.service.db.object('settings/items/' + item.key).remove();
+
+    this.service.cache.other_sales_items = this.service.actionDate();
+    this.service.saveCacheReferrence();
   }
 
   isOtherItemDisabled(): boolean {

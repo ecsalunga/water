@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   project: 'pandan',
-  version: '0.8.1',
+  version: '0.8.2',
   name: function(project: string) {
     let names = {
       "main": "Acqua Perfetta",

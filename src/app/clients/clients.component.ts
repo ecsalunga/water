@@ -170,6 +170,8 @@ export class ClientsComponent implements OnInit {
       this.filter = '';
       this.dataSource = new Array<clients>();
       this.display = 'list';
+
+      this.updateCache();
     }
   }
 
@@ -181,6 +183,12 @@ export class ClientsComponent implements OnInit {
     this.service.db.object('clients/items/' + this.item.key).remove();
     this.service.Message("Client " + this.item.name + " deleted.");
     this.display = 'list';
+    this.updateCache();
+  }
+
+  updateCache() {
+    this.service.cache.clients = this.service.actionDate();
+    this.service.saveCacheReferrence();
   }
 
   qrCode(item: clients) {

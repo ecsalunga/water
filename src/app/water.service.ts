@@ -11,6 +11,7 @@ import { sales } from './models/sales-water';
 import { clients } from './models/clients';
 import { SettingsCommon } from './models/settings-common';
 import { SalesOthersItem } from './models/sales-others-item';
+import { Cache } from './models/cache';
 
 @Injectable({
   providedIn: 'root'
@@ -35,16 +36,20 @@ export class WaterService {
   order_status = { All: 'all', None: 'none', Pickup: "pickup", Preparing: 'preparing', Delivery: 'delivery', Delivered: "delivered", Paid: "paid", Cancelled: "cancelled" };
   user_roles = { Admin: 'Admin', Monitor: 'Monitor', Delivery: "Delivery", Disabled: "Disabled" };
   current_user = { key: '', name: '', username: '', role: '', isLogin: false, day: 0 };
-  setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item' };
+  setting_types = { ExpensesCategory: 'expenses-category', ExpensesItem: 'expenses-item', OtherSalesItems: 'other-sales-item', Cache: 'cache' };
   command_types = { ImageUploaded: 'image-uploaded', Progress: 'progress', Loader: 'loader' };
   select_tab = '';
+  cache = new Cache();
+  cacheLocal = new Cache();
 
   constructor(public db: AngularFireDatabase, public store: AngularFireStorage, public router: Router, public snackBar: MatSnackBar) {
     this.action_day = this.actionDay();
-    this.loadSettingsCommon();
-    this.loadUsers();
-    this.loadClients();
-    this.loadSettings();
+
+    let cache = localStorage.getItem('cache');
+    if (cache != null && cache != '')
+      this.cacheLocal = JSON.parse(cache);
+
+    this.loadCacheSettings();
   }
 
   public actionDate(): number {
@@ -61,7 +66,7 @@ export class WaterService {
 
     return text;
   }
-  
+
   public actionDay(): number {
     let date: Date = new Date();
     return this.getActionDay(date);
@@ -105,33 +110,108 @@ export class WaterService {
     return num;
   }
 
+  private loadCacheSettings() {
+    this.db.list<Cache>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.Cache)).snapshotChanges().subscribe(records => {
+      records.forEach(c => {
+        let i = c.payload.val();
+        i.key = c.key;
+        this.cache = i;
+      });
+
+      this.loadSettingsCommon();
+      this.loadUsers();
+      this.loadClients();
+      this.loadSettings();
+
+      setTimeout(() => {
+        this.saveLocalCacheReferrence();
+      }, 5000);
+    });
+  }
+
   private loadSettings() {
-    this.db.list<ExpensesCategory>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.ExpensesCategory)).snapshotChanges().subscribe(records => {
-      this.expenses_categories = new Array<ExpensesCategory>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.expenses_categories.push(i);
-      });
-    });
+    if (this.cache.expenses_categories > this.cacheLocal.expenses_categories) {
+      this.db.list<ExpensesCategory>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.ExpensesCategory)).snapshotChanges().subscribe(records => {
+        this.expenses_categories = new Array<ExpensesCategory>();
+        records.forEach(item => {
+          let i = item.payload.val();
+          i.key = item.key;
+          this.expenses_categories.push(i);
+        });
 
-    this.db.list<ExpensesItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.ExpensesItem)).snapshotChanges().subscribe(records => {
-      this.expenses_items = new Array<ExpensesItem>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.expenses_items.push(i);
+        localStorage.setItem('expenses_categories', JSON.stringify(this.expenses_categories));
+        let cmd = new Command();
+        cmd.type = this.command_types.Loader;
+        cmd.data = 'expenses_categories';
+        this.Changed.emit(cmd);
       });
-    });
+    }
+    else {
+      this.expenses_categories = JSON.parse(localStorage.getItem('expenses_categories'));
+      let cmd = new Command();
+      cmd.type = this.command_types.Loader;
+      cmd.data = 'expenses_categories';
+      this.Changed.emit(cmd);
+    }
 
-    this.db.list<SalesOthersItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.OtherSalesItems)).snapshotChanges().subscribe(records => {
-      this.other_sales_items = new Array<SalesOthersItem>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.other_sales_items.push(i);
+    if (this.cache.expenses_items > this.cacheLocal.expenses_items) {
+      this.db.list<ExpensesItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.ExpensesItem)).snapshotChanges().subscribe(records => {
+        this.expenses_items = new Array<ExpensesItem>();
+        records.forEach(item => {
+          let i = item.payload.val();
+          i.key = item.key;
+          this.expenses_items.push(i);
+        });
+
+        localStorage.setItem('expenses_items', JSON.stringify(this.expenses_items));
+        let cmd = new Command();
+        cmd.type = this.command_types.Loader;
+        cmd.data = 'expenses_items';
+        this.Changed.emit(cmd);
       });
-    });
+    }
+    else {
+      this.expenses_items = JSON.parse(localStorage.getItem('expenses_items'));
+      let cmd = new Command();
+      cmd.type = this.command_types.Loader;
+      cmd.data = 'expenses_items';
+      this.Changed.emit(cmd);
+    }
+
+    if (this.cache.other_sales_items > this.cacheLocal.other_sales_items) {
+      this.db.list<SalesOthersItem>('settings/items', ref => ref.orderByChild('group').equalTo(this.setting_types.OtherSalesItems)).snapshotChanges().subscribe(records => {
+        this.other_sales_items = new Array<SalesOthersItem>();
+        records.forEach(item => {
+          let i = item.payload.val();
+          i.key = item.key;
+          this.other_sales_items.push(i);
+        });
+
+        localStorage.setItem('other_sales_items', JSON.stringify(this.other_sales_items));
+        let cmd = new Command();
+        cmd.type = this.command_types.Loader;
+        cmd.data = 'other_sales_items';
+        this.Changed.emit(cmd);
+      });
+    }
+    else {
+      this.other_sales_items = JSON.parse(localStorage.getItem('other_sales_items'));
+      let cmd = new Command();
+      cmd.type = this.command_types.Loader;
+      cmd.data = 'other_sales_items';
+      this.Changed.emit(cmd);
+    }
+  }
+
+  public saveLocalCacheReferrence() {
+    localStorage.setItem('cache', JSON.stringify(this.cache));
+  }
+
+  public saveCacheReferrence() {
+    if(this.cache.key != null && this.cache.key != '' && this.cache.key != 'undefined')
+      this.db.object('settings/items/' + this.cache.key).update(this.cache);
+    else
+      this.db.list('settings/items').push(this.cache);
   }
 
   private loadUsers() {
@@ -144,7 +224,7 @@ export class WaterService {
         i.key = item.key;
         this.app_users.push(i);
 
-        if(i.role == this.user_roles.Delivery)
+        if (i.role == this.user_roles.Delivery)
           this.delivery_users.push(i);
       });
 
@@ -158,19 +238,29 @@ export class WaterService {
   }
 
   private loadClients() {
-    this.db.list<clients>('clients/items', ref => ref.orderByChild('name')).snapshotChanges().subscribe(records => {
-      this.clients = new Array<clients>();
-      records.forEach(item => {
-        let i = item.payload.val();
-        i.key = item.key;
-        this.clients.push(i);
-      });
+    if (this.cache.clients > this.cacheLocal.clients) {
+      this.db.list<clients>('clients/items', ref => ref.orderByChild('name')).snapshotChanges().subscribe(records => {
+        this.clients = new Array<clients>();
+        records.forEach(item => {
+          let i = item.payload.val();
+          i.key = item.key;
+          this.clients.push(i);
+        });
 
+        localStorage.setItem('clients', JSON.stringify(this.clients));
+        let cmd = new Command();
+        cmd.type = this.command_types.Loader;
+        cmd.data = 'clients';
+        this.Changed.emit(cmd);
+      });
+    }
+    else {
+      this.clients = JSON.parse(localStorage.getItem('clients'));
       let cmd = new Command();
       cmd.type = this.command_types.Loader;
       cmd.data = 'clients';
       this.Changed.emit(cmd);
-    });
+    }
   }
 
   public GetOpenDays(): Array<number> {
